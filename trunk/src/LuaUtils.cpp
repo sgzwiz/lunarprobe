@@ -78,7 +78,7 @@ void LuaError(lua_State *stack, const char *fmt, ...)
  *      Initial version.
  */
 //*****************************************************************************
-LuaStack LuaUtils::NewLuaStack(bool openlibs, bool debug)
+LuaStack LuaUtils::NewLuaStack(bool openlibs, bool debug, const char *name)
 {
     LuaStack new_stack = lua_open();
 
@@ -89,7 +89,7 @@ LuaStack LuaUtils::NewLuaStack(bool openlibs, bool debug)
     lua_gc(new_stack, LUA_GCSETSTEPMUL, 100000000);
 
     if (debug)
-        LunarProbe::Attach(new_stack);
+        LunarProbe::Attach(new_stack, name);
 
     return new_stack;
 }

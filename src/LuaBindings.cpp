@@ -78,7 +78,7 @@ LuaBindings::~LuaBindings()
     // close the lua stack
     if (pStack != NULL)
     {
-        LunarProbe::Stop(pStack);
+        LunarProbe::Detach(pStack);
         lua_close(pStack);
     }
 }
@@ -132,7 +132,7 @@ LuaStack LuaBindings::GetLuaStack()
     {
         if (pStack == NULL)
         {
-            pStack = LuaUtils::NewLuaStack();
+            pStack = LuaUtils::NewLuaStack(true, false);
 
             // add the location of the lua files into the path!
             std::string strLuaPackagePath
@@ -152,7 +152,7 @@ LuaStack LuaBindings::GetLuaStack()
             // now register this one for debugging!
             // we have to do it here after all the above to avoid getting 
             // infinite recursive calls.
-            LunarProbe::Start(pStack, "debugger");
+            LunarProbe::Attach(pStack, "debugger");
         }
     }
 

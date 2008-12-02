@@ -44,7 +44,7 @@ class LuaUtils
 {
 public:
     // Create a new lua state
-    static LuaStack NewLuaStack();
+    static LuaStack NewLuaStack(bool openlibs, bool debug, const char *name = "");
 
     // Print errors for lua functions
     // static void LuaError(LuaStack stack, const char *fmt, ...);

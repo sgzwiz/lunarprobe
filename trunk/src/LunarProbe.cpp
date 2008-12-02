@@ -74,7 +74,7 @@ void HookFunction(LuaStack pStack, LuaDebug pDebug)
  *      Initial version.
  */
 //*****************************************************************************
-int LunarProbe::Start(LuaStack pStack, const char *name)
+int LunarProbe::Attach(LuaStack pStack, const char *name)
 {
     int result = -1;
     if (GetInstance()->StartDebugging(pStack, name))
@@ -91,7 +91,7 @@ int LunarProbe::Start(LuaStack pStack, const char *name)
  *      Initial version.
  */
 //*****************************************************************************
-int LunarProbe::Stop(LuaStack pStack)
+int LunarProbe::Detach(LuaStack pStack)
 {
     GetInstance()->StopDebugging(pStack);
     return lua_sethook(pStack, NULL, 0, 0);

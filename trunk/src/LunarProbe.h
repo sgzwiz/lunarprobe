@@ -43,10 +43,10 @@ class LunarProbe
 {
 public:
     // Starts the debugging of a lua stack
-    static int Start(LuaStack lua_stack, const char *name = "");
+    static int Attach(LuaStack lua_stack, const char *name = "");
 
     // Stops debugging of a lua stack
-    static int Stop(LuaStack lua_stack);
+    static int Detach(LuaStack lua_stack);
 
     // gets the singleton debugger instance.
     static Debugger *GetInstance();

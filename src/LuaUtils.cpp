@@ -78,14 +78,18 @@ void LuaError(lua_State *stack, const char *fmt, ...)
  *      Initial version.
  */
 //*****************************************************************************
-LuaStack LuaUtils::NewLuaStack()
+LuaStack LuaUtils::NewLuaStack(bool openlibs, bool debug)
 {
     LuaStack new_stack = lua_open();
 
-    luaL_openlibs(new_stack);
+    if (openlibs)
+        luaL_openlibs(new_stack);
 
     // Force lua garbage collector to be non incremental
     lua_gc(new_stack, LUA_GCSETSTEPMUL, 100000000);
+
+    if (debug)
+        LunarProbe::Attach(new_stack);
 
     return new_stack;
 }

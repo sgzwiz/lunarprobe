@@ -114,9 +114,17 @@
 //
 // Only modify these three numbers in this file and nothing else
 //
+#ifndef LUNARPROBE_VERSION_MAJOR
 #define LUNARPROBE_VERSION_MAJOR    0
+#endif
+
+#ifndef LUNARPROBE_VERSION_MINOR
 #define LUNARPROBE_VERSION_MINOR    0
+#endif
+
+#ifndef LUNARPROBE_VERSION_REVISION
 #define LUNARPROBE_VERSION_REVISION 1
+#endif
 
 
 //////////////////////////////////////////////////////////////////////////////

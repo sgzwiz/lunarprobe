@@ -45,22 +45,10 @@ MAIN_OUTPUT     = $(OUTPUT_DIR)/$(MAIN_EXE_NAME)
 #
 LIBS    = -lpthread
 
-DEBUG_CXXFLAGS          =   -g -fno-inline
-RELEASE_CXXFLAGS        =   -O3
-CORE_CXXFLAGS           =   -Wall                   \
-                            -I$(LUA_INCLUDES)       \
-                            -I../src                \
-                            -L$(LUA_INCLUDES)       \
-                            -L$(OUTPUT_DIR)
-
 
 ###################     Begin Targets       ######################
 
 LINK_STATICALLY = yes
-
-# Implicit rule to build .o into the build directory from .cpp
-$(OUTPUT_DIR)/%.o : %.cpp
-	$(GPP) -c $(CXXFLAGS) $< -o $@
 
 all: base test
 	@echo BIN_INSTALL_DIR = $(BIN_INSTALL_DIR)

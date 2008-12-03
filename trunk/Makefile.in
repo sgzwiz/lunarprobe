@@ -61,6 +61,7 @@ package:
 	@rm -Rf /tmp/$(PACKAGE_NAME)/.svn
 	@rm -Rf /tmp/$(PACKAGE_NAME)/src/.svn
 	@rm -Rf /tmp/$(PACKAGE_NAME)/client/.svn
+	@rm -Rf /tmp/$(PACKAGE_NAME)/client/simplejson/.svn
 	@rm -Rf /tmp/$(PACKAGE_NAME)/test/.svn
 	@rm -Rf /tmp/$(PACKAGE_NAME)/lua/.svn
 	@rm -Rf /tmp/$(PACKAGE_NAME)/bld 

@@ -1,5 +1,5 @@
 
-AC_INIT(LunarProbe, 0.0.1, sri.panyam@gmail.com)
+AC_INIT(lunarprobe, 0.0.1, sri.panyam@gmail.com)
 
 ##########  Default Values  ##############
 
@@ -113,5 +113,5 @@ AC_SUBST(RELEASE_DATE)
 
 dnl Create the necessary files.
 
-AC_OUTPUT([ Makefile ])
+AC_OUTPUT([ Makefile.common Makefile src/Makefile test/Makefile ])
 

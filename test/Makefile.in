@@ -13,76 +13,104 @@
 # limitations under the License.
 #
 
-# 
-# Version/Product information
-#
-MAJOR_VERSION           = @MAJOR_VERSION@
-MINOR_VERSION           = @MINOR_VERSION@
-BUILD_VERSION           = @BUILD_VERSION@
-PRODUCT_NAME            = lptest
+###############  Changeable  Parameters  ##############
 
-# 
-# Build directory
-#
-ifeq ($(OUTPUT_DIR),)
-    OUTPUT_DIR          =   ../bld
+include ../Makefile.common
+
+ifeq ($(MAIN_EXE_NAME),)
+    MAIN_EXE_NAME     =   lptest
 endif
 
-LIBS    = -lpthread
-
-DEBUG_CXXFLAGS          =   -g -fno-inline
-RELEASE_CXXFLAGS        =   -O3
-CORE_CXXFLAGS           =   -Wall               \
-                            -I$(LUA_INCLUDES)   \
-                            -I../src            \
-                            -L$(OUTPUT_DIR)     \
-                            -L$(LUA_INCLUDES)
+####    Installation Directories    ####
+BIN_INSTALL_DIR         = @prefix@/bin
 
 ###############  DO NOT MODIFY BELOW THIS   ##############
 
-VERSION                 = $(MAJOR_VERSION).$(MINOR_VERSION).$(BUILD_VERSION)
-
-OUTPUT_DIR              := $(OUTPUT_DIR)/$(BUILD_MODE)
-
-ifeq ($(BUILD_MODE), debug)
-    CXXFLAGS            =   $(CORE_CXXFLAGS) $(DEBUG_CXXFLAGS)
-else
-    CXXFLAGS            =   $(CORE_CXXFLAGS) $(RELEASE_CXXFLAGS)
-endif
+# 
+# Sources
+#
+LPTEST_SRCS     = commands.cpp
 
 # 
-# Select compiler
+# Corresponding obj files
 #
-GPP                     = g++
+LPTEST_OBJS     = $(foreach obj, $(patsubst %.cpp,%.o,$(LPTEST_SRCS)), $(OUTPUT_DIR)/$(obj))
+
+MAIN_OBJS       = $(LPTEST_OBJS) $(OUTPUT_DIR)/test.o
+
+MAIN_OUTPUT     = $(OUTPUT_DIR)/$(MAIN_EXE_NAME)
+
+# 
+# Libraries to include
+#
+LIBS    = -lpthread -llunarprobe
+
+DEBUG_CXXFLAGS          =   -g -fno-inline
+RELEASE_CXXFLAGS        =   -O3
+CORE_CXXFLAGS           =   -Wall                   \
+                            -I$(LUA_INCLUDES)       \
+                            -I../src                \
+                            -L$(LUA_INCLUDES)       \
+                            -L$(OUTPUT_DIR)
+
 
 ###################     Begin Targets       ######################
 
-# Implicit rule to build .o into the build directory from .cc
+LINK_STATICALLY = yes
+
+# Implicit rule to build .o into the build directory from .cpp
 $(OUTPUT_DIR)/%.o : %.cpp
 	$(GPP) -c $(CXXFLAGS) $< -o $@
 
+all: base test
+	@echo BIN_INSTALL_DIR = $(BIN_INSTALL_DIR)
 
-.PHONY: all base lptest clean
-all: base lptest
+.PHONY: clean cleanall distclean test
+
+ifeq ($(LINK_STATICALLY),yes)
+
+test: base $(MAIN_OBJS)
+	$(GPP) $(CXXFLAGS) $(MAIN_OBJS) $(LUA_ARCHIVE_PATH)/liblua.a -o $(MAIN_OUTPUT) $(LIBS)
+
+else
+
+LIBS = $(LIBS) -lliblua
+test: base $(MAIN_OBJS)
+	$(GPP) $(CXXFLAGS) $(MAIN_OBJS) -o $(MAIN_OUTPUT) $(LIBS)
+
+endif
+
+install: 
+	@echo "Nothing for install.  Run the test executable from here itself."
 
 base:
-	mkdir -p $(OUTPUT_DIR)
+	@mkdir -p "$(OUTPUT_DIR)"
 
 clean:
-	rm -Rf autom4te.cache config.*
+	@rm -f $(MAIN_OBJS)
 
-lptest:
-	$(GPP) $(CXXFLAGS) *.cpp ../src/*.cpp $(LUA_INCLUDES)/liblua.a -o $(OUTPUT_DIR)/lptest $(LIBS)
+cleanall: clean
+	@rm -f "$(MAIN_OUTPUT)"
 
-PACKAGE_NAME = LunarProbe-$(MAJOR_VERSION).$(MINOR_VERSION).$(BUILD_VERSION)
-# 
-# Creates the archive.
-#
-package:
-	@rm -f /tmp/$(PACKAGE_NAME).zip /tmp/$(PACKAGE_NAME).tar.bz2 /tmp/$(PACKAGE_NAME).tar.gz
-	@if [ -d /tmp/$(PACKAGE_NAME) ]; then echo "Error: Directory /tmp/$(PACKAGE_NAME) already exists." ; exit 1 ; fi
-	@autoconf
-	@cp -r `pwd` /tmp/$(PACKAGE_NAME)
-	@tar -C /tmp -cvf /tmp/$(PACKAGE_NAME).tar $(PACKAGE_NAME)
-	@gzip /tmp/$(PACKAGE_NAME).tar
+distclean: cleanall
+	@rm -f Makefile
+
+help:
+	@echo   "Usage: make <options> <targets>"
+	@echo   "   Options:"
+	@echo   "       BUILD_MODE=[debug | release]        -   Default: release"
+	@echo   "       OUTPUT_DIR=<output_dir>             -   Directory to place all outputs. Default: bld"
+	@echo   "       MAIN_EXE_NAME=<name>                -   Name of output file.  Default: $(MAIN_EXE_NAME)"
+	@echo   "       LUA_INCLUDES=<lua_include_path>     -   Location of Lua include.  Default: /usr/local/include/lua"
+	@echo   "       LUA_ARCHIVE_PATH=<lua_arch_path>    -   Location of Lua archive.  Default: /usr/local/lib"
+	@echo   "   Targets:"
+	@echo   "       test:       Builds test executable (default)"
+	@echo   "       base:       Core/Base checks (building output dirs etc)"
+	@echo   "       clean:      Cleans all object files"
+	@echo   "       cleanall:   Cleans all object files and executables"
+	@echo   "       dep:        Build source/project dependencies"
+	@echo   "       help:       Prints help information about targets and options"
+
+dep:
+	makedepend -Y -p"$(OUTPUT_DIR)/" -I../src   -- $(LPTEST_SRCS)
 

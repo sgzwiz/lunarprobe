@@ -38,7 +38,7 @@
 
 #include "MutexUtils.h"
 
-LUNARPROBE_CPP_NAMESPACE_BEGIN
+LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
 /*!
@@ -199,5 +199,5 @@ int CCondition::Signal()
     return pthread_cond_signal(&condVar);
 }
 
-LUNARPROBE_CPP_NAMESPACE_END
+LUNARPROBE_NS_END
 

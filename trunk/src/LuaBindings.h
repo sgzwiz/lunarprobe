@@ -30,7 +30,7 @@
 #include "LuaUtils.h"
 #include "MutexUtils.h"
 
-LUNARPROBE_CPP_NAMESPACE_BEGIN
+LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
 /*!
@@ -124,7 +124,7 @@ protected:
     CMutex      dbgStackMutex;
 };
 
-LUNARPROBE_CPP_NAMESPACE_END
+LUNARPROBE_NS_END
 
 #endif
 

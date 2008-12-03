@@ -26,7 +26,7 @@
 
 #include "lpmain.h"
 
-LUNARPROBE_CPP_NAMESPACE_BEGIN
+LUNARPROBE_NS_BEGIN
 
 int traceback(lua_State *L)
 {
@@ -319,5 +319,5 @@ int LuaUtils::CallLuaFunc(lua_State *L, const char *funcname, const char *funcsi
     return result;
 }
 
-LUNARPROBE_CPP_NAMESPACE_END
+LUNARPROBE_NS_END
 

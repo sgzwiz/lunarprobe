@@ -30,7 +30,7 @@
 
 #include "lpmain.h"
 
-LUNARPROBE_CPP_NAMESPACE_BEGIN
+LUNARPROBE_NS_BEGIN
 
 std::string  LuaBindings::LUA_SRC_LOCATION  = "shared/libgameengine/lua/debugger/";
 std::string  LuaBindings::LUA_VAR_PREFIX    = "__LDB_";
@@ -796,5 +796,5 @@ int LuaBindings::SetLocal(LuaStack stack)
     return 2;
 }
 
-LUNARPROBE_CPP_NAMESPACE_END
+LUNARPROBE_NS_END
 

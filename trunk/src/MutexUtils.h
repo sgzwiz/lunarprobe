@@ -31,7 +31,7 @@
 #include <pthread.h>
 #include "lpnsdefs.h"
 
-LUNARPROBE_CPP_NAMESPACE_BEGIN
+LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
 /*!
@@ -96,7 +96,7 @@ private:
     CMutex *pMutex;
 };
 
-LUNARPROBE_CPP_NAMESPACE_END
+LUNARPROBE_NS_END
 
 #endif
 

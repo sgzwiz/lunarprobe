@@ -27,7 +27,7 @@
 #include "LunarProbe.h"
 #include "Debugger.h"
 
-LUNARPROBE_CPP_NAMESPACE_BEGIN
+LUNARPROBE_NS_BEGIN
 
 std::auto_ptr< Debugger > LunarProbe::pDebugger;
 const int HookMask     = LUA_MASKCALL | LUA_MASKRET | LUA_MASKLINE /* | LUA_MASKCOUNT */;
@@ -97,5 +97,5 @@ int LunarProbe::Detach(LuaStack pStack)
     return lua_sethook(pStack, NULL, 0, 0);
 }
 
-LUNARPROBE_CPP_NAMESPACE_END
+LUNARPROBE_NS_END
 

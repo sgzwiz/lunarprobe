@@ -31,7 +31,7 @@
 #include <string>
 #include "MutexUtils.h"
 
-LUNARPROBE_CPP_NAMESPACE_BEGIN
+LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
 /*!
@@ -81,7 +81,7 @@ private:
     LuaDebug  pDebug;
 };
 
-LUNARPROBE_CPP_NAMESPACE_END
+LUNARPROBE_NS_END
 
 #endif
 

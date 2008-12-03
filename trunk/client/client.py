@@ -24,7 +24,8 @@ Version:
 
 import os, sys
 import re, string
-import socket, json
+import socket
+import simplejson as json
 import Queue, threading
 
 def strip_quotes(x):
@@ -64,7 +65,9 @@ class Debugger:
         self.disconnect()
 
     def do_prompt(self, prompt = PROMPT):
-        return raw_input(prompt).strip() if self.debugClient.isAlive() else None
+        if self.debugClient.isAlive():
+            return raw_input(prompt).strip()
+        return None
 
     def run(self):
         """ Runs the command line loop. """
@@ -108,7 +111,7 @@ class Debugger:
 
     def message_callback(self, data):
         # print "Decoding data: ", data
-        decdata = json.JSONDecoder().decode(data)
+        decdata = json.decoder.JSONDecoder().decode(data)
         # print "Decoded data: ", decdata
 
         msgtype = decdata["type"]
@@ -124,8 +127,12 @@ class Debugger:
                 return
 
             orig_msg    = decdata["original"]
-            command     = orig_msg['cmd'] if 'cmd' in orig_msg else None
-            handler     = self.get_command_handler(command) if command else None
+            handler     = None
+            command     = None
+            if 'cmd' in orig_msg:
+                command = orig_msg['cmd']
+            if command:
+                handler = self.get_command_handler(command)
 
             if handler:
                 handler(command, decdata, False)
@@ -339,9 +346,16 @@ class Debugger:
             if len(args) == 0:
                 return self.print_help(command)
 
-            lvindex = int(args[1]) if len(args) > 1 else 1
-            nlevels = int(args[2]) if len(args) > 2 else 1
-            frame   = int(args[3]) if len(args) > 3 else 0 
+            lvindex = 1
+            nlevels = 1
+            frame   = 0
+
+            if len(args) > 1:
+                lvindex = int(args[1])
+                if len(args) > 2:
+                    nlevels = int(args[2])
+                    if len(args) > 3:
+                        frame   = int(args[3])
 
             self.send_message("local", {'context': args[0], 'frame': frame, 'lv': lvindex, 'nlevels': nlevels})
         else:
@@ -387,7 +401,9 @@ class Debugger:
             if len(args) == 0:
                 return self.print_help(command)
 
-            frame = int(args[1]) if len(args) > 1 else 0 
+            if len(args) > 1: frame = int(args[1])
+            else: frame = 0
+
             self.send_message("locals", {'context': args[0], 'frame': frame})
         else: 
             print ""
@@ -440,7 +456,9 @@ class Debugger:
 
             orig    = data['original']
             file    = orig['data']['file']
-            first   = orig['data']['first'] if 'first' in orig['data'] else 1
+            first   = 1
+            if 'first' in orig['data']: first = orig['data']['first']
+
             lines   = data['value']
 
             print " ---  %s >>" % file
@@ -489,7 +507,10 @@ class DebugClient(threading.Thread):
         self.server         = None
         self.stopped        = False
 
-        self.msg_callback   = msg_callback if msg_callback is not None else self.default_msg_callback
+        if msg_callback is not None:
+            self.msg_callback   = msg_callback
+        else:
+            self.msg_callback   = self.default_msg_callback
 
         threading.Thread.__init__(self)
 
@@ -558,7 +579,7 @@ class DebugClient(threading.Thread):
         return None
 
     def send_message(self, id, msg_type, msg_data = None):
-        obj_str = json.JSONEncoder().encode({'id': id, 'cmd': msg_type, 'data': msg_data})
+        obj_str = json.encoder.JSONEncoder().encode({'id': id, 'cmd': msg_type, 'data': msg_data})
         self.send_string(obj_str)
 
     def send_string(self, s):
@@ -575,4 +596,7 @@ class DebugClient(threading.Thread):
 
 def run(): Debugger().run()
 
-# if __name__ == "__main__": run()
+if __name__ == "__main__":
+    if sys.argv[1] == "run":
+        run()
+

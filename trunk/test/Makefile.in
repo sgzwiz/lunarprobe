@@ -28,20 +28,6 @@ ifeq ($(OUTPUT_DIR),)
     OUTPUT_DIR          =   ../bld
 endif
 
-# 
-# External product and include directories
-#
-ifeq ($(LUA_INCLUDES),)
-    LUA_INCLUDES        = @lua_include_path@
-endif
-
-# 
-# Default build mode
-#
-ifeq ($(BUILD_MODE),)
-    BUILD_MODE          = @build_mode@
-endif
-
 LIBS    = -lpthread
 
 DEBUG_CXXFLAGS          =   -g -fno-inline

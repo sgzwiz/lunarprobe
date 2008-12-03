@@ -58,11 +58,27 @@ VERSION                 = $(MAJOR_VERSION).$(MINOR_VERSION).$(BUILD_VERSION)
 
 OUTPUT_DIR              := $(OUTPUT_DIR)/$(BUILD_MODE)
 
+DEBUG_CXXFLAGS          =   -g
+RELEASE_CXXFLAGS        =   -O3
+CORE_CXXFLAGS           =   -Wall                   \
+                            -I$(LUA_INCLUDES)       \
+                            -I../src
+
 ifeq ($(BUILD_MODE), debug)
-    CXXFLAGS            =   $(CORE_CXXFLAGS) $(DEBUG_CXXFLAGS)
+    CXXFLAGS            =   $(CORE_CXXFLAGS) $(DEBUG_CXXFLAGS)              \
+                            -DLUNARPROBE_VERSION_MAJOR=$(MAJOR_VERSION)     \
+                            -DLUNARPROBE_VERSION_MINOR=$(MINOR_VERSION)     \
+                            -DLUNARPROBE_VERSION_REVISION=$(BUILD_VERSION)
 else
-    CXXFLAGS            =   $(CORE_CXXFLAGS) $(RELEASE_CXXFLAGS)
+    CXXFLAGS            =   $(CORE_CXXFLAGS) $(RELEASE_CXXFLAGS)            \
+                            -DLUNARPROBE_VERSION_MAJOR=$(MAJOR_VERSION)     \
+                            -DLUNARPROBE_VERSION_MINOR=$(MINOR_VERSION)     \
+                            -DLUNARPROBE_VERSION_REVISION=$(BUILD_VERSION)
 endif
+
+####    Installation Directories    ####
+LIB_INSTALL_DIR         = @prefix@/lib
+INCLUDE_INSTALL_DIR     = @prefix@/include
 
 # 
 # Select compiler

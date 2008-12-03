@@ -18,37 +18,18 @@
 
 include ../Makefile.common
 
-####    Installation Directories    ####
-LIB_INSTALL_DIR         = @prefix@/lib
-INCLUDE_INSTALL_DIR     = @prefix@/include
-
 ###############  DO NOT MODIFY BELOW THIS   ##############
-
-DEBUG_CXXFLAGS          =   -g
-RELEASE_CXXFLAGS        =   -O3
-CORE_CXXFLAGS           =   -Wall                   \
-                            -I$(LUA_INCLUDES)       \
-                            -I../src
-
 
 SHARED_LIB_NAME         = lib$(PRODUCT_NAME).so.$(VERSION)
 STATIC_LIB_NAME         = lib$(PRODUCT_NAME).a.$(VERSION)
 
 ifeq ($(BUILD_MODE), debug)
-    CXXFLAGS            =   $(CORE_CXXFLAGS) $(DEBUG_CXXFLAGS)
     SHARED_LIB_NAME     = lib$(PRODUCT_NAME)_debug.so.$(VERSION)
     STATIC_LIB_NAME     = lib$(PRODUCT_NAME)_debug.a.$(VERSION)
-else
-    CXXFLAGS            =   $(CORE_CXXFLAGS) $(RELEASE_CXXFLAGS)
 endif
 
 SHARED_LIB_OUTPUT       =   "$(OUTPUT_DIR)/$(SHARED_LIB_NAME)"
 STATIC_LIB_OUTPUT       =   "$(OUTPUT_DIR)/$(STATIC_LIB_NAME)"
-
-# 
-# Select compiler
-#
-GPP         = g++
 
 # 
 # Sources
@@ -67,10 +48,6 @@ LIB_OBJS    = $(foreach obj, $(patsubst %.cpp,%.o,$(LIB_SRCS)), $(OUTPUT_DIR)/$(
 LIBS    = -lpthread
 
 ###################     Begin Targets       ######################
-
-# Implicit rule to build .o into the build directory from .cc
-$(OUTPUT_DIR)/%.o : %.cpp
-	$(GPP) -c $(CXXFLAGS) $< -o $@
 
 all: base static shared
 	@echo LIB_INSTALL_DIR     = $(LIB_INSTALL_DIR)
@@ -106,6 +83,8 @@ clean:
 
 cleanall: clean
 	@rm -f "$(SHARED_LIB_OUTPUT)" "$(STATIC_LIB_OUTPUT)"
+	@rm -f "$(OUTPUT_DIR)/lib$(PRODUCT_NAME).so"
+	@rm -f "$(OUTPUT_DIR)/lib$(PRODUCT_NAME).a"
 
 distclean: cleanall
 	@rm -f Makefile

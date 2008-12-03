@@ -43,7 +43,7 @@ MAIN_OUTPUT     = $(OUTPUT_DIR)/$(MAIN_EXE_NAME)
 # 
 # Libraries to include
 #
-LIBS    = -lpthread -llunarprobe
+LIBS    = -lpthread
 
 DEBUG_CXXFLAGS          =   -g -fno-inline
 RELEASE_CXXFLAGS        =   -O3
@@ -70,11 +70,12 @@ all: base test
 ifeq ($(LINK_STATICALLY),yes)
 
 test: base $(MAIN_OBJS)
-	$(GPP) $(CXXFLAGS) $(MAIN_OBJS) $(LUA_ARCHIVE_PATH)/liblua.a -o $(MAIN_OUTPUT) $(LIBS)
+	$(GPP) $(CXXFLAGS) $(MAIN_OBJS) $(OUTPUT_DIR)/liblunarprobe.a $(LUA_ARCHIVE_PATH)/liblua.a -o $(MAIN_OUTPUT) $(LIBS)
 
 else
 
-LIBS = $(LIBS) -lliblua
+LIBS = $(LIBS) -lliblua  -llunarprobe
+
 test: base $(MAIN_OBJS)
 	$(GPP) $(CXXFLAGS) $(MAIN_OBJS) -o $(MAIN_OUTPUT) $(LIBS)
 

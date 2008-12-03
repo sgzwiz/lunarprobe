@@ -62,10 +62,8 @@ package:
 	@rm -Rf /tmp/$(PACKAGE_NAME)/Makefile /tmp/$(PACKAGE_NAME)/Makefile.common
 	@rm -Rf /tmp/$(PACKAGE_NAME)/src/Makefile /tmp/$(PACKAGE_NAME)/lib/Makefile
 	@rm -Rf /tmp/$(PACKAGE_NAME)/autom4te.cache /tmp/$(PACKAGE_NAME)/config.*
-	@tar -C /tmp -cvf /tmp/$(PACKAGE_NAME).tar $(PACKAGE_NAME)
-	@gzip /tmp/$(PACKAGE_NAME).tar
-	@tar -C /tmp -cvf /tmp/$(PACKAGE_NAME).tar $(PACKAGE_NAME)
-	@bzip2 /tmp/$(PACKAGE_NAME).tar
+	@tar -C /tmp -zcvf /tmp/$(PACKAGE_NAME).tgz $(PACKAGE_NAME)
+	@tar -C /tmp -jcvf /tmp/$(PACKAGE_NAME).tar.bz2 $(PACKAGE_NAME)
 	@cd /tmp ; zip -r /tmp/$(PACKAGE_NAME).zip $(PACKAGE_NAME)
 	@rm -Rf /tmp/$(PACKAGE_NAME)
 

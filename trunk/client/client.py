@@ -597,6 +597,9 @@ class DebugClient(threading.Thread):
 def run(): Debugger().run()
 
 if __name__ == "__main__":
-    if sys.argv[1] == "run":
-        run()
+    if len(sys.argv) < 2:
+        print "Usage: python client.py run"
+    else:
+        if sys.argv[1] == "run":
+            run()
 

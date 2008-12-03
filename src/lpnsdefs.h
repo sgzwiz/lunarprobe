@@ -30,19 +30,19 @@
 
 #include "lpversion.h"
 
-#if defined(LUNARPROBE_HAS_CPP_NAMESPACE)
-    #define LUNARPROBE_CPP_NAMESPACE_BEGIN      namespace   LUNARPROBE_CPP_NAMESPACE    { 
-    #define LUNARPROBE_CPP_NAMESPACE_END        }
-    #define LUNARPROBE_CPP_NAMESPACE_USE        using namespace LUNARPROBE_CPP_NAMESPACE;
-    #define LUNARPROBE_CPP_NAMESPACE_QUALIFIER  LUNARPROBE_CPP_NAMESPACE::
+#if defined(LUNARPROBE_HAS_NS)
+    #define LUNARPROBE_NS_BEGIN         namespace   LUNARPROBE_NS    { 
+    #define LUNARPROBE_NS_END           }
+    #define LUNARPROBE_NS_USE           using namespace LUNARPROBE_NS;
+    #define LUNARPROBE_NS_QUALIFIER     LUNARPROBE_NS::
 
-    namespace LUNARPROBE_CPP_NAMESPACE { }
-    namespace lunarprobe = LUNARPROBE_CPP_NAMESPACE;
+    namespace LUNARPROBE_NS { }
+    namespace lunarprobe = LUNARPROBE_NS;
 #else
-    #define LUNARPROBE_CPP_NAMESPACE_BEGIN
-    #define LUNARPROBE_CPP_NAMESPACE_END
-    #define LUNARPROBE_CPP_NAMESPACE_USE
-    #define LUNARPROBE_CPP_NAMESPACE_QUALIFIER
+    #define LUNARPROBE_NS_BEGIN
+    #define LUNARPROBE_NS_END
+    #define LUNARPROBE_NS_USE
+    #define LUNARPROBE_NS_QUALIFIER
 #endif
 
 #endif

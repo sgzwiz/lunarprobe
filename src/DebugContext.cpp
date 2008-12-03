@@ -32,7 +32,7 @@
 #include "Debugger.h"
 #include "DebugContext.h"
 
-LUNARPROBE_CPP_NAMESPACE_BEGIN
+LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
 /*!
@@ -139,5 +139,5 @@ bool DebugContext::LoadFile(const char *filename)
     return LuaUtils::RunLuaScript(pStack, filename) == 0;
 }
 
-LUNARPROBE_CPP_NAMESPACE_END
+LUNARPROBE_NS_END
 

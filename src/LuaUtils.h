@@ -31,7 +31,7 @@
 #include <stdarg.h>
 #include "lpfwddefs.h"
 
-LUNARPROBE_CPP_NAMESPACE_BEGIN
+LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
 /*!
@@ -60,7 +60,7 @@ public:
     static int VCallLuaFunc(LuaStack stack, const char *funcname, const char *funcsig, va_list ap);
 };
 
-LUNARPROBE_CPP_NAMESPACE_END
+LUNARPROBE_NS_END
 
 #endif
 

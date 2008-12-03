@@ -30,7 +30,7 @@
 #include "lpfwddefs.h"
 #include <string>
 
-LUNARPROBE_CPP_NAMESPACE_BEGIN
+LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
 /*!
@@ -56,7 +56,7 @@ private:
     static std::auto_ptr< Debugger >    pDebugger;
 };
 
-LUNARPROBE_CPP_NAMESPACE_END
+LUNARPROBE_NS_END
 
 #endif
 

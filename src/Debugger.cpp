@@ -46,7 +46,7 @@
 #include "DebugContext.h"
 #include "LuaBindings.h"
 
-LUNARPROBE_CPP_NAMESPACE_BEGIN
+LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
 /*!
@@ -740,5 +740,5 @@ void *Debugger::ServerThreadFunc(void *pData)
     return NULL;
 }
 
-LUNARPROBE_CPP_NAMESPACE_END
+LUNARPROBE_NS_END
 

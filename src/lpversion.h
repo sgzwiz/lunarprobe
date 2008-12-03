@@ -131,8 +131,8 @@
 //                    Do not modify anything else below.                    //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef LUNARPROBE_HAS_CPP_NAMESPACE
-#define LUNARPROBE_HAS_CPP_NAMESPACE    1
+#ifndef LUNARPROBE_HAS_NS
+#define LUNARPROBE_HAS_NS    1
 #endif
 
 // ---------------------------------------------------------------------------
@@ -188,7 +188,7 @@
 
 // LunarProbe C++ Namespace string, concatenated with full version string
 #define LUNARPROBE_PRODUCT  lunarprobe
-#define LUNARPROBE_CPP_NAMESPACE INVK_CAT3_RAW_NUMERIC_SEP_UNDERSCORE(LUNARPROBE_PRODUCT,LUNARPROBE_VERSION_MAJOR,LUNARPROBE_VERSION_MINOR)
+#define LUNARPROBE_NS INVK_CAT3_RAW_NUMERIC_SEP_UNDERSCORE(LUNARPROBE_PRODUCT,LUNARPROBE_VERSION_MAJOR,LUNARPROBE_VERSION_MINOR)
 
 const char* const    LUNARPROBE_VERSION_STR         = LUNARPROBE_VERSIONSTR;
 const char* const    LUNARPROBE_FULL_VERSION_STR    = LUNARPROBE_FULLVERSIONSTR;

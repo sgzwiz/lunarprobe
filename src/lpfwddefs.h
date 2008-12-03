@@ -36,7 +36,7 @@ extern "C"
     #include "lualib.h"
 };
 
-LUNARPROBE_CPP_NAMESPACE_BEGIN
+LUNARPROBE_NS_BEGIN
 
 class LunarProbe;
 class Debugger;
@@ -46,6 +46,6 @@ class DebugContext;
 typedef lua_State* LuaStack;
 typedef lua_Debug* LuaDebug;
 
-LUNARPROBE_CPP_NAMESPACE_END
+LUNARPROBE_NS_END
 
 #endif

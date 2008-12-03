@@ -6,7 +6,7 @@
 #include <vector>
 #include "lpmain.h"
 
-LUNARPROBE_CPP_NAMESPACE_USE 
+LUNARPROBE_NS_USE 
 
 // The lua stacks that have been opened
 struct NamedLuaStack

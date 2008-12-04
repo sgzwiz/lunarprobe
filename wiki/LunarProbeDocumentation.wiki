@@ -1,8 +1,10 @@
-= Introduction =
+= Enabling LunarProbe =
 
-Add your content here.
+Enabling lunar probe in your applications is simple.
 
-==Debugger Client Manual==
+==Running the Client==
+
+==Debugger Client Commands ==
 
 Firstly, when the client is run as mentioned in the previous step, the debugger prompt is presented.  It is something like:
 
@@ -94,7 +96,8 @@ where the parameters are:
 <div style="margin-left: 40px;"> *index* - the index of the local variable to be printed (see the locals command for a list of locals) - defaults to 0</div>
 <div style="margin-left: 40px;"> *nlevels* - how many levels to recurse this variable - ie if the variable is a table, we can recursively print the value to this many levels - defaults to 1.</div>
 <div style="margin-left: 40px;"> *frame* - the frame in which the local variable is located - defaults to 0 </div>
-For the command local 0x97d3198 1, the following is the output:
+
+For the command *local 0x97d3198 1*, the following is the output:
 
 {{{
 
@@ -162,14 +165,13 @@ Note: the actual lua table value is:
 
 ==== until ====
 
-==== Miscellaneous Commands       
+=== Miscellaneous Commands       ===
 
 ==== file ====
 
-This commands prints out the contents of a file between given ranges.  For reference, the working directory of a game is /games/YourGameName.
+This commands prints out the contents of a file between given ranges.
 
 The syntax is:
-
 
 <div style="margin-left: 80px;"> *file &lt;filename&gt; &lt;firstline&gt; &lt;lastline&gt;* </div>
 

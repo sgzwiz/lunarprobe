@@ -6,7 +6,7 @@ A simple client is provided with the debugger.  It is in the "client" folder of 
 
 Note that the program running your lua scripts must already running before the debugger can be invoked otherwise the client will not start.
 
-The commands that can be used in the client are shown below.  It is attached to a test debug server that opens a few lua stacks.  Here is more info on the [http://lunarprobe.googlecode.com]test debug server.
+The commands that can be used in the client are shown below.  It is attached to a test debug server that opens a few lua stacks.  Here is more info on the [LunarProbeTestDebugServer Test Debug Server].
 
 == Debugger Client Commands ==
 

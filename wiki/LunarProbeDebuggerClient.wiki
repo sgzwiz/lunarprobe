@@ -89,6 +89,7 @@ Locals:
     Name: '{u'index': 6, u'name': u'd'}'
     Name: '{u'index': 7, u'name': u'e'}'
 
+
 }}}
 
 ====local ====
@@ -171,11 +172,18 @@ The following commands set and clear breakpoints in the source lua scripts.
 
 ====break ====
 
+Usages are:
+
+    *break <filename> <linenumber>*
+
+    *break <function>*
+
+
 ====clear ====
 
 ====clearall ====
 
-====Program Flow Commands       ====
+===Program Flow Commands       ===
 
 ==== step ====
 

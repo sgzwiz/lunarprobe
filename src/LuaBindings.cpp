@@ -694,12 +694,8 @@ bool transferValueToStack(LuaStack inStack, LuaStack outStack, int ntop, int lev
         lua_pushlightuserdata(outStack, lua_touserdata(inStack, ntop));
         lua_setfield(outStack, -2, "value");
     }
-    else if (lua_isuserdata(inStack, ntop))
-    {
-        lua_pushstring(outStack, "Cannot decode full userdata types.");
-        lua_setfield(outStack, -2, "value");
-    }
-    else if (lua_iscfunction(inStack, ntop) ||
+    else if (lua_isuserdata(inStack, ntop)  ||
+             lua_iscfunction(inStack, ntop) ||
              lua_isfunction(inStack, ntop)  ||
              lua_isthread(inStack, ntop))
     {

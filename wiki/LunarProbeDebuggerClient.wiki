@@ -1,3 +1,5 @@
+#summary A simple client to control the debugger.
+
 = LunarProbe Debugger Client =
 
 A simple client is provided with the debugger.  It is in the "client" folder of the installation.  It can be run with the command:

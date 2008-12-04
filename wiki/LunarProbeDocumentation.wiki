@@ -52,7 +52,7 @@ Keep an eye on the "Addr" parameter.  This is very very important as nearly all 
 
 This commands prints out all the local variables in a specific context and stack frame.  The command is run as:
 
-*locals <context> <frame>*
+*`locals <context> <frame>`*
 
 Where context is the "Addr" parameter found in the contexts command above, and frame (if not specified) defaults to 0.
 
@@ -93,8 +93,8 @@ Locals:
 
 This commands prints out the value of a particular local variable.  The usage is:
 
-<div style="margin-left: 120px;"> *local <context> <index> <nlevels> <frame>*
-</div>
+<div style="margin-left: 120px;"> *`local <context> <index> <nlevels> <frame>`*</div>
+
 where the parameters are:
 <div style="margin-left: 40px;"> *context* - the address of the context whose local variables are to be printed - see the "contexts" command.</div>
 <div style="margin-left: 40px;"> *index* - the index of the local variable to be printed (see the locals command for a list of locals) - defaults to 0</div>
@@ -149,7 +149,23 @@ Note: the actual lua table value is:
 
 ====eval   ====
 
+This command evaluates an expression when a particular context paused.  The usage is:
+
+<div style="margin-left: 120px;"> *`eval <context>   <quoted_expression>`* </div>
+
+where
+
+*context*:    Is the context on which the expression is to be evaluated.
+*quoted_expression*: Is the expression to be evaluated (in quotes).
+
+Note that this expression runs at a global level and NOT in the same stack frame where the context has paused (by hitting a breakpoint).
+
+I am still working on making this work at the stack level.  Any ideas?
+
+
 ===Breakpoint Commands       ===
+
+The following commands set and clear breakpoints in the source lua scripts.
 
 ====break ====
 
@@ -177,7 +193,7 @@ This commands prints out the contents of a file between given ranges.
 
 The syntax is:
 
-<div style="margin-left: 80px;"> *file <filename> <firstline> <lastline>* </div>
+<div style="margin-left: 80px;"> *`file <filename> <firstline> <lastline>`* </div>
 
 *firstline* and *lastline* are optional and default to 0 and -1 (indicating the "last" line of the file).
 

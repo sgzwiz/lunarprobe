@@ -1,10 +1,14 @@
-= Enabling LunarProbe =
+= LunarProbe Debugger Client =
 
-Enabling lunar probe in your applications is simple.
+A simple client is provided with the debugger.  It is in the "client" folder of the installation.  It can be run with the command:
 
-==Running the Client==
+*python client.py run*
 
-==Debugger Client Commands ==
+Note that the program running your lua scripts must already running before the debugger can be invoked otherwise the client will not start.
+
+The commands that can be used in the client are shown below.  It is attached to a test debug server that opens a few lua stacks.  Here is more info on the [http://lunarprobe.googlecode.com]test debug server.
+
+== Debugger Client Commands ==
 
 Firstly, when the client is run as mentioned in the previous step, the debugger prompt is presented.  It is something like:
 
@@ -48,7 +52,7 @@ Keep an eye on the "Addr" parameter.  This is very very important as nearly all 
 
 This commands prints out all the local variables in a specific context and stack frame.  The command is run as:
 
-*locals &lt;context&gt; &lt;frame&gt;*
+*locals <context> <frame>*
 
 Where context is the "Addr" parameter found in the contexts command above, and frame (if not specified) defaults to 0.
 
@@ -89,7 +93,7 @@ Locals:
 
 This commands prints out the value of a particular local variable.  The usage is:
 
-<div style="margin-left: 120px;"> *local &lt;context&gt; &lt;index&gt; &lt;nlevels&gt; &lt;frame&gt;*
+<div style="margin-left: 120px;"> *local <context> <index> <nlevels> <frame>*
 </div>
 where the parameters are:
 <div style="margin-left: 40px;"> *context* - the address of the context whose local variables are to be printed - see the "contexts" command.</div>
@@ -173,7 +177,7 @@ This commands prints out the contents of a file between given ranges.
 
 The syntax is:
 
-<div style="margin-left: 80px;"> *file &lt;filename&gt; &lt;firstline&gt; &lt;lastline&gt;* </div>
+<div style="margin-left: 80px;"> *file <filename> <firstline> <lastline>* </div>
 
 *firstline* and *lastline* are optional and default to 0 and -1 (indicating the "last" line of the file).
 

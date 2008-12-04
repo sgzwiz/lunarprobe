@@ -145,6 +145,7 @@ class Debugger:
 
     def handle_event(self, evt_name, evt_data):
         """ Handles an event from the server. """
+        print ""
         print "Recieved Event: ", evt_name # , evt_data
         if evt_name == "ContextPaused":
             pass

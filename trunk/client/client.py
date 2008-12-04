@@ -66,7 +66,7 @@ class Debugger:
 
     def do_prompt(self, prompt = PROMPT):
         if self.debugClient.isAlive():
-            return raw_input(prompt).strip()
+            return input(prompt).strip()
         return None
 
     def run(self):

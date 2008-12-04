@@ -66,7 +66,7 @@ class Debugger:
 
     def do_prompt(self, prompt = PROMPT):
         if self.debugClient.isAlive():
-            return input(prompt).strip()
+            return raw_input(prompt).strip()
         return None
 
     def run(self):
@@ -379,10 +379,10 @@ class Debugger:
                                          str(lVal["value"]), str(lVal["type"]))
                 
             print ""
-            print "Name: %s, Value: " % local_name, local_type
+            print "Name: %s, Type: " % local_name, local_type
 
             if local_type != "table":
-                print "Local Value: ", local_value
+                print "Value: ", local_value
             else:
                 print_table(local_value)
 

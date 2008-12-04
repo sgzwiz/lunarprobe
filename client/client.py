@@ -503,8 +503,27 @@ class DebugClient(threading.Thread):
     recives messages. """
     MSG_WAITALL = 0x100
 
+    def sendall(self, messsage, msglen = None):
+        totalsent   = 0
+        if msglen is None: msglen = len(message)
+
+        while totalsent < msglen:
+            sent = self.serverSocket.send(message[totalsent:])
+            if sent == 0:
+                raise RuntimeError, "Socket connection broken"
+            totalsent += sent
+
+    def recieveall(self, msglen):
+        msg = ""
+        while len(msg) < msglen:
+            chunk = self.serverSocket.recv(msglen - len(msg))
+            if chunk == "":
+                raise RuntimeError, "Socket connection broken"
+            msg += chunk
+        return msg
+
     def __init__(self, msg_callback = None):
-        self.server         = None
+        self.serverSocket         = None
         self.stopped        = False
 
         if msg_callback is not None:
@@ -526,20 +545,20 @@ class DebugClient(threading.Thread):
         if self.isAlive():
             self.disconnect()
 
-        self.server     = socket.socket()
-        self.server.connect((host, port))
+        self.serverSocket     = socket.socket()
+        self.serverSocket.connect((host, port))
 
     def disconnect(self):
         """ Disconnect from the server. """
         if self.isAlive():
             print "Disconnecting from server ..."
             self.stopped = True
-            if self.server:
+            if self.serverSocket:
                 print "Closing server socket..."
-                self.server.shutdown(socket.SHUT_RDWR)
-                self.server.close()
+                self.serverSocket.shutdown(socket.SHUT_RDWR)
+                self.serverSocket.close()
 
-        self.server = None
+        self.serverSocket = None
 
         if self.isAlive():
             self.join()
@@ -548,11 +567,11 @@ class DebugClient(threading.Thread):
         """ Thread callback function. """
         self.stopped    = False
 
-        if self.server is None:
+        if self.serverSocket is None:
             print "Debug client has not been started.  Please 'connect' first."
             return 
 
-        while self.server is not None and not self.stopped:
+        while self.serverSocket is not None and not self.stopped:
             try:
                 data = self.read_string()
                 if data:
@@ -566,7 +585,7 @@ class DebugClient(threading.Thread):
                 return
 
     def read_string(self):
-        data    = self.server.recv(4, DebugClient.MSG_WAITALL)
+        data    = self.serverSocket.recv(4, DebugClient.MSG_WAITALL)
 
         if len(data) == 4:
             datalen = ((ord(data[0]) & 0xff))       |   \
@@ -574,7 +593,7 @@ class DebugClient(threading.Thread):
                       ((ord(data[2]) & 0xff) << 16) |   \
                       ((ord(data[3]) & 0xff) << 24)
 
-            return self.server.recv(datalen, DebugClient.MSG_WAITALL)
+            return self.serverSocket.recv(datalen, DebugClient.MSG_WAITALL)
 
         return None
 
@@ -584,15 +603,14 @@ class DebugClient(threading.Thread):
 
     def send_string(self, s):
         """ Sends a string s to the server. """
-        string_bytes    = bytearray(s)
+        string_bytes    = s                 # bytearray(s)
         length          = len(string_bytes)
-        size            = bytearray()
-        size.append(length & 0xff)
-        size.append((length >> 8) & 0xff)
-        size.append((length >> 16) & 0xff)
-        size.append((length >> 24) & 0xff)
-        self.server.send(size)
-        self.server.send(string_bytes)
+        size            = chr(length & 0xff)            +   \
+                          chr((length >> 8) & 0xff)     +   \
+                          chr((length >> 16) & 0xff)    +   \
+                          chr((length >> 24) & 0xff)
+        self.serverSocket.send(size)
+        self.serverSocket.send(string_bytes)
 
 def run(): Debugger().run()
 

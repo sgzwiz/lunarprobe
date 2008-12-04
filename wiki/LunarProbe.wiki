@@ -4,6 +4,6 @@ This is LunarProbe.  The debugger for lua scripts embedded in C/C++.  Essentiall
 
 Following tutorials/pages are available:
 
-* LunarProbeTestDebugServer
+* [LunarProbeTestDebugServer Test Debug Server]
 
-* LunarProbeDebuggerClient
+* [LunarProbeDebuggerClient Debugger Client]

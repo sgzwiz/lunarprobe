@@ -617,17 +617,23 @@ class DebugClient(threading.Thread):
         self.serverSocket.send(string_bytes)
 
 def run(host = "localhost", port = 9999): Debugger(host, port).run()
+    
+def usage():
+    print "Usage: python client.py run <host> <port>"
+    print "     host and port are optional and default to "
+    print "     localhost and 9999 respectively."
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print "Usage: python client.py run"
-    else:
-        host    = "localhost"
-        port    = 9999
+    host    = "localhost"
+    port    = 9999
+    try:
         if sys.argv[1] == "run":
             if len(sys.argv) > 2:
                 host = sys.argv[2]
                 if len(sys.argv) > 3:
                     port = int(sys.argv[3])
-            run(host, port)
+    except:
+        usage()
+        sys.exit()
 
+    run(host, port)

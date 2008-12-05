@@ -201,9 +201,9 @@ Clears a break point at a given location that was added with the previous comman
 
 Usages are:
 
-    *`clear <filename> <linenumber>`*
+    * *`clear <filename> <linenumber>`*
 
-    *`clear <function>`*
+    * *`clear <function>`*
 
 
 Also note that with the function version of the above command, LP currently does not differentiate between global functions and member functions.
@@ -211,17 +211,70 @@ Also note that with the function version of the above command, LP currently does
 
 ====clearall ====
 
+Simple.  Clears all break points.
+
+
 ===Program Flow Commands       ===
+
+A bit of bad news up front on flow related commands.  Most of these do work.  However, each of them require a "context" parameter which is essentially the "addr" variable you will get from the listing (in the contexts command).  This is a pain and I am working towards making the client smart in a way that it "knows" which context it has currently hit.  
+
+Again really sorry for this convenience.  Appreciate your patience.  Alternatively, code is free so you can help me modify it by fixing this or even better writing alternative UI (plugins or standalone) for this.
 
 ==== step ====
 
+Steps the debugger into the next instruction.
+
+Usage:
+
+*`step <context>`*
+
+*context* is the address of the context as in the "addr" parameter from the context listing.
+
 ==== next ====
+
+Steps the debugger over the current line onto the next instruction.
+
+Usage:
+
+*`next <context>`*
+
+*context* is the address of the context as in the "addr" parameter from the context listing.
 
 ==== continue ====
 
+Continues execution till the next breakpoint is hit.
+
+Usage:
+
+*`continue <context>`*
+
+*context* is the address of the context as in the "addr" parameter from the context listing.
+
 ==== finish ====
 
+Not yet implemented.
+
+Continues execution till the current function has exited or till the next breakpoint is hit.
+
+Usage:
+
+*`finish <context>`*
+
+*context* is the address of the context as in the "addr" parameter from the context listing.
+
 ==== until ====
+
+Not yet implemented.
+
+Continues execution till a specific line or function has been hit or till the next breakpoint is hit.
+
+Usages:
+
+*`until <context> <funcname>`*
+
+*`until <context> <filename> <linenum>`*
+
+*context* is the address of the context as in the "addr" parameter from the context listing.
 
 === Miscellaneous Commands       ===
 

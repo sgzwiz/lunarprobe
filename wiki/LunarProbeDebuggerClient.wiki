@@ -41,10 +41,9 @@ Contexts:
     Name: 'b', Addr: 0x97e31c8, Running: True
     Name: 'debugger', Addr: 0x97ef118, Running: True
 
-</pre>
 }}}
 
-In the above example, we are currently debugging 3 contexts.  The first two were created by game engine and the also is actually the debugger stack opened by the lua debugger.  Oh did I mention that a big chunk of the lua debugger, which is written in Lua, can also be debugged in the debugger!!!  Though dont go to crazy with this feature as it is hardly tested!
+In the above example, we are currently debugging 4 contexts.  The first three were created by the [LunarProbeTestDebugServer Test Debug Server] and the fourth is actually the debugger stack opened by the lua debugger.  Oh did I mention that a big chunk of the lua debugger, which is written in Lua, can also be debugged in the debugger!!!  Though dont go to crazy with this feature as it is hardly tested!
 
 The huge bit of fluff ending with "At: ..." shows where the context is paused.  Only the first one is paused as it has hit a breakpoint (at abctotable).
 
@@ -88,7 +87,6 @@ Locals:
     Name: '{u'index': 5, u'name': u'output'}'
     Name: '{u'index': 6, u'name': u'd'}'
     Name: '{u'index': 7, u'name': u'e'}'
-
 
 }}}
 
@@ -172,14 +170,44 @@ The following commands set and clear breakpoints in the source lua scripts.
 
 ====break ====
 
+Sets a break point at a given location.
+
 Usages are:
 
-    *break <filename> <linenumber>*
+    * *`break <filename> <linenumber>`*
 
-    *break <function>*
+    * *`break <function>`*
 
+When this is done, the next time lua hits the particular line or function, the context is paused.  Also multiple breakpoints at the same location (identified by file/line or function) will only be added once.
+
+Also note that with the function version of the above command, LP currently does not differentiate between global functions and member functions.  Again appreciate help given my beginner lua-fu!
+
+====breaks====
+
+Prints out a list of breakpoints.  Example output is:
+
+{{{
+
+Breakpoints: 
+=============
+     1 - Function: abctotable
+     2 - File: @test.lua, Line: 38
+
+}}}
 
 ====clear ====
+
+Clears a break point at a given location that was added with the previous command.
+
+Usages are:
+
+    *`clear <filename> <linenumber>`*
+
+    *`clear <function>`*
+
+
+Also note that with the function version of the above command, LP currently does not differentiate between global functions and member functions.
+
 
 ====clearall ====
 

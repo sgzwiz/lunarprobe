@@ -150,6 +150,19 @@ class Debugger:
         else:
             pass
 
+    def command_breaks(self, command, args, sending):
+        """
+        Prints out a list of all breakpoints.
+
+        Parameters:
+            None
+        """
+        if sending: 
+            self.send_message("breaks")
+        else:
+            data    = args
+            print "Breakpoints: ", data
+
     def command_break(self, command, args, sending):
         """
         Sets a break point.

@@ -1,0 +1,143 @@
+
+AC_INIT(lunarprobe, 0.0.1, sri.panyam@gmail.com)
+
+##########  Default Values  ##############
+
+# 
+# Change the version number below and 
+# in the AC_INIT line above on every release.
+#
+MAJOR_VERSION=0
+MINOR_VERSION=0
+BUILD_VERSION=1
+RELEASE_DATE="05 Dec 2009"
+
+# 
+# Check if lua exists
+#
+lua_include_path=/usr/local/include/lua
+lua_archive_path=/usr/local/lib
+build_mode=release
+
+LUA_DOWNLOAD_URL=http://lua.org/download
+
+##########  DO NOT EDIT BELOW THIS LINE  ##############
+
+function confirm_lib_download()
+{
+    libname=$1
+
+    echo Would you like to install $libname? y/n [y]: 
+    read yesno
+
+    if [ "$yesno" = "n" -o "$yesno" = "no" -o "$yesno" = "N" -o "$yesno" = "NO" ]; then
+        echo You have chosen not to download $libname.  
+        echo Please install it manually and re-run configuration script.
+        echo You can download $libname from $url.
+        exit 1;
+    fi
+
+    if [ "$yesno" != "y" -a "$yesno" != "yes" -a "$yesno" != "Y" -a "$yesno" != "YES" ]; then
+        echo "Invalid selection.  Please select \"y\" or \"n\"."
+        exit 1;
+    fi
+}
+
+dnl Check for required programs
+AC_PROG_CXX
+AC_PROG_CC
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+
+dnl Check for required libraries
+lua_lib_fine=no
+lua_hdr_fine=no
+
+# AC_CHECK_LIB([lua], [lua_open], lua_lib_fine=yes)
+
+dnl Check for header files
+AC_HEADER_STDC
+AC_CHECK_HEADERS([fcntl.h stdlib.h string.h sys/time.h unistd.h])
+
+AC_ARG_ENABLE(debug,
+              [  --enable-debug         To enable debug build],
+              build_mode=debug)
+
+AC_ARG_WITH(lua,
+            [  --with-lua=[path]   Specify lua include path (default: /usr/local/include/lua)],
+            lua_include_path="$withval",)
+
+AC_ARG_WITH(lua,
+            [  --with-lua-archive=[path]   Specify lua archive path (default: /usr/local/lib)],
+            lua_archive_path="$withval",)
+
+echo -n "checking if lua include path (\"$lua_include_path\") exists: "
+if test -d $lua_include_path; then
+    lua_hdr_fine=yes
+    echo yes
+else
+    echo no
+    # exit 1;
+fi
+
+echo -n "checking if liblua.a exists in lua archive path (\"$lua_archive_path\"): "
+if test -e $lua_archive_path/liblua.a; then
+    lua_lib_fine=yes
+    echo yes
+else
+    echo no
+    # exit 1;
+fi
+
+dnl Check for required typedefs, structures and compiler characteristics
+AC_HEADER_STDBOOL
+AC_C_CONST
+AC_TYPE_UID_T
+AC_C_INLINE
+AC_TYPE_MODE_T
+AC_TYPE_OFF_T
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+
+dnl Check for required library functions
+AC_FUNC_MALLOC
+AC_FUNC_MKTIME
+AC_FUNC_REALLOC
+AC_FUNC_STAT
+AC_FUNC_VPRINTF
+AC_CHECK_FUNCS([gettimeofday localtime_r memset mkdir strcasecmp])
+
+dnl Check for required system services
+
+AC_SUBST(MAJOR_VERSION)
+AC_SUBST(MINOR_VERSION)
+AC_SUBST(BUILD_VERSION)
+AC_SUBST(lua_include_path)
+AC_SUBST(lua_archive_path)
+AC_SUBST(build_mode)
+AC_SUBST(RELEASE_DATE)
+
+dnl Create the necessary files.
+
+AC_OUTPUT([ Makefile.common Makefile src/Makefile test/Makefile ])
+
+if test "$lua_hdr_fine" = "no" -o "$lua_lib_fine" = "no" ; then
+
+    echo 
+    echo 
+    echo ===============================================
+    echo "Lua headers found: $lua_hdr_fine"
+    echo "Lua static archive found: $lua_lib_fine"
+    echo
+    echo "You can either install lua and run configure again or "
+    echo "specify the paths to lua headers and static archive "
+    echo "if they are not in the default paths (with the "
+    echo "--with-lua and --with-lua-archive arguments respectively)".
+    echo ===============================================
+    echo 
+    echo 
+
+    # exit 1;
+fi
+

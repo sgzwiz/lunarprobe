@@ -1,0 +1,93 @@
+# 
+# Licensed under the Apache License, Version 2.0 (the "License"); 
+# you may not use this file except in compliance with the License.  
+# You may obtain a copy of the License at 
+#
+#       http://www.apache.org/licenses/LICENSE-2.0 
+#
+# Unless required by applicable law or agreed to in writing, software 
+# distributed under the License is distributed on an "AS IS" BASIS, 
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+#
+# See the License for the specific language governing permissions and 
+# limitations under the License.
+#
+
+# 
+# Makefile for
+#
+
+###############  Changeable  Parameters  ##############
+
+# 
+# Version/Product information
+#
+MAJOR_VERSION           = @MAJOR_VERSION@
+MINOR_VERSION           = @MINOR_VERSION@
+BUILD_VERSION           = @BUILD_VERSION@
+PRODUCT_NAME            = lunarprobe
+
+# 
+# Build directory
+#
+ifeq ($(OUTPUT_DIR),)
+    OUTPUT_DIR          =   ../bld
+endif
+
+# 
+# External product and include directories
+#
+ifeq ($(LUA_INCLUDES),)
+    LUA_INCLUDES       = @lua_include_path@
+endif
+
+ifeq ($(LUA_ARCHIVE_PATH),)
+    LUA_ARCHIVE_PATH   = @lua_archive_path@
+endif
+
+# 
+# Default build mode
+#
+ifeq ($(BUILD_MODE),)
+    BUILD_MODE          = @build_mode@
+endif
+
+###############  DO NOT MODIFY BELOW THIS   ##############
+
+VERSION                 = $(MAJOR_VERSION).$(MINOR_VERSION).$(BUILD_VERSION)
+
+OUTPUT_DIR              := $(OUTPUT_DIR)/$(BUILD_MODE)
+
+DEBUG_CXXFLAGS          =   -g
+RELEASE_CXXFLAGS        =   -O3
+CORE_CXXFLAGS           =   -Wall                   \
+                            -I$(LUA_INCLUDES)       \
+                            -I../src
+
+ifeq ($(BUILD_MODE), debug)
+    CXXFLAGS            =   $(CORE_CXXFLAGS) $(DEBUG_CXXFLAGS)              \
+                            -DLUNARPROBE_VERSION_MAJOR=$(MAJOR_VERSION)     \
+                            -DLUNARPROBE_VERSION_MINOR=$(MINOR_VERSION)     \
+                            -DLUNARPROBE_VERSION_REVISION=$(BUILD_VERSION)
+else
+    CXXFLAGS            =   $(CORE_CXXFLAGS) $(RELEASE_CXXFLAGS)            \
+                            -DLUNARPROBE_VERSION_MAJOR=$(MAJOR_VERSION)     \
+                            -DLUNARPROBE_VERSION_MINOR=$(MINOR_VERSION)     \
+                            -DLUNARPROBE_VERSION_REVISION=$(BUILD_VERSION)
+endif
+
+####    Installation Directories    ####
+LIB_INSTALL_DIR         = @prefix@/lib
+INCLUDE_INSTALL_DIR     = @prefix@/include
+
+# 
+# Select compiler
+#
+GPP                     = g++
+
+###################     Begin Targets       ######################
+
+# Implicit rule to build .o into the build directory from .cpp
+$(OUTPUT_DIR)/%.o : %.cpp
+	$(GPP) -c $(CXXFLAGS) $< -o $@
+

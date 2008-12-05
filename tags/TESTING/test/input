@@ -1,0 +1,27 @@
+open a
+open b
+open c
+attach 0
+attach 1
+attach 2
+
+stack 0
+-----
+package.path = package.path .. ";../lua/?.lua"
+dofile("test.lua")
+-----
+
+stack 1
+-----
+package.path = package.path .. ";../lua/?.lua"
+dofile("test.lua")
+-----
+
+stack 2
+-----
+package.path = package.path .. ";../lua/?.lua"
+dofile("test.lua")
+-----
+
+stack 0
+-----

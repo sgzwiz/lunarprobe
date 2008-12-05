@@ -1,0 +1,105 @@
+# 
+# Licensed under the Apache License, Version 2.0 (the "License"); 
+# you may not use this file except in compliance with the License.  
+# You may obtain a copy of the License at 
+#
+#       http://www.apache.org/licenses/LICENSE-2.0 
+#
+# Unless required by applicable law or agreed to in writing, software 
+# distributed under the License is distributed on an "AS IS" BASIS, 
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+#
+# See the License for the specific language governing permissions and 
+# limitations under the License.
+#
+
+###############  Changeable  Parameters  ##############
+
+include ../Makefile.common
+
+ifeq ($(MAIN_EXE_NAME),)
+    MAIN_EXE_NAME     =   lptest
+endif
+
+####    Installation Directories    ####
+BIN_INSTALL_DIR         = @prefix@/bin
+
+###############  DO NOT MODIFY BELOW THIS   ##############
+
+# 
+# Sources
+#
+LPTEST_SRCS     = commands.cpp
+
+# 
+# Corresponding obj files
+#
+LPTEST_OBJS     = $(foreach obj, $(patsubst %.cpp,%.o,$(LPTEST_SRCS)), $(OUTPUT_DIR)/$(obj))
+
+MAIN_OBJS       = $(LPTEST_OBJS) $(OUTPUT_DIR)/test.o
+
+MAIN_OUTPUT     = $(OUTPUT_DIR)/$(MAIN_EXE_NAME)
+
+# 
+# Libraries to include
+#
+LIBS    = -lpthread
+
+
+###################     Begin Targets       ######################
+
+LINK_STATICALLY = yes
+
+all: base test
+	@echo BIN_INSTALL_DIR = $(BIN_INSTALL_DIR)
+
+.PHONY: clean cleanall distclean test
+
+ifeq ($(LINK_STATICALLY),yes)
+
+test: base $(MAIN_OBJS)
+	$(GPP) $(CXXFLAGS) $(MAIN_OBJS) $(OUTPUT_DIR)/liblunarprobe.a $(LUA_ARCHIVE_PATH)/liblua.a -o $(MAIN_OUTPUT) $(LIBS)
+
+else
+
+LIBS = $(LIBS) -lliblua  -llunarprobe
+
+test: base $(MAIN_OBJS)
+	$(GPP) $(CXXFLAGS) $(MAIN_OBJS) -o $(MAIN_OUTPUT) $(LIBS)
+
+endif
+
+install: 
+	@echo "Nothing for install.  Run the test executable from here itself."
+
+base:
+	@mkdir -p "$(OUTPUT_DIR)"
+
+clean:
+	@rm -f $(MAIN_OBJS)
+
+cleanall: clean
+	@rm -f "$(MAIN_OUTPUT)"
+
+distclean: cleanall
+	@rm -f Makefile
+
+help:
+	@echo   "Usage: make <options> <targets>"
+	@echo   "   Options:"
+	@echo   "       BUILD_MODE=[debug | release]        -   Default: release"
+	@echo   "       OUTPUT_DIR=<output_dir>             -   Directory to place all outputs. Default: bld"
+	@echo   "       MAIN_EXE_NAME=<name>                -   Name of output file.  Default: $(MAIN_EXE_NAME)"
+	@echo   "       LUA_INCLUDES=<lua_include_path>     -   Location of Lua include.  Default: /usr/local/include/lua"
+	@echo   "       LUA_ARCHIVE_PATH=<lua_arch_path>    -   Location of Lua archive.  Default: /usr/local/lib"
+	@echo   "   Targets:"
+	@echo   "       test:       Builds test executable (default)"
+	@echo   "       base:       Core/Base checks (building output dirs etc)"
+	@echo   "       clean:      Cleans all object files"
+	@echo   "       cleanall:   Cleans all object files and executables"
+	@echo   "       dep:        Build source/project dependencies"
+	@echo   "       help:       Prints help information about targets and options"
+
+dep:
+	makedepend -Y -p"$(OUTPUT_DIR)/" -I../src   -- $(LPTEST_SRCS)
+

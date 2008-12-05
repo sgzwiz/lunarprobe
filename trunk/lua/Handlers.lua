@@ -96,6 +96,7 @@ function MsgFunc_Load(debugger, msg_data)
     debugger:LoadFile(debugContext.cppContext, filename)
 end
 
+
 --[[------------------------------------------------------------------------------
     \brief  Called to set a break point.
 
@@ -133,7 +134,24 @@ function MsgFunc_SetBP(debugger, msg_data)
 end
 
 --[[------------------------------------------------------------------------------
-    \brief  Called a particular BP by index.
+    \brief  Called to get a list of all BPs.
+
+    \param  debugger    -   The debugger context to be modified.
+    \param  msg_data    -   None
+    
+    \return (0, bp_list)
+
+    \version
+            S Panyam 05/Dec/08
+            - Initial version
+--------------------------------------------------------------------------------]]
+function MsgFunc_GetBPs(debugger, msg_data)
+    return 0, debugger.bpsByIndex
+end
+
+
+--[[------------------------------------------------------------------------------
+    \brief  Called to clear a particular BP.
 
     \param  debugger    -   The debugger context to be modified.
     \param  msg_data    -   The index of the bp to remove.

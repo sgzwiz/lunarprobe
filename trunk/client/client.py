@@ -75,7 +75,7 @@ class Debugger:
         if self.debugClient.isAlive():
             self.debugClient.disconnect()
 
-        self.debugClient.connect()
+        self.debugClient.connect(self.luaHost, self.luaPort)
         self.debugClient.start()
 
         try:
@@ -299,14 +299,6 @@ class Debugger:
             self.send_message("reset")
         else: pass
 
-    def command_print(self, command, args, sending):
-        if sending: pass
-        else: pass
-
-    def command_list(self, command, args, sending):
-        if sending: pass
-        else: pass
-
     def command_set(self, command, args, sending):
         if sending: pass
         else: pass
@@ -429,6 +421,14 @@ class Debugger:
             print "Context is not paused.  Frame cannot be selected."
             return
 
+    def command_print(self, command, args, sending):
+        if sending: pass
+        else: pass
+
+    def command_list(self, command, args, sending):
+        if sending: pass
+        else: pass
+
     def command_file(self, command, args, sending):
         """
         Retrieves contents of a file in a given range.
@@ -486,7 +486,10 @@ class Debugger:
 
         if handler != self.invalid_command:
             print "%s" % command
-            print handler.__doc__
+            if handler.__doc__:
+                print handler.__doc__
+            else:
+                print "No help docs for this command yet."
         else:
             cmdlen = len("command_")
             print "Command List: "
@@ -613,12 +616,18 @@ class DebugClient(threading.Thread):
         self.serverSocket.send(size)
         self.serverSocket.send(string_bytes)
 
-def run(): Debugger().run()
+def run(host = "localhost", port = 9999): Debugger(host, port).run()
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print "Usage: python client.py run"
     else:
+        host    = "localhost"
+        port    = 9999
         if sys.argv[1] == "run":
-            run()
+            if len(sys.argv) > 2:
+                host = sys.argv[2]
+                if len(sys.argv) > 3:
+                    port = int(sys.argv[3])
+            run(host, port)
 

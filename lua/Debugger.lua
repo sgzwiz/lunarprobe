@@ -276,6 +276,7 @@ function Debugger:New(cppDebugger)
 
     -- BP related messages
     o.commandHandlers["break"]      = MsgFunc_SetBP
+    o.commandHandlers["breaks"]     = MsgFunc_GetBPs
     o.commandHandlers["clear"]      = MsgFunc_ClearBP
     o.commandHandlers["clearall"]   = MsgFunc_ClearBPs
 

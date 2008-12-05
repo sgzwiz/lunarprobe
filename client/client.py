@@ -150,7 +150,7 @@ class Debugger:
         else:
             pass
 
-    def command_breaks(self, command, args, sending):
+    def command_breaks(self, command, data, sending):
         """
         Prints out a list of all breakpoints.
 
@@ -160,8 +160,20 @@ class Debugger:
         if sending: 
             self.send_message("breaks")
         else:
-            data    = args
-            print "Breakpoints: ", data
+            if 'value' not in data or not data['value']:
+                print "No breakpoints set."
+            else:
+                bps = data['value']
+
+                print ""
+                print "Breakpoints: "
+                print "============="
+
+                for i in xrange(0, len(bps)):
+                    if 'funcname' in bps[i]:
+                        print " %5d - Function: %s" % (i + 1, bps[i]['funcname'])
+                    else:
+                        print " %5d - File: %s, Line: %d" % (i + 1, bps[i]['filename'], bps[i]['linenum'])
 
     def command_break(self, command, args, sending):
         """

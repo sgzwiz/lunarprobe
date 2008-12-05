@@ -216,7 +216,7 @@ Simple.  Clears all break points.
 
 ===Program Flow Commands       ===
 
-A bit of bad news up front on flow related commands.  Most of these do work.  However, each of them require a "context" parameter which is essentially the "addr" variable you will get from the listing (in the contexts command).  This is a pain and I am working towards making the client smart in a way that it "knows" which context it has currently hit.  
+A bit of bad news up front on flow related commands.  Most of these do work.  However, each of them require a "context" parameter which is essentially the "addr" variable you will get from the listing (in the contexts command).  This is a pain and I am working towards making the client smart in a way that it "knows" which context it has currently hit.  This is not hard from the server side as each time a breakpoint is hit, it notifies the client about this.  I am more stuck on how to enable this from a UI point of view.
 
 Again really sorry for this convenience.  Appreciate your patience.  Alternatively, code is free so you can help me modify it by fixing this or even better writing alternative UI (plugins or standalone) for this.
 
@@ -300,5 +300,3 @@ For example, file *test.lua 5 10* would have the following output:
     10 > 
 
 }}}
-
-==== print  ==== 

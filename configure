@@ -3363,24 +3363,16 @@ if test -d $lua_include_path; then
     echo yes
 else
     echo no
-    exit 1;
+    # exit 1;
 fi
 
 echo -n "checking if liblua.a exists in lua archive path (\"$lua_archive_path\"): "
-if test -d $lua_archive_path; then
+if test -e $lua_archive_path/liblua.a; then
     lua_lib_fine=yes
     echo yes
 else
     echo no
-    exit 1;
-fi
-
-if test "$lua_hdr_fine" = "no" -o "$lua_lib_fine" = "no" ; then
-
-    echo Please install lua and run configure again.
-    echo "$lua_hdr_fine" "$lua_lib_fine"
-
-    exit 1;
+    # exit 1;
 fi
 
 echo "$as_me:$LINENO: checking for stdbool.h that conforms to C99" >&5
@@ -6399,4 +6391,23 @@ if test "$no_create" != yes; then
   $ac_cs_success || { (exit 1); exit 1; }
 fi
 
+
+if test "$lua_hdr_fine" = "no" -o "$lua_lib_fine" = "no" ; then
+
+    echo
+    echo
+    echo ===============================================
+    echo "Lua headers found: $lua_hdr_fine"
+    echo "Lua static archive found: $lua_lib_fine"
+    echo
+    echo "You can either install lua and run configure again or "
+    echo "specify the paths to lua headers and static archive "
+    echo "if they are not in the default paths (with the "
+    echo "--with-lua and --with-lua-archive arguments respectively)".
+    echo ===============================================
+    echo
+    echo
+
+    # exit 1;
+fi
 

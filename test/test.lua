@@ -25,6 +25,28 @@ function sum3(a, b, c)
     return a + b + c
 end
 
+function upvaltest(a, b, c)
+    function plusa(d)
+        return a + d
+    end
+
+    function plusb(d)
+        return b + d
+    end
+
+    function another(d, f)
+        function andagain(g)
+            print("a, d, g: " .. a .. ", " .. d .. ", " .. g)
+        end
+
+        print("andagain(" .. d .. ", " .. f .. "): " .. andagain(d, f))
+    end
+
+    print ("Plusa(" .. a .. ", 10): " .. plusa(10))
+    print ("Plusb(" .. b .. ", 15): " .. plusb(15))
+    print ("another(" .. b .. ", " .. c .. "): " .. another(b, c))
+end
+
 function abctotable(a, b, c)
     local tab = {["a"] = 1, ["b"] = 2, ["c"] = {1, 2}, ["d"] = {["a"] = 1, ["b"] = 2}}
     local output = {["a"] = "a", ["b"] = "b", ["c"] = "c"}

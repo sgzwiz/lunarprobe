@@ -435,7 +435,7 @@ function MsgFunc_Local(debugger, msg_data)
 
     local lvindex   = msg_data["lv"]
     if lvindex == nil or lvindex < 0 then
-        lvindex = 0
+        lvindex = 1
     end
 
     local nlevels = msg_data["nlevels"]
@@ -473,6 +473,79 @@ function MsgFunc_Locals(debugger, msg_data)
     end
      
     return debugContext:GetLocals(frame)
+end
+
+--[[------------------------------------------------------------------------------
+    \brief  Return the value of a single upvalue in a given stack
+    frame.
+
+    \param  debugger    -   The debugger context to be modified.
+    \param  msg_data    -   {"frame"    The stack frame,
+                             "func"     Closure Function index,
+                             "uv"       Index of the upvalue,
+                             "nlevels"  Number of levels to recurse to.}
+    
+    \return (0, (var/value) pairs) if successful, otherwise (-1, error message) on error
+
+    \version
+            S Panyam 07/Nov/08
+            - Initial version
+--------------------------------------------------------------------------------]]
+function MsgFunc_UpValue(debugger, msg_data)
+    local code, debugContext = getContextFromMessageData(debugger, msg_data)
+    if code ~= 0 then
+        return code, debugContext
+    end
+
+    local frame     = msg_data["frame"]
+    if frame == nil or frame < 0 then
+        frame = 0
+    end
+
+    local funcindex = msg_data["func"]
+    if funcindex == nil or funcindex < 0 then
+        funcindex = 1
+    end
+
+    local uvindex   = msg_data["uv"]
+    if uvindex == nil or uvindex < 0 then
+        uvindex = 1
+    end
+
+    local nlevels = msg_data["nlevels"]
+    if nlevels == nil or nlevels < 1 then
+        nlevels = 1
+    end
+
+    return debugContext:GetUpValue(funcindex, uvindex, nlevels, frame)
+end
+
+--[[------------------------------------------------------------------------------
+    \brief  Return the upvalues in a given stack frame.
+
+    \param  debugger    -   The debugger context to be modified.
+    \param  msg_data    -   {"context" - The context whose locals we are intersted in.
+                             "frame" - The stack frame number.  If missing
+                             then defaults to 0. }
+    
+    \return (0, (var/value) pairs) if successful, otherwise (-1, error message) on error
+
+    \version
+            S Panyam 07/Nov/08
+            - Initial version
+--------------------------------------------------------------------------------]]
+function MsgFunc_UpValues(debugger, msg_data)
+    local code, debugContext = getContextFromMessageData(debugger, msg_data)
+    if code ~= 0 then
+        return code, debugContext
+    end
+
+    local frame     = msg_data["frame"]
+    if frame == nil or frame < 0 then
+        frame = 0
+    end
+     
+    return debugContext:GetUpValues(frame)
 end
 
 --[[------------------------------------------------------------------------------

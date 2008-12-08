@@ -319,5 +319,139 @@ int LuaUtils::CallLuaFunc(lua_State *L, const char *funcname, const char *funcsi
     return result;
 }
 
+//*****************************************************************************
+/*!
+ *  \brief  Transfers a value from a lua stack to another.
+ *
+ *  \param  inStack     Stack where the value resides.
+ *  \param  outStack    Stack where the value is to be moved to.
+ *  \param  ntop        Index on the first stack where the value exists
+ *                      (default = -1 => top).
+ *  \param  levels      How many levels to recurse to if the value is a
+ *                      table (default = 1)..
+ *  \param  varname     Name to assign to the value on the second stack, if
+ *                      the value is being copied as a key in table.
+ *
+ *  \version
+ *      - S Panyam  04/11/2008
+ *      Initial version.
+ */
+//*****************************************************************************
+bool LuaUtils::TransferValueToStack(LuaStack    inStack,
+                                    LuaStack    outStack,
+                                    int         ntop,
+                                    int         levels,
+                                    const char *varname)
+{
+    if (levels < 0)
+        return false;
+
+    // convert relative to absolute indexing if necessary
+    if (ntop < 0)
+        ntop = (lua_gettop(inStack) + 1 + ntop);
+
+    lua_newtable(outStack);
+
+    // push variable name
+    if (varname != NULL)
+    {
+        lua_pushstring(outStack, varname);
+        lua_setfield(outStack, -2, "name");
+    }
+
+    // push the variable type
+    int top_type = lua_type(inStack, ntop);
+    lua_pushstring(outStack, lua_typename(inStack, top_type));
+    lua_setfield(outStack, -2, "type");
+
+    // finally push the value
+    if (lua_isnil(inStack, ntop))
+    {
+        lua_pushnil(outStack);
+        lua_setfield(outStack, -2, "value");
+    }
+    else if (lua_isboolean(inStack, ntop))
+    {
+        lua_pushboolean(outStack, lua_toboolean(inStack, ntop));
+        lua_setfield(outStack, -2, "value");
+    }
+    else if (lua_isnumber(inStack, ntop))
+    {
+        lua_pushnumber(outStack, lua_tonumber(inStack, ntop));
+        lua_setfield(outStack, -2, "value");
+    }
+    else if (lua_isstring(inStack, ntop))
+    {
+        lua_pushstring(outStack, lua_tostring(inStack, ntop));
+        lua_setfield(outStack, -2, "value");
+    }
+    else if (lua_islightuserdata(inStack, ntop))
+    {
+        lua_pushlightuserdata(outStack, lua_touserdata(inStack, ntop));
+        lua_setfield(outStack, -2, "value");
+    }
+    else if (lua_isuserdata(inStack, ntop)  ||
+             lua_iscfunction(inStack, ntop) ||
+             lua_isfunction(inStack, ntop)  ||
+             lua_isthread(inStack, ntop))
+    {
+        lua_pushfstring(outStack, "%p", lua_topointer(inStack, ntop));
+        lua_setfield(outStack, -2, "value");
+    }
+    else if (lua_istable(inStack, ntop))
+    {
+        if (levels == 0)
+        {
+            lua_pushboolean(outStack, true);
+            lua_setfield(outStack, -2, "raw");
+
+            // whether to send only a summary!
+            lua_pushfstring(outStack, "%p", lua_topointer(inStack, ntop));
+        }
+        else
+        {
+            lua_newtable(outStack);
+
+            int index = 1;
+
+            lua_pushnil(inStack);
+            while (lua_next(inStack, ntop) != 0)
+            {
+                // printf("%s - %s\n", lua_typename(inStack, lua_type(inStack, -2)), lua_typename(inStack, lua_type(inStack, -1)));
+
+                int newtop      = lua_gettop(inStack);
+                int keyindex    = newtop - 1;
+                int valindex    = newtop;
+
+                lua_pushinteger(outStack, index++);
+                lua_newtable(outStack);
+
+                // uses 'key' at index top-1 and 'value' at index top
+                if (LuaUtils::TransferValueToStack(inStack, outStack, keyindex, 0))
+                {
+                    lua_setfield(outStack, -2, "key");
+
+                    if (LuaUtils::TransferValueToStack(inStack, outStack, valindex, levels - 1))
+                        lua_setfield(outStack, -2, "value");
+                }
+
+                lua_settable(outStack, -3);
+
+                // remove 'value', keeps 'key' for next iteration
+                lua_pop(inStack, 1);
+            }
+        }
+
+        lua_setfield(outStack, -2, "value");
+    }
+    else
+    {
+        lua_pushstring(outStack, "Unknown type.");
+        lua_setfield(outStack, -2, "value");
+    }
+
+    return true;
+}
+
 LUNARPROBE_NS_END
 

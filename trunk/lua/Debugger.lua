@@ -211,17 +211,6 @@ function DebugContext:Resume()
 end
 
 --[[------------------------------------------------------------------------------
-    \brief  Get the local variables in a frame (default 0).
-
-    \version
-            S Panyam 25/Nov/08
-            - Initial version
---------------------------------------------------------------------------------]]
-function DebugContext:GetLocals(frame)
-    return DebugLib.GetLocals(self.cppContext, frame)
-end
-
---[[------------------------------------------------------------------------------
     \brief  Evaluate an expression and return the result.
 
     \version
@@ -233,6 +222,17 @@ function DebugContext:EvaluateString(expr_str)
 end
 
 --[[------------------------------------------------------------------------------
+    \brief  Get the local variables in a frame (default 0).
+
+    \version
+            S Panyam 25/Nov/08
+            - Initial version
+--------------------------------------------------------------------------------]]
+function DebugContext:GetLocals(frame)
+    return DebugLib.GetLocals(self.cppContext, frame)
+end
+
+--[[------------------------------------------------------------------------------
     \brief  Get the value of a local variable in a frame (default 0).
 
     \version
@@ -241,6 +241,28 @@ end
 --------------------------------------------------------------------------------]]
 function DebugContext:GetLocal(lvindex, nlevels, frame)
     return DebugLib.GetLocal(self.cppContext, lvindex, nlevels, frame)
+end
+
+--[[------------------------------------------------------------------------------
+    \brief  Get the upvalues in a frame (default 0).
+
+    \version
+            S Panyam 08/Dec/08
+            - Initial version
+--------------------------------------------------------------------------------]]
+function DebugContext:GetUpValues(frame)
+    return DebugLib.GetUpValues(self.cppContext, frame)
+end
+
+--[[------------------------------------------------------------------------------
+    \brief  Get the value of an upvalue in a frame (default 0).
+
+    \version
+            S Panyam 25/Nov/08
+            - Initial version
+--------------------------------------------------------------------------------]]
+function DebugContext:GetUpValue(funcindex, uvindex, nlevels, frame)
+    return DebugLib.GetUpValue(self.cppContext, funcindex, uvindex, nlevels, frame)
 end
 
 --[[------------------------------------------------------------------------------
@@ -294,6 +316,8 @@ function Debugger:New(cppDebugger)
     o.commandHandlers["eval"]       = MsgFunc_Eval
     o.commandHandlers["local"]      = MsgFunc_Local
     o.commandHandlers["locals"]     = MsgFunc_Locals
+    o.commandHandlers["upval"]      = MsgFunc_UpValue
+    o.commandHandlers["upvals"]     = MsgFunc_UpValues
     o.commandHandlers["frame"]      = MsgFunc_Frame
     o.commandHandlers["contexts"]   = MsgFunc_Contexts
     o.commandHandlers["file"]       = MsgFunc_File

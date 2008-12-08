@@ -58,6 +58,13 @@ public:
     // calls an arbitrary lua function
     static int CallLuaFunc(LuaStack stack, const char *funcname, const char *funcsig, ...);
     static int VCallLuaFunc(LuaStack stack, const char *funcname, const char *funcsig, va_list ap);
+
+    // Transfers a value from one stack to another.
+    static bool TransferValueToStack(LuaStack      inStack,
+                                     LuaStack      outStack,
+                                     int           ntop = -1,
+                                     int           levels = 1,
+                                     const char *  varname = NULL);
 };
 
 LUNARPROBE_NS_END

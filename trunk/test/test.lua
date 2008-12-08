@@ -35,11 +35,15 @@ function upvaltest(a, b, c)
     end
 
     function another(d, f)
+
         function andagain(g)
             print("a, d, g: " .. a .. ", " .. d .. ", " .. g)
+            return g
         end
 
-        print("andagain(" .. d .. ", " .. f .. "): " .. andagain(d, f))
+        print("andagain(" .. d .. ", " .. f .. "): " .. andagain(f))
+
+        return a + b + c + d + f
     end
 
     print ("Plusa(" .. a .. ", 10): " .. plusa(10))

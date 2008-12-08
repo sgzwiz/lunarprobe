@@ -26,6 +26,19 @@ import socket
 import simplejson as json
 import Queue, threading
 
+def print_table(table_value, level = 1):
+    for kvpair in table_value:
+        lKey = kvpair['key']
+        lVal = kvpair['value']
+        if lVal["type"] == "table" and "raw" not in lVal:
+            print "%s[%s (%s)]     -> " % (level * "    ", str(lKey["value"]), str(lKey["type"]))
+            print_table(lVal["value"], level + 1)
+        else:
+            print "%s[%s (%s)]     ->      %s : (%s)" %     \
+                            (level * "    ",
+                             str(lKey["value"]), str(lKey["type"]),
+                             str(lVal["value"]), str(lVal["type"]))
+
 def strip_quotes(x):
     if x[0] == "'" or x[0] == '"':
         x = x[1:]
@@ -380,19 +393,6 @@ class Debugger:
             local_name  = results["name"]
             local_type  = results["type"]
             local_value = results["value"]
-
-            def print_table(table_value, level = 1):
-                for kvpair in table_value:
-                    lKey = kvpair['key']
-                    lVal = kvpair['value']
-                    if lVal["type"] == "table" and "raw" not in lVal:
-                        print "%s[%s (%s)]     -> " % (level * "    ", str(lKey["value"]), str(lKey["type"]))
-                        print_table(lVal["value"], level + 1)
-                    else:
-                        print "%s[%s (%s)]     ->      %s : (%s)" %     \
-                                        (level * "    ",
-                                         str(lKey["value"]), str(lKey["type"]),
-                                         str(lVal["value"]), str(lVal["type"]))
                 
             print ""
             print "Name: %s, Type: " % local_name, local_type
@@ -425,6 +425,85 @@ class Debugger:
             print ""
             print "Locals:"
             print "======="
+
+            for lv in args["value"]:
+                print "    Name: '%s'" % (lv)
+
+            print ""
+
+    def command_upval(self, command, args, sending):
+        """
+        Prints the value of a local variable in a given stack frame.
+
+        Parameters:
+            \\1  context    Address of the context whose local variables
+                            are to be printed.
+            \\2  uvindex    Optional.  Function index.  Defaults to 1.
+            \\3  uvindex    Optional.  The local variable index whose value
+                            is to be extracted - Defaults to 1.
+            \\4  nlevels    Optional.  Number of levels to recurse into the
+                            variable - Defaults to 1.
+            \\5  frame      Optional.  The frame whose LVs are to be
+                            printed.  Defaults to 0.
+        """
+        if sending: 
+            if len(args) == 0:
+                return self.print_help(command)
+
+            funcindex   = 1
+            uvindex     = 1
+            nlevels     = 1
+            frame       = 0
+
+            if len(args) > 1:
+                uvindex = int(args[1])
+                if len(args) > 2:
+                    nlevels = int(args[2])
+                    if len(args) > 3:
+                        frame   = int(args[3])
+                        if len(args) > 4:
+                            funcindex = int(args[4])
+
+            self.send_message("upval", {'context': args[0], 'frame': frame,
+                              'uv': uvindex, 'nlevels': nlevels, 'func': funcindex})
+        else:
+            results     = args["value"]
+
+            local_name  = results["name"]
+            local_type  = results["type"]
+            local_value = results["value"]
+                
+            print ""
+            print "Name: %s, Type: " % local_name, local_type
+
+            if local_type != "table":
+                print "Value: ", local_value
+            else:
+                print_table(local_value)
+
+    def command_upvals(self, command, args, sending):
+        """
+        Prints all local variables in a given stack frame.
+
+        Parameters:
+            \\1  context    Address of the context whose local variables
+                            are to be printed.
+            \\2  frame      Optional.  The frame whose LVs are to be
+                            printed.  Defaults to 0.
+        """
+
+        if sending:
+            if len(args) == 0:
+                return self.print_help(command)
+
+            if len(args) > 1: frame = int(args[1])
+            else: frame = 0
+
+            self.send_message("upvals", {'context': args[0], 'frame': frame})
+        else: 
+            print ""
+            print "UpValues:"
+            print "========="
 
             for lv in args["value"]:
                 print "    Name: '%s'" % (lv)

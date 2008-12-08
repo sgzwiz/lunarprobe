@@ -35,11 +35,19 @@ LUNARPROBE_NS_BEGIN
 std::string  LuaBindings::LUA_SRC_LOCATION  = "shared/libgameengine/lua/debugger/";
 std::string  LuaBindings::LUA_VAR_PREFIX    = "__LDB_";
 
-bool transferValueToStack(LuaStack      inStack,
-                          LuaStack      outStack,
-                          int           ntop = -1,
-                          int           levels = 1,
-                          const char *  varname = NULL);
+DebugContext *GetContextIfPaused(LuaStack stack)
+{
+    DebugContext *  pDebugContext   = (DebugContext *)lua_touserdata(stack, 1);
+    if (pDebugContext->running)
+    {
+        lua_pushinteger(stack, -1);
+        lua_pushstring(stack, "Stack is not paused.");
+
+        return NULL;
+    }
+
+    return pDebugContext;
+}
 
 //*****************************************************************************
 /*!
@@ -108,7 +116,10 @@ int LuaBindings::Register(LuaStack stack)
         { "EvaluateString", LuaBindings::EvaluateString },
         { "GetLocals", LuaBindings::GetLocals },
         { "GetLocal", LuaBindings::GetLocal},
+        { "GetUpValues", LuaBindings::GetUpValues },
+        { "GetUpValue", LuaBindings::GetUpValue},
         { "SetLocal", LuaBindings::SetLocal},
+        { "SetUpValue", LuaBindings::SetUpValue},
         { NULL, NULL }
     };
     luaL_openlib(stack, "DebugLib", lib, 0);
@@ -467,16 +478,11 @@ int LuaBindings::GetContexts(LuaStack stack)
 //*****************************************************************************
 int LuaBindings::EvaluateString(LuaStack stack)
 {
-    DebugContext *  pDebugContext   = (DebugContext *)lua_touserdata(stack, 1);
-    const char *    expr_str        = lua_tostring(stack, 2);
+    DebugContext *  pDebugContext   = GetContextIfPaused(stack);
+    if (pDebugContext != NULL)
+    {
+        const char *    expr_str        = lua_tostring(stack, 2);
 
-    if (pDebugContext->running)
-    {
-        lua_pushinteger(stack, -1);
-        lua_pushstring(stack, "Stack is currently running.");
-    }
-    else
-    {
         // we essentially do the statement:
         // LUA_VAR_PREFIX_tempResult = expr_str
         // then push the value of getglobal(LUA_VAR_PREFIX_tempResult)
@@ -496,7 +502,7 @@ int LuaBindings::EvaluateString(LuaStack stack)
         {
             lua_getglobal(pDebugContext->pStack, temp_result_var.c_str());
 
-            transferValueToStack(pDebugContext->pStack, stack);
+            LuaUtils::TransferValueToStack(pDebugContext->pStack, stack);
 
             // pop the global variable name off the stack now that we are
             // done copying it.
@@ -527,16 +533,10 @@ int LuaBindings::EvaluateString(LuaStack stack)
 //*****************************************************************************
 int LuaBindings::GetLocals(LuaStack stack)
 {
-    DebugContext *  pDebugContext   = (DebugContext *)lua_touserdata(stack, 1);
-    int             frame           = lua_tointeger(stack, 2);
-
-    if (pDebugContext->running)
+    DebugContext *  pDebugContext   = GetContextIfPaused(stack);
+    if (pDebugContext != NULL)
     {
-        lua_pushinteger(stack, -1);
-        lua_pushstring(stack, "Stack is currently running.");
-    }
-    else
-    {
+        int             frame           = lua_tointeger(stack, 2);
         lua_Debug debug;
         LuaDebug pFrameDebug = pDebugContext->GetDebug();
         if (frame > 0)
@@ -560,7 +560,8 @@ int LuaBindings::GetLocals(LuaStack stack)
             // should we?)
             lua_pop(pDebugContext->pStack, 1);
 
-            if (strncmp("(*", varname, 2) != 0)
+            // ignore temporaries?
+            // if (strncmp("(*", varname, 2) != 0)
             {
                 // push the new variable index
                 lua_pushinteger(stack, ++nitems);
@@ -602,18 +603,13 @@ int LuaBindings::GetLocals(LuaStack stack)
 //*****************************************************************************
 int LuaBindings::GetLocal(LuaStack stack)
 {
-    DebugContext *  pDebugContext   = (DebugContext *)lua_touserdata(stack, 1);
-    int             lvindex         = lua_tointeger(stack, 2);
-    int             nlevels         = lua_tointeger(stack, 3);
-    int             frame           = lua_tointeger(stack, 4);
+    DebugContext *  pDebugContext   = GetContextIfPaused(stack);
+    if (pDebugContext != NULL)
+    {
+        int             lvindex         = lua_tointeger(stack, 2);
+        int             nlevels         = lua_tointeger(stack, 3);
+        int             frame           = lua_tointeger(stack, 4);
 
-    if (pDebugContext->running)
-    {
-        lua_pushinteger(stack, -1);
-        lua_pushstring(stack, "Stack is running.");
-    }
-    else
-    {
         lua_Debug debug;
         LuaDebug pFrameDebug = pDebugContext->GetDebug();
         if (frame > 0)
@@ -634,7 +630,7 @@ int LuaBindings::GetLocal(LuaStack stack)
             lua_pushinteger(stack, 0);
 
             // local variable value
-            transferValueToStack(pDebugContext->pStack, stack, -1, nlevels, varname);
+            LuaUtils::TransferValueToStack(pDebugContext->pStack, stack, -1, nlevels, varname);
 
             // pop the value of the local variable 
             // of the stack being debugged!!
@@ -643,118 +639,6 @@ int LuaBindings::GetLocal(LuaStack stack)
     }
 
     return 2;
-}
-
-bool transferValueToStack(LuaStack inStack, LuaStack outStack, int ntop, int levels, const char *varname)
-{
-    if (levels < 0)
-        return false;
-
-    // convert relative to absolute indexing if necessary
-    if (ntop < 0)
-        ntop = (lua_gettop(inStack) + 1 + ntop);
-
-    lua_newtable(outStack);
-
-    // push variable name
-    if (varname != NULL)
-    {
-        lua_pushstring(outStack, varname);
-        lua_setfield(outStack, -2, "name");
-    }
-
-    // push the variable type
-    int top_type = lua_type(inStack, ntop);
-    lua_pushstring(outStack, lua_typename(inStack, top_type));
-    lua_setfield(outStack, -2, "type");
-
-    // finally push the value
-    if (lua_isnil(inStack, ntop))
-    {
-        lua_pushnil(outStack);
-        lua_setfield(outStack, -2, "value");
-    }
-    else if (lua_isboolean(inStack, ntop))
-    {
-        lua_pushboolean(outStack, lua_toboolean(inStack, ntop));
-        lua_setfield(outStack, -2, "value");
-    }
-    else if (lua_isnumber(inStack, ntop))
-    {
-        lua_pushnumber(outStack, lua_tonumber(inStack, ntop));
-        lua_setfield(outStack, -2, "value");
-    }
-    else if (lua_isstring(inStack, ntop))
-    {
-        lua_pushstring(outStack, lua_tostring(inStack, ntop));
-        lua_setfield(outStack, -2, "value");
-    }
-    else if (lua_islightuserdata(inStack, ntop))
-    {
-        lua_pushlightuserdata(outStack, lua_touserdata(inStack, ntop));
-        lua_setfield(outStack, -2, "value");
-    }
-    else if (lua_isuserdata(inStack, ntop)  ||
-             lua_iscfunction(inStack, ntop) ||
-             lua_isfunction(inStack, ntop)  ||
-             lua_isthread(inStack, ntop))
-    {
-        lua_pushfstring(outStack, "%p", lua_topointer(inStack, ntop));
-        lua_setfield(outStack, -2, "value");
-    }
-    else if (lua_istable(inStack, ntop))
-    {
-        if (levels == 0)
-        {
-            lua_pushboolean(outStack, true);
-            lua_setfield(outStack, -2, "raw");
-
-            // whether to send only a summary!
-            lua_pushfstring(outStack, "%p", lua_topointer(inStack, ntop));
-        }
-        else
-        {
-            lua_newtable(outStack);
-
-            int index = 1;
-
-            lua_pushnil(inStack);
-            while (lua_next(inStack, ntop) != 0)
-            {
-                // printf("%s - %s\n", lua_typename(inStack, lua_type(inStack, -2)), lua_typename(inStack, lua_type(inStack, -1)));
-
-                int newtop      = lua_gettop(inStack);
-                int keyindex    = newtop - 1;
-                int valindex    = newtop;
-
-                lua_pushinteger(outStack, index++);
-                lua_newtable(outStack);
-
-                // uses 'key' at index top-1 and 'value' at index top
-                if (transferValueToStack(inStack, outStack, keyindex, 0))
-                {
-                    lua_setfield(outStack, -2, "key");
-
-                    if (transferValueToStack(inStack, outStack, valindex, levels - 1))
-                        lua_setfield(outStack, -2, "value");
-                }
-
-                lua_settable(outStack, -3);
-
-                // remove 'value', keeps 'key' for next iteration
-                lua_pop(inStack, 1);
-            }
-        }
-
-        lua_setfield(outStack, -2, "value");
-    }
-    else
-    {
-        lua_pushstring(outStack, "Unknown type.");
-        lua_setfield(outStack, -2, "value");
-    }
-
-    return true;
 }
 
 //*****************************************************************************
@@ -774,19 +658,186 @@ bool transferValueToStack(LuaStack inStack, LuaStack outStack, int ntop, int lev
 //*****************************************************************************
 int LuaBindings::SetLocal(LuaStack stack)
 {
-    DebugContext *  pDebugContext   = (DebugContext *)lua_touserdata(stack, 1);
-    // int             frame           = lua_tointeger(stack, 2);
-    // int             lv              = lua_tointeger(stack, 3);
-    // std::string     varType(lua_tostring(stack, 4));
+    DebugContext *  pDebugContext   = GetContextIfPaused(stack);
+    if (pDebugContext != NULL)
+    {
+        // int             frame           = lua_tointeger(stack, 2);
+        // int             lv              = lua_tointeger(stack, 3);
+        // std::string     varType(lua_tostring(stack, 4));
 
-    if (pDebugContext->running)
-    {
-        lua_pushinteger(stack, -1);
-        lua_pushstring(stack, "Stack is running.");
-    }
-    else
-    {
         lua_pushinteger(stack, 0);
+        lua_pushstring(stack, "Not yet implemented.");
+    }
+
+    return 2;
+}
+
+
+//*****************************************************************************
+/*!
+ *  \brief  Get all the up values in a stack frame.
+ *
+ *  \luaparam   context -   The context to be resumed.
+ *  \luaparam   frame   -   The frame in which the locals are to be extracted.
+ *
+ *  \version
+ *      - S Panyam  08/12/2008
+ *      Initial version.
+ */
+//*****************************************************************************
+int LuaBindings::GetUpValues(LuaStack stack)
+{
+    DebugContext *  pDebugContext   = GetContextIfPaused(stack);
+    if (pDebugContext != NULL)
+    {
+        int             frame           = lua_tointeger(stack, 2);
+        lua_Debug debug;
+        LuaDebug pFrameDebug = pDebugContext->GetDebug();
+        if (frame > 0)
+        {
+            pFrameDebug = &debug;
+            lua_getstack(pDebugContext->pStack, frame, pFrameDebug);
+        }
+
+        // push message result
+        lua_pushinteger(stack, 0);
+
+        // add a table to hold each closure
+        lua_newtable(stack);
+
+        // and get all the upvalues now!!!
+        for (int funcindex = 1; ;funcindex++)
+        {
+            int uv = 1;
+            for (; ;uv++)
+            {
+                const char *uvname = lua_getupvalue(pDebugContext->pStack, funcindex, uv);
+
+                if (uvname == NULL)
+                    break ;
+
+                // pop the uv name off - we do not return this (or
+                // should we?)
+                lua_pop(pDebugContext->pStack, 1);
+
+                if (uv == 1)
+                {
+                    // add a table to hold UVs for each closure
+                    lua_pushinteger(stack, funcindex);
+                    lua_newtable(stack);
+                }
+
+                // if (strncmp("(*", uvname, 2) != 0 && 
+                //     strncmp("--", uvname, 2) != 0)
+                {
+                    // push the new variable index
+                    lua_pushinteger(stack, uv);
+
+                    // push a table to hold the variable info
+                    lua_newtable(stack);
+
+                    // push the index and the UV name
+                    lua_pushinteger(stack, uv);
+                    lua_setfield(stack, -2, "index");
+
+                    lua_pushstring(stack, uvname);
+                    lua_setfield(stack, -2, "name");
+
+                    lua_settable(stack, -3);
+                }
+            }
+            if (uv == 1) break ;
+            else lua_settable(stack, -3);
+        }
+    }
+
+    return 2;
+}
+
+
+//*****************************************************************************
+/*!
+ *  \brief  Get value of an upvalue in a stack frame.
+ *
+ *  \luaparam   context -   The context to be resumed.
+ *  \luaparam   lv      -   Index of the upvalue.
+ *  \luaparam   nlevels -   Number of leves to recurse into the value 
+ *                          (default = 1)
+ *  \luaparam   frame   -   The frame in which the upvalues are to be extracted.
+ *                          (default = 0)
+ *
+ *  \version
+ *      - S Panyam  08/12/2008
+ *      Initial version.
+ */
+//*****************************************************************************
+int LuaBindings::GetUpValue(LuaStack stack)
+{
+    DebugContext *  pDebugContext   = GetContextIfPaused(stack);
+    if (pDebugContext != NULL)
+    {
+        int             funcindex       = lua_tointeger(stack, 2);
+        int             uvindex         = lua_tointeger(stack, 3);
+        int             nlevels         = lua_tointeger(stack, 4);
+        int             frame           = lua_tointeger(stack, 5);
+
+        lua_Debug debug;
+        LuaDebug pFrameDebug = pDebugContext->GetDebug();
+        if (frame > 0)
+        {
+            pFrameDebug = &debug;
+            lua_getstack(pDebugContext->pStack, frame, pFrameDebug);
+        }
+
+        const char *varname = lua_getupvalue(pDebugContext->pStack, funcindex, uvindex);
+        if (varname == NULL)
+        {
+            lua_pushinteger(stack, -1);
+            lua_pushstring(stack, "Invalid variable index.");
+        }
+        else
+        {
+            // output code - 0 => success
+            lua_pushinteger(stack, 0);
+
+            // upvalue value
+            LuaUtils::TransferValueToStack(pDebugContext->pStack, stack, -1, nlevels, varname);
+
+            // pop the value of the upvalue
+            // of the stack being debugged!!
+            lua_pop(pDebugContext->pStack, 1);
+        }
+    }
+
+    return 2;
+}
+
+//*****************************************************************************
+/*!
+ *  \brief  Set value of an upvalue in a stack frame.
+ *
+ *  \luaparam   context -   The context to be resumed.
+ *  \luaparam   frame   -   The frame in which the upvalues are to be extracted.
+ *  \luaparam   uv      -   Index of the upvalue.
+ *  \luaparam   type    -   Type of the new value.
+ *  \luaparam   value   -   The new value
+ *
+ *  \version
+ *      - S Panyam  08/12/2008
+ *      Initial version.
+ */
+//*****************************************************************************
+int LuaBindings::SetUpValue(LuaStack stack)
+{
+    DebugContext *  pDebugContext   = GetContextIfPaused(stack);
+    if (pDebugContext)
+    {
+        // int             frame           = lua_tointeger(stack, 2);
+        // int             uv              = lua_tointeger(stack, 3);
+        // std::string     varType(lua_tostring(stack, 4));
+
+        lua_pushinteger(stack, 0);
+        lua_pushstring(stack, "Not yet implemented.");
     }
 
     return 2;

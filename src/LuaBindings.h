@@ -94,6 +94,15 @@ public: // Lua methods - called from LUA
     // Set value of a local variable in a given frame.
     static int  SetLocal(LuaStack stack);
 
+    // Get upvalues in a frame
+    static int  GetUpValues(LuaStack stack);
+
+    // Get value of an upvalue in a given frame.
+    static int  GetUpValue(LuaStack stack);
+
+    // Set value of an upvalue in a given frame.
+    static int  SetUpValue(LuaStack stack);
+
     // Resumes a particular debug context
     static int  Resume(LuaStack stack);
 

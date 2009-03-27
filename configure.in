@@ -1,5 +1,5 @@
 
-AC_INIT(lunarprobe, 0.1.0, sri.panyam@gmail.com)
+AC_INIT(lunarprobe, 0.2.0, sri.panyam@gmail.com)
 
 ##########  Default Values  ##############
 
@@ -8,40 +8,21 @@ AC_INIT(lunarprobe, 0.1.0, sri.panyam@gmail.com)
 # in the AC_INIT line above on every release.
 #
 MAJOR_VERSION=0
-MINOR_VERSION=1
+MINOR_VERSION=2
 BUILD_VERSION=0
 RELEASE_DATE="08 Dec 2009"
 
 # 
 # Check if lua exists
 #
+halley_include_path=/usr/local/include/halley
+halley_archive_path=/usr/local/lib
+
 lua_include_path=/usr/local/include/lua
 lua_archive_path=/usr/local/lib
 build_mode=release
 
-LUA_DOWNLOAD_URL=http://lua.org/download
-
 ##########  DO NOT EDIT BELOW THIS LINE  ##############
-
-function confirm_lib_download()
-{
-    libname=$1
-
-    echo Would you like to install $libname? y/n [y]: 
-    read yesno
-
-    if [ "$yesno" = "n" -o "$yesno" = "no" -o "$yesno" = "N" -o "$yesno" = "NO" ]; then
-        echo You have chosen not to download $libname.  
-        echo Please install it manually and re-run configuration script.
-        echo You can download $libname from $url.
-        exit 1;
-    fi
-
-    if [ "$yesno" != "y" -a "$yesno" != "yes" -a "$yesno" != "Y" -a "$yesno" != "YES" ]; then
-        echo "Invalid selection.  Please select \"y\" or \"n\"."
-        exit 1;
-    fi
-}
 
 dnl Check for required programs
 AC_PROG_CXX
@@ -49,7 +30,11 @@ AC_PROG_CC
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
-dnl Check for required libraries
+dnl Check for halley libraries
+halley_lib_fine=no
+halley_hdr_fine=no
+
+dnl Check for lua libraries
 lua_lib_fine=no
 lua_hdr_fine=no
 
@@ -89,6 +74,38 @@ else
     # exit 1;
 fi
 
+
+AC_ARG_WITH(halley,
+            [  --with-halley=[path]   Specify halley include path (default: /usr/local/include/halley)],
+            halley_include_path="$withval",)
+
+AC_ARG_WITH(halley,
+            [  --with-halley-archive=[path]   Specify halley archive path (default: /usr/local/lib)],
+            halley_archive_path="$withval",)
+
+echo -n "checking if halley include path (\"$halley_include_path\") exists: "
+if test -d $halley_include_path; then
+    halley_hdr_fine=yes
+    echo yes
+else
+    echo no
+    # exit 1;
+fi
+
+echo -n "checking if libhalley.a exists in halley archive path (\"$halley_archive_path\"): "
+if test -e $halley_archive_path/libhalley.a; then
+    halley_lib_fine=yes
+    echo yes
+else
+    echo no
+    # exit 1;
+fi
+
+
+
+
+
+
 dnl Check for required typedefs, structures and compiler characteristics
 AC_HEADER_STDBOOL
 AC_C_CONST
@@ -115,12 +132,33 @@ AC_SUBST(MINOR_VERSION)
 AC_SUBST(BUILD_VERSION)
 AC_SUBST(lua_include_path)
 AC_SUBST(lua_archive_path)
+AC_SUBST(halley_include_path)
+AC_SUBST(halley_archive_path)
 AC_SUBST(build_mode)
 AC_SUBST(RELEASE_DATE)
 
 dnl Create the necessary files.
 
 AC_OUTPUT([ Makefile.common Makefile src/Makefile test/Makefile ])
+
+if test "$halley_hdr_fine" = "no" -o "$halley_lib_fine" = "no" ; then
+
+    echo 
+    echo 
+    echo ===============================================
+    echo "Halley headers found: $halley_hdr_fine"
+    echo "Halley static archive found: $halley_lib_fine"
+    echo
+    echo "You can either install halley and run configure again or "
+    echo "specify the paths to halley headers and static archive "
+    echo "if they are not in the default paths (with the "
+    echo "--with-halley and --with-halley-archive arguments respectively)".
+    echo ===============================================
+    echo 
+    echo 
+
+    # exit 1;
+fi
 
 if test "$lua_hdr_fine" = "no" -o "$lua_lib_fine" = "no" ; then
 

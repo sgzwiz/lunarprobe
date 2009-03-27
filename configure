@@ -310,7 +310,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT CC CFLAGS ac_ct_CC LN_S SET_MAKE CPP EGREP LIBOBJS MAJOR_VERSION MINOR_VERSION BUILD_VERSION lua_include_path lua_archive_path build_mode RELEASE_DATE LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT CC CFLAGS ac_ct_CC LN_S SET_MAKE CPP EGREP LIBOBJS MAJOR_VERSION MINOR_VERSION BUILD_VERSION lua_include_path lua_archive_path halley_include_path halley_archive_path build_mode RELEASE_DATE LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -858,6 +858,8 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-lua=path   Specify lua include path (default: /usr/local/include/lua)
   --with-lua-archive=path   Specify lua archive path (default: /usr/local/lib)
+  --with-halley=path   Specify halley include path (default: /usr/local/include/halley)
+  --with-halley-archive=path   Specify halley archive path (default: /usr/local/lib)
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -1334,33 +1336,14 @@ RELEASE_DATE="08 Dec 2009"
 #
 # Check if lua exists
 #
+halley_include_path=/usr/local/include/halley
+halley_archive_path=/usr/local/lib
+
 lua_include_path=/usr/local/include/lua
 lua_archive_path=/usr/local/lib
 build_mode=release
 
-LUA_DOWNLOAD_URL=http://lua.org/download
-
 ##########  DO NOT EDIT BELOW THIS LINE  ##############
-
-function confirm_lib_download()
-{
-    libname=$1
-
-    echo Would you like to install $libname? y/n y:
-    read yesno
-
-    if  "$yesno" = "n" -o "$yesno" = "no" -o "$yesno" = "N" -o "$yesno" = "NO" ; then
-        echo You have chosen not to download $libname.
-        echo Please install it manually and re-run configuration script.
-        echo You can download $libname from $url.
-        exit 1;
-    fi
-
-    if  "$yesno" != "y" -a "$yesno" != "yes" -a "$yesno" != "Y" -a "$yesno" != "YES" ; then
-        echo "Invalid selection.  Please select \"y\" or \"n\"."
-        exit 1;
-    fi
-}
 
 ac_ext=cc
 ac_cpp='$CXXCPP $CPPFLAGS'
@@ -2688,6 +2671,9 @@ echo "${ECHO_T}no" >&6
 fi
 
 
+halley_lib_fine=no
+halley_hdr_fine=no
+
 lua_lib_fine=no
 lua_hdr_fine=no
 
@@ -3374,6 +3360,44 @@ else
     echo no
     # exit 1;
 fi
+
+
+
+# Check whether --with-halley or --without-halley was given.
+if test "${with_halley+set}" = set; then
+  withval="$with_halley"
+  halley_include_path="$withval"
+fi;
+
+
+# Check whether --with-halley or --without-halley was given.
+if test "${with_halley+set}" = set; then
+  withval="$with_halley"
+  halley_archive_path="$withval"
+fi;
+
+echo -n "checking if halley include path (\"$halley_include_path\") exists: "
+if test -d $halley_include_path; then
+    halley_hdr_fine=yes
+    echo yes
+else
+    echo no
+    # exit 1;
+fi
+
+echo -n "checking if libhalley.a exists in halley archive path (\"$halley_archive_path\"): "
+if test -e $halley_archive_path/libhalley.a; then
+    halley_lib_fine=yes
+    echo yes
+else
+    echo no
+    # exit 1;
+fi
+
+
+
+
+
 
 echo "$as_me:$LINENO: checking for stdbool.h that conforms to C99" >&5
 echo $ECHO_N "checking for stdbool.h that conforms to C99... $ECHO_C" >&6
@@ -5467,6 +5491,8 @@ done
 
 
 
+
+
                                         ac_config_files="$ac_config_files Makefile.common Makefile src/Makefile test/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -6125,6 +6151,8 @@ s,@MINOR_VERSION@,$MINOR_VERSION,;t t
 s,@BUILD_VERSION@,$BUILD_VERSION,;t t
 s,@lua_include_path@,$lua_include_path,;t t
 s,@lua_archive_path@,$lua_archive_path,;t t
+s,@halley_include_path@,$halley_include_path,;t t
+s,@halley_archive_path@,$halley_archive_path,;t t
 s,@build_mode@,$build_mode,;t t
 s,@RELEASE_DATE@,$RELEASE_DATE,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
@@ -6391,6 +6419,25 @@ if test "$no_create" != yes; then
   $ac_cs_success || { (exit 1); exit 1; }
 fi
 
+
+if test "$halley_hdr_fine" = "no" -o "$halley_lib_fine" = "no" ; then
+
+    echo
+    echo
+    echo ===============================================
+    echo "Halley headers found: $halley_hdr_fine"
+    echo "Halley static archive found: $halley_lib_fine"
+    echo
+    echo "You can either install halley and run configure again or "
+    echo "specify the paths to halley headers and static archive "
+    echo "if they are not in the default paths (with the "
+    echo "--with-halley and --with-halley-archive arguments respectively)".
+    echo ===============================================
+    echo
+    echo
+
+    # exit 1;
+fi
 
 if test "$lua_hdr_fine" = "no" -o "$lua_lib_fine" = "no" ; then
 

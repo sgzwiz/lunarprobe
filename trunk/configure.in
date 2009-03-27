@@ -52,7 +52,7 @@ AC_ARG_WITH(lua,
             [  --with-lua=[path]   Specify lua include path (default: /usr/local/include/lua)],
             lua_include_path="$withval",)
 
-AC_ARG_WITH(lua,
+AC_ARG_WITH(lua-archive,
             [  --with-lua-archive=[path]   Specify lua archive path (default: /usr/local/lib)],
             lua_archive_path="$withval",)
 
@@ -77,11 +77,11 @@ fi
 
 AC_ARG_WITH(halley,
             [  --with-halley=[path]   Specify halley include path (default: /usr/local/include/halley)],
-            halley_include_path="$withval",)
+            [ halley_include_path="$withval" ])
 
-AC_ARG_WITH(halley,
+AC_ARG_WITH(halley-archive,
             [  --with-halley-archive=[path]   Specify halley archive path (default: /usr/local/lib)],
-            halley_archive_path="$withval",)
+            [ halley_archive_path="$withval" ])
 
 echo -n "checking if halley include path (\"$halley_include_path\") exists: "
 if test -d $halley_include_path; then
@@ -151,8 +151,8 @@ if test "$halley_hdr_fine" = "no" -o "$halley_lib_fine" = "no" ; then
     echo
     echo "You can either install halley and run configure again or "
     echo "specify the paths to halley headers and static archive "
-    echo "if they are not in the default paths (with the "
-    echo "--with-halley and --with-halley-archive arguments respectively)".
+    echo "if they are not in the default paths with the "
+    echo "--with-halley and --with-halley-archive arguments respectively".
     echo ===============================================
     echo 
     echo 
@@ -170,8 +170,8 @@ if test "$lua_hdr_fine" = "no" -o "$lua_lib_fine" = "no" ; then
     echo
     echo "You can either install lua and run configure again or "
     echo "specify the paths to lua headers and static archive "
-    echo "if they are not in the default paths (with the "
-    echo "--with-lua and --with-lua-archive arguments respectively)".
+    echo "if they are not in the default paths with the "
+    echo "--with-lua and --with-lua-archive arguments respectively".
     echo ===============================================
     echo 
     echo 

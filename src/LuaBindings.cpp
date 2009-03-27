@@ -199,7 +199,7 @@ void LuaBindings::RequestReload()
 //*****************************************************************************
 int LuaBindings::CallLuaFunc(const char *funcname, const char *funcsig, ...)
 {
-    CMutexLock mutexLock(dbgStackMutex);
+    SMutexLock mutexLock(dbgStackMutex);
 
     va_list vl;
     va_start(vl, funcsig);

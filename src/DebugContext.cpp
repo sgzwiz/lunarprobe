@@ -63,7 +63,7 @@ DebugContext::DebugContext(LuaStack luaStack, const char *n) :
 //*****************************************************************************
 bool DebugContext::Pause(LuaDebug pDbg)
 {
-    CMutexLock mutexLock(runStateMutex);
+    SMutexLock mutexLock(runStateMutex);
     if (running)
     {
         running = false;
@@ -87,7 +87,7 @@ bool DebugContext::Pause(LuaDebug pDbg)
 //*****************************************************************************
 bool DebugContext::Resume()
 {
-    CMutexLock mutexLock(runStateMutex);
+    SMutexLock mutexLock(runStateMutex);
 
     if (!running)
     {
@@ -113,7 +113,7 @@ bool DebugContext::Resume()
 //*****************************************************************************
 int DebugContext::WaitWhilePaused()
 {
-    CMutexLock mutexLock(runStateMutex);
+    SMutexLock mutexLock(runStateMutex);
 
     return running ? 0 : pausedCond.Wait();
 }

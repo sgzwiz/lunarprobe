@@ -31,6 +31,7 @@
 #include <map>
 #include "LuaUtils.h"
 #include "net/connhandler.h"
+#include "thread/mutex.h"
 
 LUNARPROBE_NS_BEGIN
 
@@ -100,6 +101,12 @@ private:
 
     //! the actual lua binding for the debugger exposed to LUA
     LuaBindings *       pLuaBindings;
+
+    //! Read lock on the socket
+    SMutex              socketReadMutex;
+
+    //! Write lock on the socket
+    SMutex              socketWriteMutex;
 };
 
 LUNARPROBE_NS_END

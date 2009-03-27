@@ -30,7 +30,7 @@
 
 #include <map>
 #include "LuaUtils.h"
-#include "MutexUtils.h"
+#include "net/connhandler.h"
 
 LUNARPROBE_NS_BEGIN
 
@@ -47,7 +47,7 @@ typedef std::map<LuaStack , DebugContext *> DebugContextMap;
  *  \brief  The actual remote lua debugger instance.
  *
  *****************************************************************************/
-class Debugger
+class Debugger : public SConnHandler
 {
     // Make lua debugger our friend so it 
     // can access context maps and so on.
@@ -103,44 +103,12 @@ protected:
     // Reads a string from the socket
     virtual bool ReadString(std::string &result);
 
-protected:
-    typedef enum
-    {
-        SERVER_CREATED,
-        SERVER_STARTED,
-        SERVER_RUNNING,
-        SERVER_STOPPED,
-        SERVER_TERMINATED,
-    } ServerState;
-
-    int         serverPort;
-    int         serverSocket;
-    bool        serverStopped;
-    ServerState serverState;
-    int         clientSocket;
-    pthread_t   serverThread;
-
 private:
     // the real server function
     int                 Run();
 
     // Get the lua bindings for the debugger
     LuaBindings *       GetLuaBindings();
-
-    // server thread callback on startup
-    static void *       ServerThreadFunc(void *pData);
-
-    int                 WaitForServerBegin();
-    int                 WaitForServerFinish();
-    int                 SignalServerBegin();
-    int                 SignalServerFinish();
-
-private:
-    CMutex              serverStateMutex;
-    CMutex              socketReadMutex;
-    CMutex              socketWriteMutex;
-    CCondition          serverRunningCond;
-    CCondition          serverDeadCond;
 
     //! the actual lua binding for the debugger exposed to LUA
     LuaBindings *       pLuaBindings;

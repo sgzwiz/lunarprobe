@@ -45,6 +45,14 @@ ifeq ($(LUA_ARCHIVE_PATH),)
     LUA_ARCHIVE_PATH   = @lua_archive_path@
 endif
 
+ifeq ($(HALLEY_INCLUDES),)
+    HALLEY_INCLUDES       = @halley_include_path@
+endif
+
+ifeq ($(HALLEY_ARCHIVE_PATH),)
+    HALLEY_ARCHIVE_PATH   = @halley_archive_path@
+endif
+
 # 
 # Default build mode
 #
@@ -61,6 +69,7 @@ OUTPUT_DIR              := $(OUTPUT_DIR)/$(BUILD_MODE)
 DEBUG_CXXFLAGS          =   -g
 RELEASE_CXXFLAGS        =   -O3
 CORE_CXXFLAGS           =   -Wall                   \
+                            -I$(HALLEY_INCLUDES)    \
                             -I$(LUA_INCLUDES)       \
                             -I../src
 

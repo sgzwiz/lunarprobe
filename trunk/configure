@@ -6458,3 +6458,6 @@ if test "$lua_hdr_fine" = "no" -o "$lua_lib_fine" = "no" ; then
     # exit 1;
 fi
 
+echo Generating make dependancies...
+make dep
+

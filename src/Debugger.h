@@ -93,9 +93,6 @@ protected:
     virtual bool ReadString(std::string &result);
 
 private:
-    // the real server function
-    int                 Run();
-
     // Get the lua bindings for the debugger
     LuaBindings *       GetLuaBindings();
 

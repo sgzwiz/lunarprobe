@@ -63,9 +63,6 @@ public:
     // dtor
     virtual ~Debugger();
 
-    // Sets the server port if the server is NOT running
-    bool            SetPort(int port = LUA_DEBUG_PORT);
-
     // Functions called by the Interface on startup
     bool            StartDebugging(LuaStack lua_stack, const char *name = "");
     bool            StopDebugging(LuaStack lua_stack);
@@ -84,21 +81,12 @@ protected:
 
     //////////////////  All things to the with the Server   ///////////////////
 public:
-    // Starts the server
-    virtual int StartServer();
-
-    // Tells if the server is running or not
-    virtual bool ServerRunning() { return serverState == SERVER_RUNNING; }
-
-    // stops the server
-    virtual void StopServer();
-
     // Sends a string on the socket
     virtual int WriteString(const char *data, unsigned datasize);
 
 protected:
     // Handle a new client connection
-    void HandleConnection();
+    bool HandleConnection();
 
     // Reads a string from the socket
     virtual bool ReadString(std::string &result);

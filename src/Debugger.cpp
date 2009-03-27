@@ -59,18 +59,8 @@ LUNARPROBE_NS_BEGIN
  *      Initial version.
  */
 //*****************************************************************************
-Debugger::Debugger() :
-    serverPort(LUA_DEBUG_PORT),
-    serverSocket(-1),
-    serverStopped(false),
-    serverState(SERVER_CREATED),
-    clientSocket(-1),
-    serverRunningCond(serverStateMutex),
-    serverDeadCond(serverStateMutex),
-    pLuaBindings(NULL)
+Debugger::Debugger() : pLuaBindings(NULL)
 {
-    // Start the lua server
-    StartServer();
 }
 
 //*****************************************************************************
@@ -311,44 +301,6 @@ void Debugger::StopServer()
     serverSocket = -1;
 }
 
-
-//*****************************************************************************
-/*!
- *  \brief  Starts the debug server.
- *
- *  \version
- *      - S Panyam  27/10/2008
- *      Initial version.
- */
-//*****************************************************************************
-int Debugger::StartServer()
-{
-    CMutexLock stateMutexLock(serverStateMutex);
-    if (serverState == SERVER_RUNNING)
-    {
-        return -1;
-    }
-    else if (serverState == SERVER_STARTED)
-    {
-        WaitForServerBegin();
-        return -1;
-    }
-    else if (serverState == SERVER_STOPPED)
-    {
-        WaitForServerFinish();
-    }
-
-    serverState = SERVER_STARTED;
-
-    pthread_create(&serverThread, NULL, ServerThreadFunc, this);
-
-    pthread_detach(serverThread);
-
-    WaitForServerBegin();
-
-    return 0;
-}
-
 //*****************************************************************************
 /*!
  *  \brief  Here is where a client connection to the debugger is handled.
@@ -358,7 +310,7 @@ int Debugger::StartServer()
  *      Initial version.
  */
 //*****************************************************************************
-void Debugger::HandleConnection()
+bool Debugger::HandleConnection()
 {
     // read and handle messages one by one
     std::string message;
@@ -380,6 +332,8 @@ void Debugger::HandleConnection()
         if (ctx != NULL)
             ctx->Resume();
     }
+
+    return true;
 }
 
 
@@ -503,241 +457,6 @@ LuaBindings *Debugger::GetLuaBindings()
         pLuaBindings = new LuaBindings(this);
     }
     return pLuaBindings;
-}
-
-
-
-
-///////////////////////////////////////////////////////////////////////////////////
-//
-//
-//                      SERVER THREAD SPECIFIC FUNCTIONS
-//
-//
-///////////////////////////////////////////////////////////////////////////////////
-
-//*****************************************************************************
-/*!
- *  \brief  If a thread has been started but not yet in the running state,
- *  this blocks until the thread has got into the running state.
- *
- *  \version
- *      - S Panyam     27/10/2008
- *        Created.
- *
- *****************************************************************************/
-int Debugger::WaitForServerBegin()
-{
-    return serverRunningCond.Wait();
-}
-
-//*****************************************************************************
-/*!
- *  \brief  If a thread has been stopped but still running, this blocks
- *  until the thread has stopped running.
- *
- *  \version
- *      - S Panyam     27/10/2008
- *        Created.
- *
- *****************************************************************************/
-int Debugger::WaitForServerFinish()
-{
-    return serverDeadCond.Wait();
-}
-
-//*****************************************************************************
-/*!
- *  \brief  Signals that the thread has gone to the start state.
- *
- *  \version
- *      - S Panyam     27/10/2008
- *        Created.
- *
- *****************************************************************************/
-int Debugger::SignalServerBegin()
-{
-    serverState = SERVER_RUNNING;
-
-    return serverRunningCond.Signal();
-}
-
-//*****************************************************************************
-/*!
- *  \brief  Signals that the thread has gone to the finished state.
- *
- *  \version
- *      - S Panyam     27/10/2008
- *        Created.
- *
- *****************************************************************************/
-int Debugger::SignalServerFinish()
-{
-    CMutexLock stateMutexLock(serverStateMutex);
-
-    serverState = SERVER_TERMINATED;
-
-    return serverDeadCond.Signal();
-}
-
-//*****************************************************************************
-/*!
- *  \brief  The actual run function of the Server thread.
- *
- *  \version
- *      - S Panyam     27/10/2008
- *        Created.
- *
- *****************************************************************************/
-int Debugger::Run()
-{
-    // do it all here now
-
-    int result = 0;
-
-    using namespace std;
-
-    // Create an internet socket using streaming (tcp/ip)
-    // and save the handle for the server socket
-    serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (serverSocket < 0)
-    {
-        cerr << "=======================================================" << endl;
-        cerr << "ERROR: Cannot create server socket: [" << errno << "]: " << strerror(errno) << endl << endl;
-        return errno;
-    }
-
-    // set it so we can reuse the socket immediately after closing it.
-    int reuse = 1;
-    if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&reuse, sizeof(reuse)) != 0)
-    {
-        cerr << "=======================================================" << endl;
-        cerr << "ERROR: setsockopt failed: [" << errno << "]: " << strerror(errno) << endl << endl;
-        result = errno;
-    }
-    else
-    {
-        int nodelay = 1;
-        if (setsockopt(serverSocket, SOL_TCP, TCP_NODELAY, &nodelay, sizeof(nodelay)) != 0)
-        {
-            cerr << "=======================================================" << endl;
-            cerr << "ERROR: Could not set TCP_NODELAY [" << errno << "]: " << strerror(errno) << endl << endl;
-            result = errno;
-        }
-        else
-        {
-            // Setup the structure that defines the IP-adress, port and protocol
-            // family to use.
-            sockaddr_in srv_sock_addr;
-
-            // zero the srv sock addr structure
-            bzero(&srv_sock_addr, sizeof(srv_sock_addr));
-
-            // Use the internet domain.
-            srv_sock_addr.sin_family = AF_INET;
-
-            // Use this specific port.
-            srv_sock_addr.sin_port = htons(serverPort);
-
-            // Use any of the network cards IP addresses.
-            srv_sock_addr.sin_addr.s_addr = INADDR_ANY;
-
-            // Bind the socket to the port number specified by (serverPort).
-            int retval = bind(serverSocket, (sockaddr*)(&srv_sock_addr), sizeof(sockaddr));
-            if (retval != 0)
-            {
-                cerr << "=======================================================" << endl;
-                cerr << "ERROR: Cannot bind to server on port: [" << errno << "]: " << strerror(errno) << endl << endl;
-                result = errno;
-            }
-            else
-            {
-                // Setup a limit of maximum 10 pending connections.
-                retval = listen(serverSocket, 10);
-                if (retval < 0)
-                {
-                    cerr << "=======================================================" << endl;
-                    cerr << "ERROR: Cannot listen to connections: [" << errno << "]: " << strerror(errno) << endl;
-                    result = errno;
-                }
-                else
-                {
-                    // Ok, now loop here indefinitly to service our incoming requests
-                    serverStopped = false;
-
-                    // block/ignore SIGPIPE exceptions
-                    signal(SIGPIPE, SIG_IGN);
-
-                    while(!serverStopped)
-                    {
-                        // Accept will block until a request is detected on this socket
-                        sockaddr_in client_sock_addr;
-                        socklen_t addlen = sizeof(client_sock_addr);
-
-                        // Handle for the socket taking the client request
-                        clientSocket    = accept(serverSocket, (sockaddr*)(&client_sock_addr), &addlen);
-                        int errnum      = errno;
-                        result          = errnum;
-
-                        if (!serverStopped)
-                        {
-                            if (clientSocket < 0)
-                            {
-                                cerr << "=======================================================" << endl;
-                                cerr << "ERROR: Could not accept connection [" << errnum << "]: " << strerror(errnum) << "." << endl;
-                                serverStopped = true;
-                            }
-                            else
-                            {
-                                HandleConnection();
-                            }
-                        }
-
-                        // close the client after done!!
-                        if (clientSocket >= 0)
-                        {
-                            // server being killed and we have a socket, so close the
-                            // socket as well
-                            shutdown(clientSocket, SHUT_RDWR);
-                            close(clientSocket);
-                            clientSocket = -1;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    if (serverSocket >= 0)
-    {
-        shutdown(serverSocket, SHUT_RDWR);
-        close(serverSocket);
-        serverSocket = -1;
-    }
-
-    SignalServerFinish();
-
-    return result;
-}
-
-void *Debugger::ServerThreadFunc(void *pData)
-{
-    Debugger *pDebugger = (Debugger *)pData;
-
-    {
-        CMutexLock mutexLock(pDebugger->serverStateMutex);
-
-        if (pDebugger->serverState == SERVER_STARTED)
-            pDebugger->SignalServerBegin();
-    }
-
-    pDebugger->Run();
-
-    pDebugger->SignalServerFinish();
-
-    pthread_exit(NULL);
-
-    return NULL;
 }
 
 LUNARPROBE_NS_END

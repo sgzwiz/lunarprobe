@@ -45,7 +45,7 @@ LIB_OBJS    = $(foreach obj, $(patsubst %.cpp,%.o,$(LIB_SRCS)), $(OUTPUT_DIR)/$(
 # 
 # Libraries to include
 #
-LIBS    = -lpthread
+LIBS    = 
 
 ###################     Begin Targets       ######################
 

@@ -28,7 +28,7 @@
 #define _LUABINDINGS_H_
 
 #include "LuaUtils.h"
-#include "MutexUtils.h"
+#include "thread/mutex.h"
 
 LUNARPROBE_NS_BEGIN
 
@@ -130,7 +130,7 @@ protected:
     bool        reloadRequested;
 
     // Mutex for the debugger lua stack
-    CMutex      dbgStackMutex;
+    SMutex      dbgStackMutex;
 };
 
 LUNARPROBE_NS_END

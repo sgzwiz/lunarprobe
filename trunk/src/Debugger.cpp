@@ -74,8 +74,6 @@ Debugger::Debugger() : pLuaBindings(NULL)
 //*****************************************************************************
 Debugger::~Debugger()
 {
-    StopServer();
-
     // remove any debug contexts that wasnt removed (via StopDebugging)
     for (DebugContextMap::iterator iter = debugContexts.begin();iter != debugContexts.end(); ++iter)
     {
@@ -86,28 +84,6 @@ Debugger::~Debugger()
 
     if (pLuaBindings != NULL)
         delete pLuaBindings;
-}
-
-//*****************************************************************************
-/*!
- *  \brief  Sets the port on which the server will be started.
- *
- *  Only will be set if the server is stopped.  
- *
- *  \return true if port set false otherwise.
- *
- *  \version
- *      - S Panyam  18/11/2008
- *      Initial version.
- */
-//*****************************************************************************
-bool Debugger::SetPort(int port)
-{
-    if (ServerRunning())
-        return false;
-
-    serverPort = port;
-    return true;
 }
 
 //*****************************************************************************
@@ -280,27 +256,6 @@ void Debugger::HandleDebugHook(LuaStack pStack, LuaDebug pDebug)
 //////////////////////////   Server related Stuff   ///////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-
-//*****************************************************************************
-/*!
- *  \brief  Stops the debug server.
- *
- *  \version
- *      - S Panyam  27/10/2008
- *      Initial version.
- */
-//*****************************************************************************
-void Debugger::StopServer()
-{
-    if (serverSocket >= 0)
-    {
-        shutdown(serverSocket, SHUT_RDWR);
-        close(serverSocket);
-    }
-
-    serverSocket = -1;
-}
-
 //*****************************************************************************
 /*!
  *  \brief  Here is where a client connection to the debugger is handled.
@@ -361,7 +316,7 @@ bool Debugger::ReadString(std::string &result)
     if (clientSocket >= 0)
     {
         // lock the read mutex
-        CMutexLock socketReadLock(socketReadMutex);
+        SMutexLock socketReadLock(socketReadMutex);
 
         const unsigned MAX_PARAM_SIZE = 1024;
         char param[MAX_PARAM_SIZE + 1];
@@ -422,7 +377,7 @@ int Debugger::WriteString(const char *data, unsigned datasize)
     if (clientSocket >= 0)
     {
         // lock the write mutex
-        CMutexLock socketWriteLock(socketWriteMutex);
+        SMutexLock socketWriteLock(socketWriteMutex);
 
         datasizebuff[0] = ((datasize)       & 0xff);
         datasizebuff[1] = ((datasize >> 8)  & 0xff);

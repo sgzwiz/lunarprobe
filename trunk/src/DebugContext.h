@@ -29,7 +29,7 @@
 #define _DEBUGCONTEXT_H_
 
 #include <string>
-#include "MutexUtils.h"
+#include "thread/mutex.h"
 
 LUNARPROBE_NS_BEGIN
 
@@ -73,8 +73,8 @@ public:
     std::string name;
 
 protected:
-    CMutex          runStateMutex;
-    CCondition      pausedCond;
+    SMutex          runStateMutex;
+    SCondition      pausedCond;
 
 private:
     //! More info about the current breakpoint where we are paused.

@@ -34,8 +34,9 @@ STATIC_LIB_OUTPUT       =   "$(OUTPUT_DIR)/$(STATIC_LIB_NAME)"
 # 
 # Sources
 #
-LIB_SRCS    =   LuaBindings.cpp LuaUtils.cpp LunarProbe.cpp     \
-                DebugContext.cpp Debugger.cpp 
+SRC_FOLDERS =   .
+
+LIB_SRCS     := $(foreach dir,$(SRC_FOLDERS),$(shell find $(dir)/*.cpp -printf "%p " 2> /dev/null))
 
 # 
 # Corresponding obj files

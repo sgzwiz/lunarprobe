@@ -69,6 +69,7 @@ LUNARPROBE_NS_BEGIN
 //*****************************************************************************
 void BayeuxDebugger::HandleEvent(const JsonNodePtr &event, JsonNodePtr &output)
 {
+    SMutexLock socketReadLock(socketReadMutex);
 }
 
 
@@ -89,6 +90,7 @@ void BayeuxDebugger::HandleEvent(const JsonNodePtr &event, JsonNodePtr &output)
 //*****************************************************************************
 int BayeuxDebugger::SendMessage(const char *data, unsigned datasize)
 {
+    SMutexLock socketWriteLock(socketWriteMutex);
     return 0;
 }
 

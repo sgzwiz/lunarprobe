@@ -28,7 +28,9 @@
 #define _BAYEUX_DEBUGGER_H_
 
 #include "Debugger.h"
+#include "json/json.h"
 #include "eds/http/bayeux/channel.h"
+#include "thread/mutex.h"
 
 LUNARPROBE_NS_BEGIN
 
@@ -44,7 +46,14 @@ public:
     virtual int     SendMessage(const char *data, unsigned datasize);
 
     //! Handles an event.
-    virtual void HandleEvent(const JsonNodePtr &event, JsonNodePtr &output) { }
+    virtual void HandleEvent(const JsonNodePtr &event, JsonNodePtr &output);
+
+private:
+    //! Read lock on the socket
+    SMutex              socketReadMutex;
+
+    //! Write lock on the socket
+    SMutex              socketWriteMutex;
 };
 
 LUNARPROBE_NS_END

@@ -14,54 +14,37 @@
  *
  *****************************************************************************
  *
- * \file   LunarProbe.h
+ *  \file   BayeuxDebugger.h
  *
- * \brief  The hook between liblua and the debug interface.
+ *  \brief  A bayeux (comet) implementation of the debugger.
  *
- * Version:
- *      Sri Panyam      05 Dec 2008
- *      Initial version
+ *  \version
+ *        - S Panyam  30/03/2009
+ *        Initial version.
  *
  *****************************************************************************/
 
-#ifndef _LUNAR_PROBE_H
-#define _LUNAR_PROBE_H
+#ifndef _BAYEUX_DEBUGGER_H_
+#define _BAYEUX_DEBUGGER_H_
 
-#include "lpfwddefs.h"
-#include <string>
+#include "Debugger.h"
+#include "eds/http/bayeux/channel.h"
 
 LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
 /*!
- *  \class  LunarProbe
+ *  \class  BayeuxDebugger
  *
- *  \brief  Main functions to start and stop debugging of lua stacks.
- *
+ *  \brief  A bayeux (comet) implementation of the debugger.
  *****************************************************************************/
-class LunarProbe
+class BayeuxDebugger : public Debugger, public SBayeuxChannel
 {
 public:
-    //! Destructor
-    virtual ~LunarProbe() { }
+    virtual int     SendMessage(const char *data, unsigned datasize);
 
-    // Starts the debugging of a lua stack
-    int Attach(LuaStack lua_stack, const char *name = "");
-
-    // Stops debugging of a lua stack
-    int Detach(LuaStack lua_stack);
-
-    static LunarProbe *GetInstance();
-
-    // gets the debugger instance.
-    virtual Debugger *GetDebugger();
-
-    // sets the debugger instance.
-    virtual void SetDebugger(Debugger *);
-
-private:
-    //! Singleton instance of the debugger.
-    static std::auto_ptr< Debugger >    pDebugger;
+    //! Handles an event.
+    virtual void HandleEvent(const JsonNodePtr &event, JsonNodePtr &output) { }
 };
 
 LUNARPROBE_NS_END

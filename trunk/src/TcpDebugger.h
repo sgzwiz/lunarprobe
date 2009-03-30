@@ -25,59 +25,43 @@
  *
  *****************************************************************************/
 
-#ifndef _DEBUGGER_H_
-#define _DEBUGGER_H_
+#ifndef _TCP_DEBUGGER_H_
+#define _TCP_DEBUGGER_H_
 
-#include <map>
-#include "LuaUtils.h"
+#include "Debugger.h"
+#include "net/connhandler.h"
+#include "thread/mutex.h"
 
 LUNARPROBE_NS_BEGIN
 
-typedef std::map<LuaStack , DebugContext *> DebugContextMap;
-
 //*****************************************************************************
 /*!
- *  \class  Debugger
+ *  \class  TcpDebugger
  *
- *  \brief  The actual remote lua debugger instance.  Debuggers only handle
- *  the comms between server and client
- *
+ *  \brief  A custom tcp implementation of the debugger.
  *****************************************************************************/
-class Debugger
+class TcpDebugger : public Debugger, public SConnHandler
 {
 public:
-    // ctor
-    Debugger();
-
-    // dtor
-    virtual ~Debugger();
-
-    // Functions called by the Interface on startup
-    virtual bool    StartDebugging(LuaStack lua_stack, const char *name = "");
-    virtual bool    StopDebugging(LuaStack lua_stack);
+    // OVerridden to check client status
     virtual void    HandleDebugHook(LuaStack pStack, LuaDebug pDebug);
 
-    DebugContext *  GetDebugContext(LuaStack stack);
-
-    //! Sends a message to the connected client
-    virtual int     SendMessage(const char *data, unsigned datasize) = 0;
-
-    //! Get a list of debug contexts
-    const DebugContextMap &GetContexts() const { return debugContexts; }
+    // Sends a message to the connected client
+    virtual int     SendMessage(const char *data, unsigned datasize);
 
 protected:
-    // Generic functions
-    DebugContext *  AddDebugContext(LuaStack stack, const char *name = "");
+    // Handle a new client connection
+    bool HandleConnection();
 
-    // Get the lua bindings for the debugger
-    LuaBindings *       GetLuaBindings();
+    // Reads a string from the socket
+    virtual bool ReadString(std::string &result);
 
-protected:
-    //! List of debug contexts
-    DebugContextMap   debugContexts;
+private:
+    //! Read lock on the socket
+    SMutex              socketReadMutex;
 
-    //! the actual lua binding for the debugger exposed to LUA
-    LuaBindings *       pLuaBindings;
+    //! Write lock on the socket
+    SMutex              socketWriteMutex;
 };
 
 LUNARPROBE_NS_END

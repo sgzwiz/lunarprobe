@@ -86,7 +86,7 @@ LuaBindings::~LuaBindings()
     // close the lua stack
     if (pStack != NULL)
     {
-        LunarProbe::Detach(pStack);
+        LunarProbe::GetInstance()->Detach(pStack);
         lua_close(pStack);
     }
 }
@@ -163,7 +163,7 @@ LuaStack LuaBindings::GetLuaStack()
             // now register this one for debugging!
             // we have to do it here after all the above to avoid getting 
             // infinite recursive calls.
-            LunarProbe::Attach(pStack, "debugger");
+            LunarProbe::GetInstance()->Attach(pStack, "debugger");
         }
     }
 
@@ -230,7 +230,7 @@ void LuaBindings::ContextAdded(DebugContext *pContext)
 
         // and send out a "failure" message
         std::string error_msg = "{'code': -1, 'value': 'Unknown error in lua file.'}";
-        pDebugger->WriteString(error_msg.c_str(), error_msg.size());
+        pDebugger->SendMessage(error_msg.c_str(), error_msg.size());
     }
 }
 
@@ -255,7 +255,7 @@ void LuaBindings::ContextRemoved(DebugContext *pContext)
 
         // and send out a "failure" message
         std::string error_msg = "{'code': -1, 'value': 'Unknown error in lua file.'}";
-        pDebugger->WriteString(error_msg.c_str(), error_msg.size());
+        pDebugger->SendMessage(error_msg.c_str(), error_msg.size());
     }
 }
 
@@ -330,7 +330,7 @@ void LuaBindings::HandleMessage(const std::string &message)
 
         // and send out a "failure" message
         std::string error_msg = "{'code': -1, 'value': 'Unknown error in lua file.'}";
-        pDebugger->WriteString(error_msg.c_str(), error_msg.size());
+        pDebugger->SendMessage(error_msg.c_str(), error_msg.size());
     }
 }
 
@@ -388,7 +388,7 @@ int LuaBindings::WriteString(LuaStack stack)
     size_t          length;
     LuaBindings *   pLuaBindings    = (LuaBindings *)lua_touserdata(stack, 1);
     const char *    msg             = lua_tolstring(stack, 2, &length);
-    pLuaBindings->pDebugger->WriteString(msg, length);
+    pLuaBindings->pDebugger->SendMessage(msg, length);
     return 0;
 }
 
@@ -437,8 +437,8 @@ int LuaBindings::GetContexts(LuaStack stack)
 
     lua_newtable(stack);
 
-    for (DebugContextMap::iterator iter = pDebugger->debugContexts.begin();
-         iter != pDebugger->debugContexts.end();
+    for (DebugContextMap::const_iterator iter = pDebugger->GetContexts().begin();
+         iter != pDebugger->GetContexts().end();
          ++iter)
     {
         DebugContext *pContext = iter->second;

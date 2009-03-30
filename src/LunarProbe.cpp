@@ -25,31 +25,13 @@
 //*****************************************************************************
 
 #include "LunarProbe.h"
-#include "Debugger.h"
+#include "TcpDebugger.h"
 
 LUNARPROBE_NS_BEGIN
 
 std::auto_ptr< Debugger > LunarProbe::pDebugger;
 const int HookMask     = LUA_MASKCALL | LUA_MASKRET | LUA_MASKLINE /* | LUA_MASKCOUNT */;
 const int HookCount    = 10000;
-
-//*****************************************************************************
-/*!
- *  \brief  Get the singleton instance of the Debugger.
- *
- *  \version
- *      - S Panyam  27/10/2008
- *      Initial version.
- */
-//*****************************************************************************
-Debugger *LunarProbe::GetInstance()
-{
-    if (pDebugger.get() == NULL)
-    {
-        pDebugger = std::auto_ptr<Debugger>(new Debugger());
-    }
-    return pDebugger.get();
-}
 
 //*****************************************************************************
 /*!
@@ -62,7 +44,57 @@ Debugger *LunarProbe::GetInstance()
 //*****************************************************************************
 void HookFunction(LuaStack pStack, LuaDebug pDebug)
 {
-    LunarProbe::GetInstance()->HandleDebugHook(pStack, pDebug);
+    LunarProbe::GetInstance()->GetDebugger()->HandleDebugHook(pStack, pDebug);
+}
+
+//*****************************************************************************
+/*!
+ *  \brief  Gets the LP instance.
+ *
+ *  \version
+ *      - S Panyam  30/03/2009
+ *      Initial version.
+ */
+//*****************************************************************************
+LunarProbe *LunarProbe::GetInstance()
+{
+    static LunarProbe theProbe;
+    return &theProbe;
+}
+
+//*****************************************************************************
+/*!
+ *  \brief  Get the instance of the Debugger.
+ *
+ *  \version
+ *      - S Panyam  27/10/2008
+ *      Initial version.
+ */
+//*****************************************************************************
+Debugger *LunarProbe::GetDebugger()
+{
+    if (pDebugger.get() == NULL)
+    {
+        pDebugger = std::auto_ptr<Debugger>(new TcpDebugger());
+    }
+    return pDebugger.get();
+}
+
+//*****************************************************************************
+/*!
+ *  \brief  Set the instance of the Debugger.
+ *
+ *  \version
+ *      - S Panyam  27/10/2008
+ *      Initial version.
+ */
+//*****************************************************************************
+void LunarProbe::SetDebugger(Debugger *pDebugger_)
+{
+    Debugger *pOld = pDebugger.get();
+    if (pOld != NULL)
+        delete pOld;
+    pDebugger = std::auto_ptr<Debugger>(pDebugger_);
 }
 
 //*****************************************************************************
@@ -77,7 +109,7 @@ void HookFunction(LuaStack pStack, LuaDebug pDebug)
 int LunarProbe::Attach(LuaStack pStack, const char *name)
 {
     int result = -1;
-    if (GetInstance()->StartDebugging(pStack, name))
+    if (GetDebugger()->StartDebugging(pStack, name))
         result = lua_sethook(pStack, HookFunction, HookMask, HookCount);
     return result;
 }
@@ -93,7 +125,7 @@ int LunarProbe::Attach(LuaStack pStack, const char *name)
 //*****************************************************************************
 int LunarProbe::Detach(LuaStack pStack)
 {
-    GetInstance()->StopDebugging(pStack);
+    GetDebugger()->StopDebugging(pStack);
     return lua_sethook(pStack, NULL, 0, 0);
 }
 

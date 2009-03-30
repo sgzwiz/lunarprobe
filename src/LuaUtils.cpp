@@ -89,7 +89,7 @@ LuaStack LuaUtils::NewLuaStack(bool openlibs, bool debug, const char *name)
     lua_gc(new_stack, LUA_GCSETSTEPMUL, 100000000);
 
     if (debug)
-        LunarProbe::Attach(new_stack, name);
+        LunarProbe::GetInstance()->Attach(new_stack, name);
 
     return new_stack;
 }

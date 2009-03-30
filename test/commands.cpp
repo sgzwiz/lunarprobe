@@ -93,7 +93,7 @@ bool processCloseCommand(const char *args)
     NamedLuaStack *pStack = luaStacks[index];
     if (pStack->debugging)
     {
-        LunarProbe::Detach(pStack->pStack);
+        LunarProbe::GetInstance()->Detach(pStack->pStack);
     }
     lua_close(pStack->pStack);
     luaStacks.erase(luaStacks.begin() + index);
@@ -145,10 +145,10 @@ bool processAttachCommand(const char *args)
     }
 
     NamedLuaStack *pNamedStack  = luaStacks[index];
-    if (LunarProbe::Attach(pNamedStack->pStack, pNamedStack->name.c_str()) >= 0)
+    if (LunarProbe::GetInstance()->Attach(pNamedStack->pStack, pNamedStack->name.c_str()) >= 0)
     {
         pNamedStack->debugging = true;
-        pNamedStack->pContext  = LunarProbe::GetInstance()->GetDebugContext(pNamedStack->pStack);
+        pNamedStack->pContext  = LunarProbe::GetInstance()->GetDebugger()->GetDebugContext(pNamedStack->pStack);
     }
     return true;
 }
@@ -164,7 +164,7 @@ bool processDetachCommand(const char *args)
     }
 
     NamedLuaStack *pNamedStack  = luaStacks[index];
-    LunarProbe::Detach(pNamedStack->pStack);
+    LunarProbe::GetInstance()->Detach(pNamedStack->pStack);
     pNamedStack->debugging = false;
     pNamedStack->pContext  = NULL;
     return true;

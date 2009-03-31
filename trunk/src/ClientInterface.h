@@ -14,7 +14,7 @@
  *
  *****************************************************************************
  *
- *  \file   DebugServer.h
+ *  \file   ClientIface.h
  *
  *  \brief  The interface between lunar probe and the client.
  *
@@ -24,8 +24,8 @@
  *
  *****************************************************************************/
 
-#ifndef _DEBUG_SERVER_H_
-#define _DEBUG_SERVER_H_
+#ifndef _CLIENT_INTERFACE_H_
+#define _CLIENT_INTERFACE_H_
 
 #include <map>
 #include "LuaUtils.h"
@@ -36,19 +36,19 @@ typedef std::map<LuaStack , DebugContext *> DebugContextMap;
 
 //*****************************************************************************
 /*!
- *  \class  DebugServer
+ *  \class  ClientIface
  *
  *  \brief  The interface between lunar probe and the client.
  *
  *****************************************************************************/
-class DebugServer
+class ClientIface
 {
 public:
     // ctor
-    DebugServer();
+    ClientIface();
 
     // dtor
-    virtual ~DebugServer();
+    virtual ~ClientIface();
 
     // Functions called by the Interface on startup
     virtual bool    StartDebugging(LuaStack lua_stack, const char *name = "");

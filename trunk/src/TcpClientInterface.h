@@ -14,7 +14,7 @@
  *
  *****************************************************************************
  *
- *  \file   DebugServer.h
+ *  \file   ClientIface.h
  *
  *  \brief  A custom TCP based client interface.
  *
@@ -24,10 +24,10 @@
  *
  *****************************************************************************/
 
-#ifndef _TCP_DEBUG_SERVER_H_
-#define _TCP_DEBUG_SERVER_H_
+#ifndef _TCP_CLIENT_INTERFACE_H_
+#define _TCP_CLIENT_INTERFACE_H_
 
-#include "DebugServer.h"
+#include "ClientIface.h"
 #include "net/connhandler.h"
 #include "thread/mutex.h"
 
@@ -35,11 +35,11 @@ LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
 /*!
- *  \class  TcpDebugServer
+ *  \class  TcpClientIface
  *
  *  \brief  A custom tcp implementation of the debugger.
  *****************************************************************************/
-class TcpDebugServer : public DebugServer, public SConnHandler
+class TcpClientIface : public ClientIface, public SConnHandler
 {
 public:
     // OVerridden to check client status

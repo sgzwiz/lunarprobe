@@ -148,7 +148,7 @@ bool processAttachCommand(const char *args)
     if (LunarProbe::GetInstance()->Attach(pNamedStack->pStack, pNamedStack->name.c_str()) >= 0)
     {
         pNamedStack->debugging = true;
-        pNamedStack->pContext  = LunarProbe::GetInstance()->GetDebugger()->GetDebugContext(pNamedStack->pStack);
+        pNamedStack->pContext  = LunarProbe::GetInstance()->GetClientIface()->GetDebugContext(pNamedStack->pStack);
     }
     return true;
 }

@@ -29,7 +29,6 @@
 #include <stdio.h> 
 
 #include "LuaUtils.h"
-#include "Debugger.h"
 #include "DebugContext.h"
 
 LUNARPROBE_NS_BEGIN

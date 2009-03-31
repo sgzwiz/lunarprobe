@@ -14,10 +14,9 @@
  *
  *****************************************************************************
  *
- *  \file   Debugger.h
+ *  \file   DebugServer.h
  *
- *  \brief  The top level interface for the lua debugger for debugging lua
- *  files as the game is running.
+ *  \brief  A custom TCP based client interface.
  *
  *  \version
  *        - S Panyam  23/10/2008
@@ -25,10 +24,10 @@
  *
  *****************************************************************************/
 
-#ifndef _TCP_DEBUGGER_H_
-#define _TCP_DEBUGGER_H_
+#ifndef _TCP_DEBUG_SERVER_H_
+#define _TCP_DEBUG_SERVER_H_
 
-#include "Debugger.h"
+#include "DebugServer.h"
 #include "net/connhandler.h"
 #include "thread/mutex.h"
 
@@ -36,11 +35,11 @@ LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
 /*!
- *  \class  TcpDebugger
+ *  \class  TcpDebugServer
  *
  *  \brief  A custom tcp implementation of the debugger.
  *****************************************************************************/
-class TcpDebugger : public Debugger, public SConnHandler
+class TcpDebugServer : public DebugServer, public SConnHandler
 {
 public:
     // OVerridden to check client status

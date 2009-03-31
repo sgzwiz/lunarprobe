@@ -14,10 +14,9 @@
  *
  *****************************************************************************
  *
- *  \file   Debugger.h
+ *  \file   DebugServer.h
  *
- *  \brief  The top level interface for the lua debugger for debugging lua
- *  files as the game is running.
+ *  \brief  The interface between lunar probe and the client.
  *
  *  \version
  *        - S Panyam  23/10/2008
@@ -25,8 +24,8 @@
  *
  *****************************************************************************/
 
-#ifndef _DEBUGGER_H_
-#define _DEBUGGER_H_
+#ifndef _DEBUG_SERVER_H_
+#define _DEBUG_SERVER_H_
 
 #include <map>
 #include "LuaUtils.h"
@@ -37,20 +36,19 @@ typedef std::map<LuaStack , DebugContext *> DebugContextMap;
 
 //*****************************************************************************
 /*!
- *  \class  Debugger
+ *  \class  DebugServer
  *
- *  \brief  The actual remote lua debugger instance.  Debuggers only handle
- *  the comms between server and client
+ *  \brief  The interface between lunar probe and the client.
  *
  *****************************************************************************/
-class Debugger
+class DebugServer
 {
 public:
     // ctor
-    Debugger();
+    DebugServer();
 
     // dtor
-    virtual ~Debugger();
+    virtual ~DebugServer();
 
     // Functions called by the Interface on startup
     virtual bool    StartDebugging(LuaStack lua_stack, const char *name = "");

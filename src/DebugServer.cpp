@@ -14,9 +14,9 @@
  *
  *****************************************************************************
  *
- *  \file   Debugger.cpp
+ *  \file   DebugServer.cpp
  *
- *  \brief  Implementation of the Debugger.
+ *  \brief  Implementation of the DebugServer.
  *
  *  \version
  *      - S Panyam   05/12/2008
@@ -38,7 +38,7 @@
 #include <sys/types.h>
 
 #include "lpfwddefs.h"
-#include "Debugger.h"
+#include "DebugServer.h"
 #include "DebugContext.h"
 #include "LuaBindings.h"
 
@@ -55,7 +55,7 @@ LUNARPROBE_NS_BEGIN
  *      Initial version.
  */
 //*****************************************************************************
-Debugger::Debugger() : pLuaBindings(NULL)
+DebugServer::DebugServer() : pLuaBindings(NULL)
 {
 }
 
@@ -68,7 +68,7 @@ Debugger::Debugger() : pLuaBindings(NULL)
  *      Initial version.
  */
 //*****************************************************************************
-Debugger::~Debugger()
+DebugServer::~DebugServer()
 {
     // remove any debug contexts that wasnt removed (via StopDebugging)
     for (DebugContextMap::iterator iter = debugContexts.begin();iter != debugContexts.end(); ++iter)
@@ -83,7 +83,7 @@ Debugger::~Debugger()
 }
 
 // Sends a message to the client
-int Debugger::SendMessage(const char *data, unsigned datasize)
+int DebugServer::SendMessage(const char *data, unsigned datasize)
 {
     return 0;
 }
@@ -97,7 +97,7 @@ int Debugger::SendMessage(const char *data, unsigned datasize)
  *      Initial version.
  */
 //*****************************************************************************
-const DebugContextMap &Debugger::GetContexts() const
+const DebugContextMap &DebugServer::GetContexts() const
 {
     return debugContexts;
 }
@@ -111,7 +111,7 @@ const DebugContextMap &Debugger::GetContexts() const
  *      Initial version.
  */
 //*****************************************************************************
-bool Debugger::StartDebugging(LuaStack pStack, const char *name)
+bool DebugServer::StartDebugging(LuaStack pStack, const char *name)
 {
     DebugContext *pContext = GetDebugContext(pStack);
     if (pContext != NULL)
@@ -134,7 +134,7 @@ bool Debugger::StartDebugging(LuaStack pStack, const char *name)
  *      Initial version.
  */
 //*****************************************************************************
-bool Debugger::StopDebugging(LuaStack pStack)
+bool DebugServer::StopDebugging(LuaStack pStack)
 {
     DebugContextMap::iterator iter = debugContexts.find(pStack);
 
@@ -161,7 +161,7 @@ bool Debugger::StopDebugging(LuaStack pStack)
  *      Initial version.
  */
 //*****************************************************************************
-DebugContext *Debugger::GetDebugContext(LuaStack pStack)
+DebugContext *DebugServer::GetDebugContext(LuaStack pStack)
 {
     DebugContextMap::iterator iter = debugContexts.find(pStack);
     if (iter == debugContexts.end())
@@ -184,7 +184,7 @@ DebugContext *Debugger::GetDebugContext(LuaStack pStack)
  *      Initial version.
  */
 //*****************************************************************************
-DebugContext *Debugger::AddDebugContext(LuaStack pStack, const char *name)
+DebugContext *DebugServer::AddDebugContext(LuaStack pStack, const char *name)
 {
     DebugContext *pContext = new DebugContext(pStack, name);
     debugContexts[pStack] = pContext;
@@ -204,7 +204,7 @@ DebugContext *Debugger::AddDebugContext(LuaStack pStack, const char *name)
  *      Initial version.
  */
 //*****************************************************************************
-void Debugger::HandleDebugHook(LuaStack pStack, LuaDebug pDebug)
+void DebugServer::HandleDebugHook(LuaStack pStack, LuaDebug pDebug)
 {
     DebugContext *pContext = GetDebugContext(pStack);
 
@@ -276,7 +276,7 @@ void Debugger::HandleDebugHook(LuaStack pStack, LuaDebug pDebug)
  *      Initial version.
  */
 //*****************************************************************************
-LuaBindings *Debugger::GetLuaBindings()
+LuaBindings *DebugServer::GetLuaBindings()
 {
     if (pLuaBindings == NULL)
     {

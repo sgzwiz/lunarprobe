@@ -43,12 +43,19 @@ LUNARPROBE_NS_BEGIN
 class BayeuxDebugger : public Debugger, public SBayeuxChannel
 {
 public:
+    // Constructor
+    BayeuxDebugger(SBayeuxModule *pModule) : pBayeuxModule(pModule) { }
+
+    // Sends a message to the client
     virtual int     SendMessage(const char *data, unsigned datasize);
 
     //! Handles an event.
     virtual void HandleEvent(const JsonNodePtr &event, JsonNodePtr &output);
 
 private:
+    //! Events will be deliver through this module
+    SBayeuxModule *     *pBayeuxModule;
+
     //! Read lock on the socket
     SMutex              socketReadMutex;
 

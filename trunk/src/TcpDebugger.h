@@ -49,10 +49,10 @@ public:
     // Sends a message to the connected client
     virtual int     SendMessage(const char *data, unsigned datasize);
 
-protected:
     // Handle a new client connection
     bool HandleConnection();
 
+protected:
     // Reads a string from the socket
     virtual bool ReadString(std::string &result);
 

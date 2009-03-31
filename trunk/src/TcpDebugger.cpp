@@ -83,7 +83,7 @@ bool TcpDebugger::HandleConnection()
     // reload lua scripts at the start of each connection
     // GetLuaBindings()->RequestReload();
 
-    while (ReadString(message))
+    while (Running() && ReadString(message))
     {
         GetLuaBindings()->HandleMessage(message);
     }

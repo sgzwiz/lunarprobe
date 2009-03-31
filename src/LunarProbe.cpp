@@ -25,7 +25,7 @@
 //*****************************************************************************
 
 #include "LunarProbe.h"
-#include "TcpClientIface.h"
+#include "HttpClientIface.h"
 
 LUNARPROBE_NS_BEGIN
 
@@ -77,7 +77,10 @@ LunarProbe *LunarProbe::GetInstance()
 
 //*****************************************************************************
 /*!
- *  \brief  Get the instance of the ClientIface.
+ *  \brief  Get the instance of the ClientIface - this will create one if
+ *  it does not already exist.  So if you want a specific implementation of
+ *  the client iface, then call SetClientIface (only once is enough) before
+ *  calling this somewhere at the start.
  *
  *  \version
  *      - S Panyam  27/10/2008
@@ -88,7 +91,7 @@ ClientIface *LunarProbe::GetClientIface()
 {
     if (pClientIface.get() == NULL)
     {
-        pClientIface = std::auto_ptr<ClientIface>(new TcpClientIface());
+        pClientIface = std::auto_ptr<ClientIface>(new HttpClientIface());
     }
     return pClientIface.get();
 }

@@ -14,9 +14,9 @@
  *
  *****************************************************************************
  *
- *  \file   BayeuxDebugger.h
+ *  \file   HttpClientIface.h
  *
- *  \brief  A bayeux (comet) implementation of the debugger.
+ *  \brief  A http (comet) client interface.
  *
  *  \version
  *        - S Panyam  30/03/2009
@@ -24,10 +24,10 @@
  *
  *****************************************************************************/
 
-#ifndef _BAYEUX_DEBUGGER_H_
-#define _BAYEUX_DEBUGGER_H_
+#ifndef _HTTP_CLIENT_INTERFACE_H_
+#define _HTTP_CLIENT_INTERFACE_H_
 
-#include "Debugger.h"
+#include "ClientIface.h"
 #include "json/json.h"
 #include "eds/http/bayeux/channel.h"
 #include "thread/mutex.h"
@@ -36,18 +36,18 @@ LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
 /*!
- *  \class  BayeuxDebugger
+ *  \class  HttpClientIface
  *
  *  \brief  A bayeux (comet) implementation of the debugger.
  *****************************************************************************/
-class BayeuxDebugger : public Debugger, public SBayeuxChannel
+class HttpClientIface : public ClientIface, public SBayeuxChannel
 {
 public:
     // Constructor
-    BayeuxDebugger(SBayeuxModule *pModule, const std::string &name);
+    HttpClientIface(SBayeuxModule *pModule, const std::string &name);
 
     // Destructor
-    ~BayeuxDebugger();
+    ~HttpClientIface();
 
     // Sends a message to the client
     virtual int     SendMessage(const char *data, unsigned datasize);

@@ -49,6 +49,19 @@ void HookFunction(LuaStack pStack, LuaDebug pDebug)
 
 //*****************************************************************************
 /*!
+ *  \brief  Destructor
+ *
+ *  \version
+ *      - S Panyam  30/03/2009
+ *      Initial version.
+ */
+//*****************************************************************************
+LunarProbe::~LunarProbe()
+{
+}
+
+//*****************************************************************************
+/*!
  *  \brief  Gets the LP instance.
  *
  *  \version

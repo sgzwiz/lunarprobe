@@ -84,6 +84,20 @@ Debugger::~Debugger()
 
 //*****************************************************************************
 /*!
+ *  \brief  Gets the debug contexts
+ *
+ *  \version
+ *      - S Panyam  23/10/2008
+ *      Initial version.
+ */
+//*****************************************************************************
+const Debugger::DebugContextMap &GetContexts() const
+{
+    return debugContexts;
+}
+
+//*****************************************************************************
+/*!
  *  \brief  Starts debugging of a lua stack.
  *
  *  \version

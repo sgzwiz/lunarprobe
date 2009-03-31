@@ -63,7 +63,7 @@ public:
     virtual int     SendMessage(const char *data, unsigned datasize) = 0;
 
     //! Get a list of debug contexts
-    const DebugContextMap &GetContexts() const { return debugContexts; }
+    const DebugContextMap &GetContexts() const;
 
 protected:
     // Generic functions

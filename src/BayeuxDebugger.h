@@ -44,7 +44,7 @@ class BayeuxDebugger : public Debugger, public SBayeuxChannel
 {
 public:
     // Constructor
-    BayeuxDebugger(SBayeuxModule *pModule) : pBayeuxModule(pModule) { }
+    BayeuxDebugger(SBayeuxModule *pModule, const std::string &name) : SBayeuxChannel(pModule, name) { }
 
     // Sends a message to the client
     virtual int     SendMessage(const char *data, unsigned datasize);
@@ -53,9 +53,6 @@ public:
     virtual void HandleEvent(const JsonNodePtr &event, JsonNodePtr &output);
 
 private:
-    //! Events will be deliver through this module
-    SBayeuxModule *     *pBayeuxModule;
-
     //! Read lock on the socket
     SMutex              socketReadMutex;
 

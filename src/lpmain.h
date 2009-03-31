@@ -29,11 +29,11 @@
 
 #include "LuaUtils.h"
 #include "LunarProbe.h"
-#include "Debugger.h"
 #include "DebugContext.h"
 #include "LuaBindings.h"
-#include "TcpDebugger.h"
-#include "BayeuxDebugger.h"
+#include "ClientIface.h"
+#include "TcpClientIface.h"
+#include "BayeuxClientIface.h"
 
 #endif
 

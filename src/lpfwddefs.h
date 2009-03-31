@@ -39,7 +39,9 @@ extern "C"
 LUNARPROBE_NS_BEGIN
 
 class LunarProbe;
-class Debugger;
+class ClientIface;
+class BayeuxClientIface;
+class TcpClientIface;
 class LuaBindings;
 class DebugContext;
 

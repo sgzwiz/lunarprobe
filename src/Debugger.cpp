@@ -82,6 +82,12 @@ Debugger::~Debugger()
         delete pLuaBindings;
 }
 
+// Sends a message to the client
+int Debugger::SendMessage(const char *data, unsigned datasize)
+{
+    return 0;
+}
+
 //*****************************************************************************
 /*!
  *  \brief  Gets the debug contexts

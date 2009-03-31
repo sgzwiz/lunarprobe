@@ -25,11 +25,11 @@
 //*****************************************************************************
 
 #include "LunarProbe.h"
-#include "TcpDebugger.h"
+#include "TcpClientIface.h"
 
 LUNARPROBE_NS_BEGIN
 
-std::auto_ptr< Debugger > LunarProbe::pDebugger;
+std::auto_ptr< ClientIface > LunarProbe::pClientIface;
 const int HookMask     = LUA_MASKCALL | LUA_MASKRET | LUA_MASKLINE /* | LUA_MASKCOUNT */;
 const int HookCount    = 10000;
 
@@ -44,7 +44,7 @@ const int HookCount    = 10000;
 //*****************************************************************************
 void HookFunction(LuaStack pStack, LuaDebug pDebug)
 {
-    LunarProbe::GetInstance()->GetDebugger()->HandleDebugHook(pStack, pDebug);
+    LunarProbe::GetInstance()->GetClientIface()->HandleDebugHook(pStack, pDebug);
 }
 
 //*****************************************************************************
@@ -77,37 +77,37 @@ LunarProbe *LunarProbe::GetInstance()
 
 //*****************************************************************************
 /*!
- *  \brief  Get the instance of the Debugger.
+ *  \brief  Get the instance of the ClientIface.
  *
  *  \version
  *      - S Panyam  27/10/2008
  *      Initial version.
  */
 //*****************************************************************************
-Debugger *LunarProbe::GetDebugger()
+ClientIface *LunarProbe::GetClientIface()
 {
-    if (pDebugger.get() == NULL)
+    if (pClientIface.get() == NULL)
     {
-        pDebugger = std::auto_ptr<Debugger>(new TcpDebugger());
+        pClientIface = std::auto_ptr<ClientIface>(new TcpClientIface());
     }
-    return pDebugger.get();
+    return pClientIface.get();
 }
 
 //*****************************************************************************
 /*!
- *  \brief  Set the instance of the Debugger.
+ *  \brief  Set the instance of the ClientIface.
  *
  *  \version
  *      - S Panyam  27/10/2008
  *      Initial version.
  */
 //*****************************************************************************
-void LunarProbe::SetDebugger(Debugger *pDebugger_)
+void LunarProbe::SetClientIface(ClientIface *pClientIface_)
 {
-    Debugger *pOld = pDebugger.get();
+    ClientIface *pOld = pClientIface.get();
     if (pOld != NULL)
         delete pOld;
-    pDebugger = std::auto_ptr<Debugger>(pDebugger_);
+    pClientIface = std::auto_ptr<ClientIface>(pClientIface_);
 }
 
 //*****************************************************************************
@@ -122,7 +122,7 @@ void LunarProbe::SetDebugger(Debugger *pDebugger_)
 int LunarProbe::Attach(LuaStack pStack, const char *name)
 {
     int result = -1;
-    if (GetDebugger()->StartDebugging(pStack, name))
+    if (GetClientIface()->StartDebugging(pStack, name))
         result = lua_sethook(pStack, HookFunction, HookMask, HookCount);
     return result;
 }
@@ -138,7 +138,7 @@ int LunarProbe::Attach(LuaStack pStack, const char *name)
 //*****************************************************************************
 int LunarProbe::Detach(LuaStack pStack)
 {
-    GetDebugger()->StopDebugging(pStack);
+    GetClientIface()->StopDebugging(pStack);
     return lua_sethook(pStack, NULL, 0, 0);
 }
 

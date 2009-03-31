@@ -54,14 +54,14 @@ public:
     static LunarProbe *GetInstance();
 
     // gets the debugger instance.
-    virtual Debugger *GetDebugger();
+    virtual ClientIface *GetClientIface();
 
     // sets the debugger instance.
-    virtual void SetDebugger(Debugger *);
+    virtual void SetClientIface(ClientIface *);
 
 private:
     //! Singleton instance of the debugger.
-    static std::auto_ptr< Debugger >    pDebugger;
+    static std::auto_ptr< ClientIface >    pClientIface;
 };
 
 LUNARPROBE_NS_END

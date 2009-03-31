@@ -14,9 +14,9 @@
  *
  *****************************************************************************
  *
- *  \file   BayeuxDebugger.cpp
+ *  \file   BayeuxClientIface.cpp
  *
- *  \brief  Bayeux (comet) Implementation of the Debugger.
+ *  \brief  Bayeux (comet) Implementation of the ClientIface.
  *
  *  \version
  *      - S Panyam   31/03/2009
@@ -42,7 +42,7 @@
 #include <sys/sendfile.h>
 
 #include "lpfwddefs.h"
-#include "BayeuxDebugger.h"
+#include "BayeuxClientIface.h"
 #include "DebugContext.h"
 #include "LuaBindings.h"
 
@@ -57,7 +57,7 @@ LUNARPROBE_NS_BEGIN
  *      Initial version.
  */
 //*****************************************************************************
-BayeuxDebugger::BayeuxDebugger(SBayeuxModule *pModule, const std::string &name)
+BayeuxClientIface::BayeuxClientIface(SBayeuxModule *pModule, const std::string &name)
     : SBayeuxChannel(pModule, name)
 {
 }
@@ -71,7 +71,7 @@ BayeuxDebugger::BayeuxDebugger(SBayeuxModule *pModule, const std::string &name)
  *      Initial version.
  */
 //*****************************************************************************
-BayeuxDebugger::~BayeuxDebugger()
+BayeuxClientIface::~BayeuxClientIface()
 {
 }
 
@@ -94,7 +94,7 @@ BayeuxDebugger::~BayeuxDebugger()
  *      Initial version.
  */
 //*****************************************************************************
-void BayeuxDebugger::HandleEvent(const JsonNodePtr &event, JsonNodePtr &output)
+void BayeuxClientIface::HandleEvent(const JsonNodePtr &event, JsonNodePtr &output)
 {
     SMutexLock socketReadLock(socketReadMutex);
 }
@@ -115,7 +115,7 @@ void BayeuxDebugger::HandleEvent(const JsonNodePtr &event, JsonNodePtr &output)
  *      Initial version.
  */
 //*****************************************************************************
-int BayeuxDebugger::SendMessage(const char *data, unsigned datasize)
+int BayeuxClientIface::SendMessage(const char *data, unsigned datasize)
 {
     SMutexLock socketWriteLock(socketWriteMutex);
     return 0;

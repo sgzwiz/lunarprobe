@@ -45,6 +45,7 @@ public:
     virtual ~TcpDebugServer();
     SConnHandler *  NewHandler();
     void            ReleaseHandler(SConnHandler *);
+    inline BayeuxClientIface * GetClientIface()    { return pClientIface; }
 
 protected:
     TcpClientIface  *   pClientIface;

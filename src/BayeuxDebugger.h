@@ -44,7 +44,10 @@ class BayeuxDebugger : public Debugger, public SBayeuxChannel
 {
 public:
     // Constructor
-    BayeuxDebugger(SBayeuxModule *pModule, const std::string &name) : SBayeuxChannel(pModule, name) { }
+    BayeuxDebugger(SBayeuxModule *pModule, const std::string &name);
+
+    // Destructor
+    ~BayeuxDebugger();
 
     // Sends a message to the client
     virtual int     SendMessage(const char *data, unsigned datasize);

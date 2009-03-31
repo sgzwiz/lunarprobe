@@ -50,6 +50,33 @@ LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
 /*!
+ *  \brief  Create a new debugger client.
+ *
+ *  \version
+ *      - S Panyam  31/03/2009
+ *      Initial version.
+ */
+//*****************************************************************************
+BayeuxDebugger::BayeuxDebugger(SBayeuxModule *pModule, const std::string &name)
+    : SBayeuxChannel(pModule, name)
+{
+}
+
+//*****************************************************************************
+/*!
+ *  \brief  Destructor
+ *
+ *  \version
+ *      - S Panyam  31/03/2009
+ *      Initial version.
+ */
+//*****************************************************************************
+BayeuxDebugger::~BayeuxDebugger()
+{
+}
+
+//*****************************************************************************
+/*!
  *  \brief  Reads a string from the socket.  
  *
  *  Read a string from the socket.  All strings will be ascii only and

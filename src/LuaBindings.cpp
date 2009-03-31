@@ -16,7 +16,7 @@
  *
  *  \file   LuaBindings.cpp
  *
- *  \brief  Lua bindings implementation for the DebugServer.
+ *  \brief  Lua bindings implementation for the ClientIface.
  *
  *  \version
  *      - S Panyam   28/10/2008
@@ -62,8 +62,8 @@ DebugContext *GetContextIfPaused(LuaStack stack)
  *      Initial version.
  */
 //*****************************************************************************
-LuaBindings::LuaBindings(DebugServer *debugger) :
-    pDebugServer(debugger),
+LuaBindings::LuaBindings(ClientIface *debugger) :
+    pClientIface(debugger),
     pStack(NULL),
     reloadRequested(true),
     dbgStackMutex(PTHREAD_MUTEX_RECURSIVE_NP)
@@ -230,7 +230,7 @@ void LuaBindings::ContextAdded(DebugContext *pContext)
 
         // and send out a "failure" message
         std::string error_msg = "{'code': -1, 'value': 'Unknown error in lua file.'}";
-        pDebugServer->SendMessage(error_msg.c_str(), error_msg.size());
+        pClientIface->SendMessage(error_msg.c_str(), error_msg.size());
     }
 }
 
@@ -255,7 +255,7 @@ void LuaBindings::ContextRemoved(DebugContext *pContext)
 
         // and send out a "failure" message
         std::string error_msg = "{'code': -1, 'value': 'Unknown error in lua file.'}";
-        pDebugServer->SendMessage(error_msg.c_str(), error_msg.size());
+        pClientIface->SendMessage(error_msg.c_str(), error_msg.size());
     }
 }
 
@@ -268,12 +268,12 @@ void LuaBindings::ContextRemoved(DebugContext *pContext)
  *  finish, when the client performs one of the program flow actions (eg
  *  "continue", "step", "next" etc).
  *
- *  Note that when this function is called (by the DebugServer), the
+ *  Note that when this function is called (by the ClientIface), the
  *  LuaStack associated with that Context (or thread) will be paused, until
  *  this function is returned from and hence the wait loop in the function.
  *
  *  It is upto the debug server (by itself or via the client) to resume the
- *  pContext for the context to proceed otherwise, the DebugServer will
+ *  pContext for the context to proceed otherwise, the ClientIface will
  *  wait indefinitely until pContext->Resume() is invoked.  Note that this
  *  can happen in this function or anywhere else.  It must happen sometime
  *  that is all.
@@ -330,7 +330,7 @@ void LuaBindings::HandleMessage(const std::string &message)
 
         // and send out a "failure" message
         std::string error_msg = "{'code': -1, 'value': 'Unknown error in lua file.'}";
-        pDebugServer->SendMessage(error_msg.c_str(), error_msg.size());
+        pClientIface->SendMessage(error_msg.c_str(), error_msg.size());
     }
 }
 
@@ -388,7 +388,7 @@ int LuaBindings::WriteString(LuaStack stack)
     size_t          length;
     LuaBindings *   pLuaBindings    = (LuaBindings *)lua_touserdata(stack, 1);
     const char *    msg             = lua_tolstring(stack, 2, &length);
-    pLuaBindings->pDebugServer->SendMessage(msg, length);
+    pLuaBindings->pClientIface->SendMessage(msg, length);
     return 0;
 }
 
@@ -432,13 +432,13 @@ int LuaBindings::LoadFile(LuaStack stack)
 int LuaBindings::GetContexts(LuaStack stack)
 {
     LuaBindings *   pLuaBindings    = (LuaBindings *)lua_touserdata(stack, 1);
-    DebugServer *      pDebugServer       = pLuaBindings->pDebugServer;
+    ClientIface *   pClientIface    = pLuaBindings->pClientIface;
     int nitems = 1;
 
     lua_newtable(stack);
 
-    for (DebugContextMap::const_iterator iter = pDebugServer->GetContexts().begin();
-         iter != pDebugServer->GetContexts().end();
+    for (DebugContextMap::const_iterator iter = pClientIface->GetContexts().begin();
+         iter != pClientIface->GetContexts().end();
          ++iter)
     {
         DebugContext *pContext = iter->second;

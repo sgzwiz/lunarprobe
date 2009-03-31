@@ -16,7 +16,7 @@
  *
  *  \file   LuaBindings.h
  *
- *  \brief  Lua bindings for the DebugServer.
+ *  \brief  Lua bindings for the ClientIface.
  *
  *  \version
  *      - S Panyam   28/10/2008
@@ -53,7 +53,7 @@ public:
 
 public:
     // ctor
-    LuaBindings(DebugServer *pDebugServer);
+    LuaBindings(ClientIface *pClientIface);
 
     // dtor
     virtual ~LuaBindings();
@@ -121,7 +121,7 @@ protected:
 
 protected:
     //! The actual debugger object we will be seving.
-    DebugServer *  pDebugServer;
+    ClientIface *  pClientIface;
 
     //! The debugger lua stack - for running the debugger
     LuaStack    pStack;

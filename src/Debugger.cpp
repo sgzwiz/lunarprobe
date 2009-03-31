@@ -91,7 +91,7 @@ Debugger::~Debugger()
  *      Initial version.
  */
 //*****************************************************************************
-const Debugger::DebugContextMap &GetContexts() const
+const DebugContextMap &Debugger::GetContexts() const
 {
     return debugContexts;
 }

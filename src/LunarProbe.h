@@ -43,7 +43,7 @@ class LunarProbe
 {
 public:
     //! Destructor
-    virtual ~LunarProbe() { }
+    virtual ~LunarProbe();
 
     // Starts the debugging of a lua stack
     int Attach(LuaStack lua_stack, const char *name = "");

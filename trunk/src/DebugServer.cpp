@@ -84,5 +84,40 @@ void TcpDebugServer::ReleaseHandler(SConnHandler *)
 {
 }
 
+//*****************************************************************************
+/*!
+ *  \brief  Create a HTTP based debug server.
+ *
+ *  \version
+ *      - S Panyam  01/04/2009
+ *      Initial version.
+ */
+//*****************************************************************************
+HttpDebugServer::HttpDebugServer(int                    port,
+                                 BayeuxClientIface *    pIface,
+                                 const std::string &    msgBoundary) :
+    SEvServer(port),
+    pClientIface(pIface),
+    contentModule(&writerModule),
+    bayeuxModule(&contentModule, msgBoundary),
+    fileModule(&contentModule, true),
+    urlRouter(&fileModule)
+{
+    SetRequestReader(&requestReader);
+}
+
+//*****************************************************************************
+/*!
+ *  \brief  No-op destructor
+ *
+ *  \version
+ *      - S Panyam  01/04/2009
+ *      Initial version.
+ */
+//*****************************************************************************
+HttpDebugServer::~HttpDebugServer()
+{
+}
+
 LUNARPROBE_NS_END
 

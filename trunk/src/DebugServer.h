@@ -29,8 +29,7 @@
 #define _DEBUG_SERVER_H_
 
 #include <map>
-#include "net/server.h"
-#include "net/connfactory.h"
+#include "halley.h"
 #include "LuaUtils.h"
 #include "TcpClientIface.h"
 
@@ -49,6 +48,34 @@ public:
 
 protected:
     TcpClientIface  *   pClientIface;
+};
+
+class HttpDebugServer : public virtual SEvServer
+{
+public:
+    HttpDebugServer(int                 port,
+                    BayeuxClientIface * pIface,
+                    const std::string & msgBoundary = "LUNARPROBE_MESSAGE_BOUNDARY");
+    virtual ~HttpDebugServer();
+
+    inline SHttpReaderStage *  GetReaderStage()    { return &requestReader; }
+    inline SHttpHandlerStage * GetHandlerStage()   { return &requestHandler; }
+    inline SWriterModule *     GetWriterModule()   { return &writerModule; }
+    inline SContentModule *    GetContentModule()  { return &contentModule; }
+    inline SBayeuxModule *     GetBayeuxModule()   { return &bayeuxModule; }
+    inline SUrlRouter *        GetUrlRouter()      { return &urlRouter; }
+    inline BayeuxClientIface * GetClientIface()    { return pClientIface; }
+
+protected:
+    BayeuxClientIface  *pClientIface;
+
+    SHttpReaderStage    requestReader;
+    SHttpHandlerStage   requestHandler;
+    SWriterModule       writerModule;
+    SContentModule      contentModule;
+    SBayeuxModule       bayeuxModule;
+    SFileModule         fileModule;
+    SUrlRouter          urlRouter;
 };
 
 LUNARPROBE_NS_END

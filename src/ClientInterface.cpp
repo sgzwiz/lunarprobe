@@ -14,9 +14,9 @@
  *
  *****************************************************************************
  *
- *  \file   DebugServer.cpp
+ *  \file   ClientIface.cpp
  *
- *  \brief  Implementation of the DebugServer.
+ *  \brief  Implementation of the ClientIface.
  *
  *  \version
  *      - S Panyam   05/12/2008
@@ -38,7 +38,7 @@
 #include <sys/types.h>
 
 #include "lpfwddefs.h"
-#include "DebugServer.h"
+#include "ClientIface.h"
 #include "DebugContext.h"
 #include "LuaBindings.h"
 
@@ -55,7 +55,7 @@ LUNARPROBE_NS_BEGIN
  *      Initial version.
  */
 //*****************************************************************************
-DebugServer::DebugServer() : pLuaBindings(NULL)
+ClientIface::ClientIface() : pLuaBindings(NULL)
 {
 }
 
@@ -68,7 +68,7 @@ DebugServer::DebugServer() : pLuaBindings(NULL)
  *      Initial version.
  */
 //*****************************************************************************
-DebugServer::~DebugServer()
+ClientIface::~ClientIface()
 {
     // remove any debug contexts that wasnt removed (via StopDebugging)
     for (DebugContextMap::iterator iter = debugContexts.begin();iter != debugContexts.end(); ++iter)
@@ -83,7 +83,7 @@ DebugServer::~DebugServer()
 }
 
 // Sends a message to the client
-int DebugServer::SendMessage(const char *data, unsigned datasize)
+int ClientIface::SendMessage(const char *data, unsigned datasize)
 {
     return 0;
 }
@@ -97,7 +97,7 @@ int DebugServer::SendMessage(const char *data, unsigned datasize)
  *      Initial version.
  */
 //*****************************************************************************
-const DebugContextMap &DebugServer::GetContexts() const
+const DebugContextMap &ClientIface::GetContexts() const
 {
     return debugContexts;
 }
@@ -111,7 +111,7 @@ const DebugContextMap &DebugServer::GetContexts() const
  *      Initial version.
  */
 //*****************************************************************************
-bool DebugServer::StartDebugging(LuaStack pStack, const char *name)
+bool ClientIface::StartDebugging(LuaStack pStack, const char *name)
 {
     DebugContext *pContext = GetDebugContext(pStack);
     if (pContext != NULL)
@@ -134,7 +134,7 @@ bool DebugServer::StartDebugging(LuaStack pStack, const char *name)
  *      Initial version.
  */
 //*****************************************************************************
-bool DebugServer::StopDebugging(LuaStack pStack)
+bool ClientIface::StopDebugging(LuaStack pStack)
 {
     DebugContextMap::iterator iter = debugContexts.find(pStack);
 
@@ -161,7 +161,7 @@ bool DebugServer::StopDebugging(LuaStack pStack)
  *      Initial version.
  */
 //*****************************************************************************
-DebugContext *DebugServer::GetDebugContext(LuaStack pStack)
+DebugContext *ClientIface::GetDebugContext(LuaStack pStack)
 {
     DebugContextMap::iterator iter = debugContexts.find(pStack);
     if (iter == debugContexts.end())
@@ -184,7 +184,7 @@ DebugContext *DebugServer::GetDebugContext(LuaStack pStack)
  *      Initial version.
  */
 //*****************************************************************************
-DebugContext *DebugServer::AddDebugContext(LuaStack pStack, const char *name)
+DebugContext *ClientIface::AddDebugContext(LuaStack pStack, const char *name)
 {
     DebugContext *pContext = new DebugContext(pStack, name);
     debugContexts[pStack] = pContext;
@@ -204,7 +204,7 @@ DebugContext *DebugServer::AddDebugContext(LuaStack pStack, const char *name)
  *      Initial version.
  */
 //*****************************************************************************
-void DebugServer::HandleDebugHook(LuaStack pStack, LuaDebug pDebug)
+void ClientIface::HandleDebugHook(LuaStack pStack, LuaDebug pDebug)
 {
     DebugContext *pContext = GetDebugContext(pStack);
 
@@ -276,7 +276,7 @@ void DebugServer::HandleDebugHook(LuaStack pStack, LuaDebug pDebug)
  *      Initial version.
  */
 //*****************************************************************************
-LuaBindings *DebugServer::GetLuaBindings()
+LuaBindings *ClientIface::GetLuaBindings()
 {
     if (pLuaBindings == NULL)
     {

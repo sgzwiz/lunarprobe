@@ -14,9 +14,9 @@
  *
  *****************************************************************************
  *
- *  \file   TcpDebugger.cpp
+ *  \file   TcpClientIface.cpp
  *
- *  \brief  Custom TCP Implementation of the Debugger.
+ *  \brief  Custom TCP Implementation of the ClientIface.
  *
  *  \version
  *      - S Panyam   05/12/2008
@@ -42,7 +42,7 @@
 #include <sys/sendfile.h>
 
 #include "lpfwddefs.h"
-#include "TcpDebugger.h"
+#include "TcpClientIface.h"
 #include "DebugContext.h"
 #include "LuaBindings.h"
 
@@ -58,12 +58,12 @@ LUNARPROBE_NS_BEGIN
  *      Initial version.
  */
 //*****************************************************************************
-void TcpDebugger::HandleDebugHook(LuaStack pStack, LuaDebug pDebug)
+void TcpClientIface::HandleDebugHook(LuaStack pStack, LuaDebug pDebug)
 {
     if (clientSocket < 0)
         return ;
 
-    Debugger::HandleDebugHook(pStack, pDebug);
+    ClientIface::HandleDebugHook(pStack, pDebug);
 }
 
 //*****************************************************************************
@@ -75,7 +75,7 @@ void TcpDebugger::HandleDebugHook(LuaStack pStack, LuaDebug pDebug)
  *      Initial version.
  */
 //*****************************************************************************
-bool TcpDebugger::HandleConnection()
+bool TcpClientIface::HandleConnection()
 {
     // read and handle messages one by one
     std::string message;
@@ -121,7 +121,7 @@ bool TcpDebugger::HandleConnection()
  *      Initial version.
  */
 //*****************************************************************************
-bool TcpDebugger::ReadString(std::string &result)
+bool TcpClientIface::ReadString(std::string &result)
 {
     if (clientSocket >= 0)
     {
@@ -181,7 +181,7 @@ bool TcpDebugger::ReadString(std::string &result)
  *      Initial version.
  */
 //*****************************************************************************
-int TcpDebugger::SendMessage(const char *data, unsigned datasize)
+int TcpClientIface::SendMessage(const char *data, unsigned datasize)
 {
     char datasizebuff[8];
     if (clientSocket >= 0)

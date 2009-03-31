@@ -58,7 +58,7 @@ public:
     DebugContext *  GetDebugContext(LuaStack stack);
 
     //! Sends a message to the connected client
-    virtual int     SendMessage(const char *data, unsigned datasize) = 0;
+    virtual int     SendMessage(const char *data, unsigned datasize);
 
     //! Get a list of debug contexts
     const DebugContextMap &GetContexts() const;

@@ -107,7 +107,9 @@ HttpDebugServer::HttpDebugServer(int                    port,
     SetStage("RequestReader", &requestReader);
     SetStage("RequestHandler", &requestHandler);
 
-    bayeuxModule.RegisterChannel(pIface);
+    assert("BayeuxClientIface is NULL." && (pIface != NULL));
+
+    bayeuxModule.RegisterChannel(pClientIface);
 
     // add more files and all that here to enable static html/js/css files
 }

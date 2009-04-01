@@ -44,7 +44,7 @@ class BayeuxClientIface : public ClientIface, public SBayeuxChannel
 {
 public:
     // Constructor
-    BayeuxClientIface(SBayeuxModule *pModule, const std::string &name);
+    BayeuxClientIface(const std::string &name);
 
     // Destructor
     ~BayeuxClientIface();

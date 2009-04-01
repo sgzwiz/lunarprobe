@@ -101,7 +101,7 @@ HttpDebugServer::HttpDebugServer(int                    port,
     contentModule(&writerModule),
     bayeuxModule(&contentModule, msgBoundary),
     fileModule(&contentModule, true),
-    urlRouter(&fileModule)
+    urlRouter(NULL)
 {
     SetRequestReader(&requestReader);
     SetStage("RequestReader", &requestReader);

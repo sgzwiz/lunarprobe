@@ -163,7 +163,7 @@ LuaStack LuaBindings::GetLuaStack()
             // now register this one for debugging!
             // we have to do it here after all the above to avoid getting 
             // infinite recursive calls.
-            LunarProbe::GetInstance()->Attach(pStack, "debugger");
+            // LunarProbe::GetInstance()->Attach(pStack, "debugger");
         }
     }
 

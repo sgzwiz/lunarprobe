@@ -104,6 +104,12 @@ HttpDebugServer::HttpDebugServer(int                    port,
     urlRouter(&fileModule)
 {
     SetRequestReader(&requestReader);
+    SetStage("RequestReader", &requestReader);
+    SetStage("RequestHandler", &requestHandler);
+
+    bayeuxModule.RegisterChannel(pIface);
+
+    // add more files and all that here to enable static html/js/css files
 }
 
 //*****************************************************************************

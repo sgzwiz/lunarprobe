@@ -25,7 +25,7 @@
 //*****************************************************************************
 
 #include "LunarProbe.h"
-#include "HttpClientIface.h"
+#include "ClientIface.h"
 
 LUNARPROBE_NS_BEGIN
 
@@ -77,10 +77,12 @@ LunarProbe *LunarProbe::GetInstance()
 
 //*****************************************************************************
 /*!
- *  \brief  Get the instance of the ClientIface - this will create one if
- *  it does not already exist.  So if you want a specific implementation of
- *  the client iface, then call SetClientIface (only once is enough) before
- *  calling this somewhere at the start.
+ *  \brief  Get the instance of the ClientIface.
+ *
+ *  It is absolutely necessary that SetClientIface is called once before
+ *  the first time this is called so that a client interface can be set.
+ *  This gives the user of LP to use specific interfaces as they choose (eg
+ *  Tcp or Http over Bayeux etc).
  *
  *  \version
  *      - S Panyam  27/10/2008
@@ -91,7 +93,7 @@ ClientIface *LunarProbe::GetClientIface()
 {
     if (pClientIface.get() == NULL)
     {
-        pClientIface = std::auto_ptr<ClientIface>(new HttpClientIface());
+        assert("SetClientIface has NOT been called yet" && false);
     }
     return pClientIface.get();
 }

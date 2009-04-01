@@ -34,6 +34,10 @@
 #include "TcpClientIface.h"
 #include "BayeuxClientIface.h"
 
+#ifndef LUA_DEBUG_PORT
+#define LUA_DEBUG_PORT  9999
+#endif
+
 LUNARPROBE_NS_BEGIN
 
 class TcpDebugServer :

@@ -56,8 +56,8 @@ LUNARPROBE_NS_BEGIN
  *      Initial version.
  */
 //*****************************************************************************
-BayeuxClientIface::BayeuxClientIface(SBayeuxModule *pModule, const std::string &name)
-    : SBayeuxChannel(pModule, name)
+BayeuxClientIface::BayeuxClientIface(const std::string &name, SBayeuxModule *pModule)
+    : SBayeuxChannel(name, pModule)
 {
 }
 

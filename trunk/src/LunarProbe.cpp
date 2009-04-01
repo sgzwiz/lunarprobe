@@ -91,10 +91,6 @@ LunarProbe *LunarProbe::GetInstance()
 //*****************************************************************************
 ClientIface *LunarProbe::GetClientIface()
 {
-    if (pClientIface.get() == NULL)
-    {
-        assert("SetClientIface has NOT been called yet" && false);
-    }
     return pClientIface.get();
 }
 
@@ -110,7 +106,7 @@ ClientIface *LunarProbe::GetClientIface()
 void LunarProbe::SetClientIface(ClientIface *pClientIface_)
 {
     ClientIface *pOld = pClientIface.get();
-    if (pOld != NULL)
+    if (pOld != NULL && pOld != pClientIface_)
         delete pOld;
     pClientIface = std::auto_ptr<ClientIface>(pClientIface_);
 }

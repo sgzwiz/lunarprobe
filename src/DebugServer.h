@@ -60,7 +60,7 @@ class HttpDebugServer : public virtual SEvServer
 {
 public:
     HttpDebugServer(int                 port,
-                    BayeuxClientIface * pIface,
+                    BayeuxClientIface * pIface      = NULL,
                     const std::string & msgBoundary = "LUNARPROBE_MESSAGE_BOUNDARY");
     virtual ~HttpDebugServer();
 

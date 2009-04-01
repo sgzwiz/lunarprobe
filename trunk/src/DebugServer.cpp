@@ -107,6 +107,9 @@ HttpDebugServer::HttpDebugServer(int                    port,
     SetStage("RequestReader", &requestReader);
     SetStage("RequestHandler", &requestHandler);
 
+    requestReader.SetHandlerStage(&requestHandler);
+    requestHandler.SetRootModule(&urlRouter);
+
     assert("BayeuxClientIface is NULL." && (pIface != NULL));
 
     bayeuxModule.RegisterChannel(pClientIface);

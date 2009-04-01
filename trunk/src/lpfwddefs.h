@@ -27,6 +27,7 @@
 #ifndef _LUNARPROBE_FWD_DEFS_H
 #define _LUNARPROBE_FWD_DEFS_H
 
+#include <assert.h>
 #include "lpnsdefs.h"
 
 extern "C"

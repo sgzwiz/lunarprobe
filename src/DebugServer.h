@@ -69,6 +69,7 @@ public:
     inline SWriterModule *     GetWriterModule()   { return &writerModule; }
     inline SContentModule *    GetContentModule()  { return &contentModule; }
     inline SBayeuxModule *     GetBayeuxModule()   { return &bayeuxModule; }
+    inline SFileModule *       GetFileModule()     { return &fileModule; }
     inline SUrlRouter *        GetUrlRouter()      { return &urlRouter; }
     inline BayeuxClientIface * GetClientIface()    { return pClientIface; }
 

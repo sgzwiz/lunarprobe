@@ -1,0 +1,147 @@
+
+<html>
+    <head>
+    <script type="text/javascript" src = "/ldb/js/jsonerror.js"> </script>
+    <script type="text/javascript" src = "/ldb/js/json.js"> </script>
+    <script type="text/javascript" src = "/ldb/js/ldb.js"> </script>
+    <title>Lua Debugger!!!</title>
+    <script type="text/javascript" defer >
+        // info about each of the channels
+        var clientId        = null;
+        var NUM_CHANNELS    = 5;
+        var ALL_AT_ONCE     = true;
+        var curr_channel    = 1;
+        var channels = [
+            null,
+            {'started': false, 'numevents': 0},
+            {'started': false, 'numevents': 0},
+            {'started': false, 'numevents': 0},
+            {'started': false, 'numevents': 0},
+            {'started': false, 'numevents': 0},
+        ];
+
+        function logMessage(text)
+        {
+            var logs = document.getElementById("bayeuxLogs");
+            logs.value += (text + "\n");
+            logs.focus();
+        }
+
+        function onChannelClicked(channel)
+        {
+            var command = document.getElementById("channel" + channel).value;
+
+            channels['started'] = !channels['started'];
+            document.getElementById("channel" + channel).value =
+                                    channels['started'] ? "Stop" : "Start";
+        }
+
+        function SetPromptForChannel(channel)
+        {
+            var prompt = document.getElementById("channel" + channel + "Prompt").value;
+            function handler(request)
+            {
+                logMessage("SetPrompt Result for channel (" + channel + "): " + request.responseText);
+            }
+
+            var data = {'channel': '/bayeux/channel' + channel,
+                        'clientId': clientId,
+                        'prompt': prompt}
+
+            var datastr = JSON.encode(data);
+            MakeAjaxRequest("POST", "/bayeux/", handler, datastr, true);
+        }
+
+        function HandleChannelEvent(channel)
+        {
+            function handler(request)
+            {
+                var result      = JSON.decode(request.responseText);
+                var numevents   = channels[channel]['numevents'];
+                if (numevents == 0)
+                {
+                    logMessage("Subscription Result for channel (" + channel + "): " + request.responseText);
+
+                    // this is the first event so ignore it if need be
+                    if (result['firstconn'] == true)
+                    {
+                        logMessage("Channel with Connection: (" + channel + "): " + request.responseText);
+                    }
+                    channels[channel]['started'] = true;
+                    document.getElementById("channel" + channel).value = "Stop";
+
+                    // subscribe to the next channel if more left
+                    curr_channel += 1;
+                    if ( ! ALL_AT_ONCE && curr_channel <= NUM_CHANNELS)
+                    {
+                        SubscribeToChannel(curr_channel);
+                    }
+                }
+                else
+                {
+                    logMessage("Received Event: " + request.responseText);
+                }
+
+                channels[channel]['numevents'] = numevents + 1;
+            };
+            return handler;
+        }
+
+        function SubscribeToChannel(channel)
+        {
+            logMessage("Subscribing to channel: " + channel);
+            var data = {'channel': '/meta/subscribe',
+                        'clientId': clientId,
+                        'subscription': '/bayeux/channel' + channel};
+
+            var datastr = JSON.encode(data);
+            MakeAjaxRequest("POST", "/bayeux/", HandleChannelEvent(channel), datastr, true);
+        }
+
+        function handshake()
+        {
+            // subscribe to all channels
+            function callback(request)
+            {
+                if (request.readyState == 4)
+                {
+                    // woo whoo success
+                    var result = JSON.decode(request.responseText);
+                    clientId = result['clientId'];
+
+                    if (ALL_AT_ONCE)
+                    {
+                        for (var i = 1;i <= NUM_CHANNELS;i++)
+                            SubscribeToChannel(i);
+                    }
+                    else
+                    {
+                        SubscribeToChannel(curr_channel);
+                    }
+                }
+            }
+
+            var data = {'channel': '/meta/handshake',
+                        'version': '1.0',
+                        'supportedConnectionTypes': ['long-polling',
+                                                     'callback-polling',
+                                                     'iframe']};
+            var datastr = JSON.encode(data);
+            MakeAjaxRequest("POST", "/bayeux/", callback, datastr);
+        }
+
+        function onDocumentLoaded()
+        {
+            document.getElementById("bayeuxLogs").value = "";
+            // handshake();
+        }
+
+        window.onload = onDocumentLoaded;
+    </script>
+    </head>
+    <body>
+    <center><table style="width: 100%; height: 100%" border = 1>
+    </table></center>
+    </body>
+</html>
+

@@ -32,7 +32,7 @@
 
 LUNARPROBE_NS_BEGIN
 
-std::string  LuaBindings::LUA_SRC_LOCATION  = "shared/libgameengine/libluadebug/lua/";
+std::string  LuaBindings::LUA_SRC_LOCATION  = "shared/libgameengine/lua/debugger/";
 std::string  LuaBindings::LUA_VAR_PREFIX    = "__LDB_";
 
 DebugContext *GetContextIfPaused(LuaStack stack)

@@ -187,8 +187,11 @@ bool processCommand(char *command)
     return running;
 }
 
-void InitLunarProbe(const std::string &staticPath)
+void InitLunarProbe(std::string staticPath)
 {
+    if (staticPath[staticPath.size() - 1] != '/')
+        staticPath = staticPath +  "/";
+
     class LPIndexModule : public SHttpModule
     {
     public:
@@ -262,7 +265,7 @@ int main(int argc, char *argv[])
     char inputBuff[1024];
     char *command;
     const char *luaPath = "./lua/";
-    const char *staticPath = "./static";
+    const char *staticPath = "./static/";
     bool running = true;
 
     int argCounter = 1;

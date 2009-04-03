@@ -13,6 +13,8 @@ function ChannelEventHandler(request)
     {
         // this is the first event so ignore it if need be
         channelStarted = true;
+
+        ListDir(".")
     }
     else
     {
@@ -235,4 +237,14 @@ function GetFile(file, first, last)
     SendCommand("file", callback, {'file': file, 'first': first, 'last': last});
 }
 
+
+function ListDir(dir)
+{
+    function callback(result)
+    {
+        GetClient().GotDirListing(result);
+    }
+
+    SendCommand("files", callback, {'dir': dir});
+}
 

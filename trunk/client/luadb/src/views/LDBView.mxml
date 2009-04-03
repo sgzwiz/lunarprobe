@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel 	xmlns:mx="http://www.adobe.com/2006/mxml">
+	<!-- The actual game parameter accessible to all games -->
+	<mx:Script>
+		<![CDATA[
+			import luadb.core.LDBContext;
+			public var theApp:GPApp = null;
+			
+			/*
+			 * Notified when game's connection status
+			 * changes
+			 */
+			public function SetConnected(conn:Boolean): void
+			{
+			}
+		]]>
+	</mx:Script>
+</mx:Panel>

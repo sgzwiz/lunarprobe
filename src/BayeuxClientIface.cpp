@@ -41,6 +41,7 @@
 #include <sys/sendfile.h>
 
 #include "lpfwddefs.h"
+#include "halley.h"
 #include "BayeuxClientIface.h"
 #include "DebugContext.h"
 #include "LuaBindings.h"
@@ -95,7 +96,8 @@ BayeuxClientIface::~BayeuxClientIface()
 //*****************************************************************************
 void BayeuxClientIface::HandleEvent(const JsonNodePtr &event, JsonNodePtr &output)
 {
-    SMutexLock socketReadLock(socketReadMutex);
+    SString message(event->Get<SString>("command", ""));
+    GetLuaBindings()->HandleMessage(message);
 }
 
 
@@ -117,6 +119,10 @@ void BayeuxClientIface::HandleEvent(const JsonNodePtr &event, JsonNodePtr &outpu
 int BayeuxClientIface::SendMessage(const char *data, unsigned datasize)
 {
     SMutexLock socketWriteLock(socketWriteMutex);
+
+    JsonNodePtr value = JsonNodeFactory::StringNode(SString(data, datasize));
+    pModule->DeliverEvent(this, value);
+
     return 0;
 }
 

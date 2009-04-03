@@ -56,9 +56,6 @@ public:
     virtual void HandleEvent(const JsonNodePtr &event, JsonNodePtr &output);
 
 private:
-    //! Read lock on the socket
-    SMutex              socketReadMutex;
-
     //! Write lock on the socket
     SMutex              socketWriteMutex;
 };

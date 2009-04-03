@@ -1,108 +1,69 @@
-String.prototype.trim = function() { return this.replace(/^\s+|\s+$/, ''); };
-var EmailFilter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 
-// 
-// Make an ajax request to a server and send the response to a call back
-//
-function MakeAjaxRequest(method, uri, callback, data, multipart, headers)
+var clientId        = null;
+var numEvents       = 0;
+var channelStarted  = false;
+
+function ChannelEventHandler(request)
 {
-    var httpRequest = GetHttpRequest(method, uri, multipart, headers)
-    if (httpRequest == null)
+    var result      = JSON.decode(request.responseText);
+    if (numEvents == 0)
     {
-        alert("You are not ajax enabled!  This is being fixed!")
-        return false;
-    }
+        alert("Subscription Result for channel: " + request.responseText);
 
-    var handler = function(evt)
-    {
-        callback(evt.currentTarget);
-    }
-
-    // 
-    // Called as we get a list of files to fill up on
-    //
-    if (multipart == true)
-    {
-        httpRequest.onload = handler;
+        // this is the first event so ignore it if need be
+        if (result['firstconn'] == true)
+        {
+            alert("Channel with Connection: " + request.responseText);
+        }
+        channelStarted = true;
     }
     else
     {
-        httpRequest.onreadystatechange = handler;
+        alert("Received Event: " + request.responseText);
     }
 
-    SendHttpRequest(httpRequest, data);
-
-    return true;
+    numEvents = numEvents + 1;
 }
 
-function SendHttpRequest(httpRequest, data)
+function SubscribeToChannel()
 {
-    if (data != null)
-    {
-        httpRequest.setRequestHeader("Content-Length", data.len);
-    }
-    else
-    {
-        data = null;
-    }
+    var data = {'channel': '/meta/subscribe',
+                'clientId': clientId,
+                'subscription': '/ldb'};
 
-    httpRequest.send(data);
+    var datastr = JSON.encode(data);
+    MakeAjaxRequest("POST", "/bayeux/", ChannelEventHandler(), datastr, true);
 }
 
-// 
-// This gets the XMLHttpRequest object for us 
-// in a platform independant way
-//
-function GetHttpRequest(method, uri, multipart, headers)
+function DoHandshake()
 {
-    var xmlHttp;
-    try
+    // subscribe to all channels
+    function callback(request)
     {
-        // Firefox, Opera 8.0+, Safari
-        xmlHttp=new XMLHttpRequest();
-    }
-    catch (e)
-    {
-        // Internet Explorer
-        try
+        if (request.readyState == 4)
         {
-            xmlHttp=new ActiveXObject("Msxml2.XMLHTTP");
-        }
-        catch (e)
-        {
-            try
-            {
-                xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
-            }
-            catch (e)
-            {
-                alert("Your browser does not support AJAX!");
-                return null;
-            }
+            // woo whoo success
+            var result = JSON.decode(request.responseText);
+            clientId = result['clientId'];
+
+            alert("Client ID: " + clientId);
+
+            SubscribeToChannel();
         }
     }
 
-    if (xmlHttp != null)
-    {
-        if (multipart == true)
-            xmlHttp.multipart = true;
-        xmlHttp.open(method, uri, true)
-        if (headers != null)
-        {
-            for (var hdr in headers)
-            {
-                xmlHttp.setRequestHeader(hdr, headers[hdr]);
-            }
-        }
-    }
-
-    return xmlHttp;
+    var data = {'channel': '/meta/handshake',
+                'version': '1.0',
+                'supportedConnectionTypes': ['long-polling',
+                                             'callback-polling',
+                                             'iframe']};
+    var datastr = JSON.encode(data);
+    MakeAjaxRequest("POST", "/bayeux/", callback, datastr);
 }
 
-// 
-// Note: This is not browser independent
-//
-function ElementById(name)
+function LuaDBLoaded()
 {
-    return document.getElementById(name);
+    // now do the channel subscriptions
+    DoHandshake();
 }
+

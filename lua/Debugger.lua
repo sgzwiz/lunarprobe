@@ -321,6 +321,7 @@ function Debugger:New(cppDebugger)
     o.commandHandlers["frame"]      = MsgFunc_Frame
     o.commandHandlers["contexts"]   = MsgFunc_Contexts
     o.commandHandlers["file"]       = MsgFunc_File
+    o.commandHandlers["files"]      = MsgFunc_Files
 
     return o
 end

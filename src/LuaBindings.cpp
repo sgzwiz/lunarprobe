@@ -29,6 +29,7 @@
 #include <iostream>
 
 #include "lpmain.h"
+#include "halley.h"
 
 LUNARPROBE_NS_BEGIN
 
@@ -111,6 +112,7 @@ int LuaBindings::Register(LuaStack stack)
         { "WriteString", LuaBindings::WriteString },
         { "Resume", LuaBindings::Resume },
         { "Reload", LuaBindings::Reload },
+        { "ListDir", LuaBindings::ListDir},
         { "LoadFile", LuaBindings::LoadFile },
         { "GetContexts", LuaBindings::GetContexts },
         { "EvaluateString", LuaBindings::EvaluateString },
@@ -389,6 +391,61 @@ int LuaBindings::WriteString(LuaStack stack)
     LuaBindings *   pLuaBindings    = (LuaBindings *)lua_touserdata(stack, 1);
     const char *    msg             = lua_tolstring(stack, 2, &length);
     pLuaBindings->pClientIface->SendMessage(msg, length);
+    return 0;
+}
+
+//*****************************************************************************
+/*!
+ *  \brief  Get a file listing of a folder.
+ *
+ *  \luaparam   debugger    -   The lua debugger whose contexts are to be retrieved.
+ *  \luaparam   directory   -   The directory to be listed.
+ *
+ *  \version
+ *      - S Panyam  12/11/2008
+ *      Initial version.
+ */
+//*****************************************************************************
+int LuaBindings::ListDir(LuaStack stack)
+{
+    const char *    directory   = (const char *)lua_tostring(stack, 1);
+    std::vector<DirEnt> entries;
+
+    if (SFileModule::ReadDirectory(directory, entries))
+    {
+        lua_pushinteger(stack, 0);
+        lua_newtable(stack);
+
+        std::vector<DirEnt>::iterator iter = entries.begin();
+        int nitems = 0;
+        for (;iter != entries.end(); ++iter)
+        {
+            bool isdir = (iter->entStat.st_mode & S_IFDIR) != 0;
+
+            // push the new item index
+            lua_pushinteger(stack, ++nitems);
+
+            // push a table to hold the entry info
+            lua_newtable(stack);
+
+            lua_pushstring(stack, iter->entName.c_str());
+            lua_setfield(stack, -2, "name");
+
+            lua_pushboolean(stack, isdir);
+            lua_setfield(stack, -2, "isdir");
+
+            lua_pushboolean(stack, iter->entStat.st_size);
+            lua_setfield(stack, -2, "size");
+
+            lua_settable(stack, -3);
+        }
+    }
+    else
+    {
+        lua_pushinteger(stack, 0);
+        lua_pushstring(stack, "Could not read directory.");
+    }
+
     return 0;
 }
 

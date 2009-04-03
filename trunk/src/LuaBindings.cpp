@@ -155,7 +155,7 @@ LuaStack LuaBindings::GetLuaStack()
             }
         }
 
-        std::string mainlua = LUA_SRC_LOCATION + "Main.lua";
+        std::string mainlua = LUA_SRC_LOCATION + "/Main.lua";
         if (LuaUtils::RunLuaScript(pStack, mainlua.c_str()) == 0)
         {
             reloadRequested = false;

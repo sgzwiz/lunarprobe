@@ -7,20 +7,20 @@ attach 2
 
 stack 0
 -----
-package.path = package.path .. ";../lua/?.lua"
-dofile("test.lua")
+package.path = package.path .. ";./test/?.lua"
+dofile("test/test.lua")
 -----
 
 stack 1
 -----
-package.path = package.path .. ";../lua/?.lua"
-dofile("test.lua")
+package.path = package.path .. ";./test/?.lua"
+dofile("test/test.lua")
 -----
 
 stack 2
 -----
-package.path = package.path .. ";../lua/?.lua"
-dofile("test.lua")
+package.path = package.path .. ";./test/?.lua"
+dofile("test/test.lua")
 -----
 
 stack 0

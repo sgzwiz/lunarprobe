@@ -42,7 +42,16 @@ char *showPrompt(char *inputBuff = NULL)
 #endif
 }
 
-void usage()
+void prog_usage()
+{
+    puts("\nUsage: options <optional preample files>");
+    puts("    Options: \n");
+    puts("      -l | --lua      -   Specify folder containing the lua files.  Default: ./lua");
+    puts("      -s | --static   -   Specify folder containing the static files (for http).  Default: ./static");
+    puts("");
+}
+
+void command_usage()
 {
     puts("\nCommands: \n");
     puts("    open  <name>      -   Creates a new lua stack with the given name.");
@@ -105,7 +114,7 @@ bool processCmdString(const char *input)
 
     if (strncmp(input, "help", 4) == 0)
     {
-        usage();
+        command_usage();
     }
     else
     {
@@ -130,7 +139,7 @@ bool processCmdString(const char *input)
         }
 
         std::cerr << std::endl << "Invalid Command: '" << input << "'" << std::endl << std::endl;
-        usage();
+        command_usage();
     }
     return true;
 }
@@ -178,7 +187,7 @@ bool processCommand(char *command)
     return running;
 }
 
-LUNARPROBE_NS::LunarProbe *GetLPInstance()
+void InitLunarProbe(const std::string &staticPath)
 {
     class LPIndexModule : public SHttpModule
     {
@@ -196,7 +205,7 @@ LUNARPROBE_NS::LunarProbe *GetLPInstance()
             SString links =
                     "<p>"
                     "<h2><a href='/ldb/index.html'>Lua Debugger</a></h2>"
-                    "<br><h2><a href='/files/'>/games/</a></h2>"
+                    "<br><h2><a href='/files/'>FileSystem</a></h2>"
                     ;
             SString body    = "<hr><center>"    + links + "</center><hr>";
 
@@ -227,10 +236,10 @@ LUNARPROBE_NS::LunarProbe *GetLPInstance()
     if (lpInstance->GetClientIface() == NULL)
     {
         // set the different modules we need
-        gameFilesModule.AddDocRoot("/files/", "/games/");
+        gameFilesModule.AddDocRoot("/files/", "/home/spanyam/");
         pUrlRouter->AddUrlMatch(&gameFilesUrlMatch);
 
-        pFileModule->AddDocRoot("/ldb/", "shared/libgameengine/luadb/static/");
+        pFileModule->AddDocRoot("/ldb/", staticPath);
         pUrlRouter->AddUrlMatch(&ldbUrlMatch);
 
         pUrlRouter->AddUrlMatch(&bayeuxUrlMatch);
@@ -240,22 +249,57 @@ LUNARPROBE_NS::LunarProbe *GetLPInstance()
         lpInstance->SetClientIface(&clientIface);
         serverThread.Start();
     }
-    return lpInstance;
+}
+
+LUNARPROBE_NS::LunarProbe *GetLPInstance()
+{
+    return LUNARPROBE_NS::LunarProbe::GetInstance();
 }
 
 int main(int argc, char *argv[])
 {
+    char pathBuff[1024];
     char inputBuff[1024];
     char *command;
+    const char *luaPath = "./lua";
+    const char *staticPath = "./static";
     bool running = true;
 
-    LuaBindings::LUA_SRC_LOCATION = "../lua/";
-
-    if (argc > 1)
+    int argCounter = 1;
+    for (;argCounter < argc;argCounter++)
     {
-        // see if we can take inputs from some file first before running
-        // the command prompt
-        FILE *fptr = fopen(argv[1], "r");
+        if (strcmp(argv[argCounter], "--lua") == 0   ||
+            strcmp(argv[argCounter], "-lua") == 0    ||
+            strcmp(argv[argCounter], "-l") == 0)
+        {
+            luaPath = argv[++argCounter];
+        }
+        else if (strcmp(argv[argCounter], "--help") == 0 ||
+                 strcmp(argv[argCounter], "-help") == 0     ||
+                 strcmp(argv[argCounter], "-h") == 0)
+        {
+            prog_usage();
+            return 0;
+        }
+        else if (strcmp(argv[argCounter], "--static") == 0 ||
+                 strcmp(argv[argCounter], "-static") == 0     ||
+                 strcmp(argv[argCounter], "-s") == 0)
+        {
+            staticPath = argv[++argCounter];
+        }
+        else
+        {
+            break ;
+        }
+    }
+
+    LuaBindings::LUA_SRC_LOCATION = realpath(luaPath, pathBuff);
+
+    InitLunarProbe(realpath(staticPath, pathBuff));
+
+    for (;argCounter < argc;argCounter++)
+    {
+        FILE *fptr = fopen(argv[argCounter], "r");
         if (fptr == NULL)
         {
             fprintf(stderr, "\nCannot open file: %s\n\n", argv[1]);

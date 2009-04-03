@@ -1,28 +1,22 @@
 
 var clientId        = null;
-var numEvents       = 0;
+var numEvents       = -1;
 var channelStarted  = false;
 
 function ChannelEventHandler(request)
 {
     var result      = JSON.decode(request.responseText);
+    numEvents = numEvents + 1;
+
     if (numEvents == 0)
     {
-        alert("Subscription Result for channel: " + request.responseText);
-
         // this is the first event so ignore it if need be
-        if (result['firstconn'] == true)
-        {
-            alert("Channel with Connection: " + request.responseText);
-        }
         channelStarted = true;
     }
     else
     {
         alert("Received Event: " + request.responseText);
     }
-
-    numEvents = numEvents + 1;
 }
 
 function SubscribeToChannel()
@@ -32,7 +26,7 @@ function SubscribeToChannel()
                 'subscription': '/ldb'};
 
     var datastr = JSON.encode(data);
-    MakeAjaxRequest("POST", "/bayeux/", ChannelEventHandler(), datastr, true);
+    MakeAjaxRequest("POST", "/bayeux/", ChannelEventHandler, datastr, true);
 }
 
 function DoHandshake()
@@ -45,8 +39,6 @@ function DoHandshake()
             // woo whoo success
             var result = JSON.decode(request.responseText);
             clientId = result['clientId'];
-
-            alert("Client ID: " + clientId);
 
             SubscribeToChannel();
         }

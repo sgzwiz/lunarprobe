@@ -261,7 +261,7 @@ int main(int argc, char *argv[])
     char pathBuff[1024];
     char inputBuff[1024];
     char *command;
-    const char *luaPath = "./lua";
+    const char *luaPath = "./lua/";
     const char *staticPath = "./static";
     bool running = true;
 

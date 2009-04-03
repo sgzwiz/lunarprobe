@@ -4,16 +4,7 @@
 	<!-- The actual game parameter accessible to all games -->
 	<mx:Script>
 		<![CDATA[
-			import luadb.core.LDBContext;
-			public var theApp:GPApp = null;
-			
-			/*
-			 * Notified when game's connection status
-			 * changes
-			 */
-			public function SetConnected(conn:Boolean): void
-			{
-			}
+			public var theApp:LDBApp = null;
 		]]>
 	</mx:Script>
 </mx:Panel>

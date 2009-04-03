@@ -5,6 +5,10 @@
 #include "test.h"
 #include "commands.h"
 
+#include "halley.h"
+#include "DebugServer.h"
+#include "BayeuxClientIface.h"
+
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -174,7 +178,72 @@ bool processCommand(char *command)
     return running;
 }
 
-int console_main(int argc, char *argv[])
+LUNARPROBE_NS::LunarProbe *GetLPInstance()
+{
+    class LPIndexModule : public SHttpModule
+    {
+    public:
+        //! Constructor
+        LPIndexModule(SHttpModule *pNext) : SHttpModule(pNext) { }
+
+        //! Called to handle input data from another module
+        void ProcessInput(SHttpHandlerData *    pHandlerData,
+                          SHttpHandlerStage *   pStage,
+                          SBodyPart *           pBodyPart)
+        {
+            SHttpRequest *pRequest      = pHandlerData->Request();
+            SHttpResponse *pResponse    = pRequest->Response();
+            SString links =
+                    "<p>"
+                    "<h2><a href='/ldb/index.html'>Lua Debugger</a></h2>"
+                    "<br><h2><a href='/files/'>/games/</a></h2>"
+                    ;
+            SString body    = "<hr><center>"    + links + "</center><hr>";
+
+            SBodyPart *part = pResponse->NewBodyPart();
+            part->SetBody("<html><head><title>Lua Debugger</title></head>");
+            part->AppendToBody("<body>" + body + "</body></html>");
+
+            pStage->OutputToModule(pHandlerData->pConnection, pNextModule, part);
+            pStage->OutputToModule(pHandlerData->pConnection, pNextModule,
+                                   pResponse->NewBodyPart(SBodyPart::BP_CONTENT_FINISHED, pNextModule));
+        }
+    };
+
+    static LUNARPROBE_NS::BayeuxClientIface clientIface("/ldb");
+    static LUNARPROBE_NS::HttpDebugServer   debugServer(LUA_DEBUG_PORT, &clientIface);
+    static SThread                          serverThread(&debugServer);
+    SUrlRouter *                            pUrlRouter = debugServer.GetUrlRouter();
+    SFileModule *                           pFileModule = debugServer.GetFileModule();
+
+    static LPIndexModule lpIndexModule(debugServer.GetContentModule());
+    static SFileModule gameFilesModule(debugServer.GetContentModule());
+    static SContainsUrlMatcher gameFilesUrlMatch("/files/", SContainsUrlMatcher::PREFIX_MATCH, &gameFilesModule);
+    static SContainsUrlMatcher ldbUrlMatch("/ldb/", SContainsUrlMatcher::PREFIX_MATCH, pFileModule);
+    static SContainsUrlMatcher bayeuxUrlMatch("/bayeux/", SContainsUrlMatcher::PREFIX_MATCH, debugServer.GetBayeuxModule());
+
+
+    LUNARPROBE_NS::LunarProbe *lpInstance = LUNARPROBE_NS::LunarProbe::GetInstance();
+    if (lpInstance->GetClientIface() == NULL)
+    {
+        // set the different modules we need
+        gameFilesModule.AddDocRoot("/files/", "/games/");
+        pUrlRouter->AddUrlMatch(&gameFilesUrlMatch);
+
+        pFileModule->AddDocRoot("/ldb/", "shared/libgameengine/luadb/static/");
+        pUrlRouter->AddUrlMatch(&ldbUrlMatch);
+
+        pUrlRouter->AddUrlMatch(&bayeuxUrlMatch);
+
+        pUrlRouter->SetNextModule(&lpIndexModule);
+
+        lpInstance->SetClientIface(&clientIface);
+        serverThread.Start();
+    }
+    return lpInstance;
+}
+
+int main(int argc, char *argv[])
 {
     char inputBuff[1024];
     char *command;

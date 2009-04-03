@@ -106,6 +106,9 @@ public: // Lua methods - called from LUA
     // Resumes a particular debug context
     static int  Resume(LuaStack stack);
 
+    // Lists a folder
+    static int  ListDir(LuaStack stack);
+
     // Loads a file on a context
     static int  LoadFile(LuaStack stack);
 

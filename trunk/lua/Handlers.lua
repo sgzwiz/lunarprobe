@@ -23,7 +23,7 @@
     the client.
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 
 --------------------------------------------------------------------------------]]
@@ -62,7 +62,7 @@ end
     \param  debugger    -   The debugger context to be modified.
     
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_Reset(debugger, msg_data)
@@ -78,7 +78,7 @@ end
                             }
     
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_Load(debugger, msg_data)
@@ -109,7 +109,7 @@ end
             otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_SetBP(debugger, msg_data)
@@ -142,7 +142,7 @@ end
     \return (0, bp_list)
 
     \version
-            S Panyam 05/Dec/08
+            Sri Panyam 05/Dec/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_GetBPs(debugger, msg_data)
@@ -160,7 +160,7 @@ end
             otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_ClearBP(debugger, msg_data)
@@ -186,7 +186,7 @@ end
             otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_ClearBPs(debugger, msg_data)
@@ -205,7 +205,7 @@ end
     \return (0) if successful, otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_Step(debugger, msg_data)
@@ -229,7 +229,7 @@ end
     \return (0) if successful, otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_Next(debugger, msg_data)
@@ -259,7 +259,7 @@ end
     \return (0) if successful, otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_Until(debugger, msg_data)
@@ -293,7 +293,7 @@ end
     \return (0) if successful, otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_Finish(debugger, msg_data)
@@ -315,7 +315,7 @@ end
     \return (0) if successful, otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_Continue(debugger, msg_data)
@@ -337,7 +337,7 @@ end
     \return (0, result) if successful, otherwise (-1, error message) on error
 
     \version
-            S Panyam 10/Nov/08
+            Sri Panyam 10/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_Print(debugger, msg_data)
@@ -356,7 +356,7 @@ end
     \return (0, list of lines) if successful, otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_List(debugger, msg_data)
@@ -374,7 +374,7 @@ end
     \return (0, ) if successful, otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_Set(debugger, msg_data)
@@ -391,7 +391,7 @@ end
     \return (0, (var/value) pairs) if successful, otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_Eval(debugger, msg_data)
@@ -419,7 +419,7 @@ end
     \return (0, (var/value) pairs) if successful, otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_Local(debugger, msg_data)
@@ -458,7 +458,7 @@ end
     \return (0, (var/value) pairs) if successful, otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_Locals(debugger, msg_data)
@@ -488,7 +488,7 @@ end
     \return (0, (var/value) pairs) if successful, otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_UpValue(debugger, msg_data)
@@ -531,7 +531,7 @@ end
     \return (0, (var/value) pairs) if successful, otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_UpValues(debugger, msg_data)
@@ -559,7 +559,7 @@ end
     \return (0) if successful, otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_Frame(debugger, msg_data)
@@ -574,7 +574,7 @@ end
             otherwise (-1, error message) on error
 
     \version
-            S Panyam 07/Nov/08
+            Sri Panyam 07/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_Contexts(debugger, msg_data)
@@ -601,6 +601,30 @@ function MsgFunc_Contexts(debugger, msg_data)
 end
 
 --[[------------------------------------------------------------------------------
+    \brief  Returns a list of files in a directory.
+
+    The file contents are returned within a given range.
+    \param  debugger    -   The debugger context.
+    \param  msg_data    -   {'dir' - List of packages to restrict files to.}
+    
+    \return (0, list of files) if successful,
+            otherwise (-1, error message) on error
+
+    \version
+            Sri Panyam 03/Apr/09
+            - Initial version
+--------------------------------------------------------------------------------]]
+function MsgFunc_Files(debugger, msg_data)
+    local directory     = msg_data["dir"]
+
+    if directory == nil then
+        directory = "."
+    end
+
+    return debugger:ListDir(directory);
+end
+
+--[[------------------------------------------------------------------------------
     \brief  Returns the contents of a file.
 
     The file contents are returned within a given range.
@@ -614,7 +638,7 @@ end
             otherwise (-1, error message) on error
 
     \version
-            S Panyam 12/Nov/08
+            Sri Panyam 12/Nov/08
             - Initial version
 --------------------------------------------------------------------------------]]
 function MsgFunc_File(debugger, msg_data)

@@ -1,154 +1,121 @@
+<!-- saved from url=(0014)about:internet -->
+<html lang="en">
 
-<html>
-    <head>
-    <script type="text/javascript" src = "/ldb/js/jsonerror.js"> </script>
-    <script type="text/javascript" src = "/ldb/js/json.js"> </script>
-    <script type="text/javascript" src = "/ldb/js/ldb.js"> </script>
-    <title>Lua Debugger!!!</title>
-    <script type="text/javascript" defer >
-        // info about each of the channels
-        var clientId        = null;
-        var NUM_CHANNELS    = 5;
-        var ALL_AT_ONCE     = true;
-        var curr_channel    = 1;
-        var channels = [
-            null,
-            {'started': false, 'numevents': 0},
-            {'started': false, 'numevents': 0},
-            {'started': false, 'numevents': 0},
-            {'started': false, 'numevents': 0},
-            {'started': false, 'numevents': 0},
-        ];
+<!-- 
+Smart developers always View Source. 
 
-        function logMessage(text)
-        {
-            var logs = document.getElementById("bayeuxLogs");
-            logs.value += (text + "\n");
-            logs.focus();
-        }
+This application was built using Adobe Flex, an open source framework
+for building rich Internet applications that get delivered via the
+Flash Player or to desktops via Adobe AIR. 
 
-        function onChannelClicked(channel)
-        {
-            var command = document.getElementById("channel" + channel).value;
+Learn more about Flex at http://flex.org 
+// -->
 
-            channels['started'] = !channels['started'];
-            document.getElementById("channel" + channel).value =
-                                    channels['started'] ? "Stop" : "Start";
-        }
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-        function SetPromptForChannel(channel)
-        {
-            var prompt = document.getElementById("channel" + channel + "Prompt").value;
-            function handler(request)
-            {
-                logMessage("SetPrompt Result for channel (" + channel + "): " + request.responseText);
-            }
+<!--  BEGIN Browser History required section -->
+<link rel="stylesheet" type="text/css" href="history/history.css" />
+<!--  END Browser History required section -->
 
-            var data = {'channel': '/bayeux/channel' + channel,
-                        'clientId': clientId,
-                        'prompt': prompt}
+<title></title>
+<script src="flash/AC_OETags.js" language="javascript"></script>
 
-            var datastr = JSON.encode(data);
-            MakeAjaxRequest("POST", "/bayeux/", handler, datastr, true);
-        }
+<!--  BEGIN Browser History required section -->
+<script src="flash/history/history.js" language="javascript"></script>
+<!--  END Browser History required section -->
 
-        function HandleChannelEvent(channel)
-        {
-            function handler(request)
-            {
-                var result      = JSON.decode(request.responseText);
-                var numevents   = channels[channel]['numevents'];
-                if (numevents == 0)
-                {
-                    logMessage("Subscription Result for channel (" + channel + "): " + request.responseText);
+<style>
+body { margin: 0px; overflow:hidden }
+</style>
+<script language="JavaScript" type="text/javascript">
+<!--
+// -----------------------------------------------------------------------------
+// Globals
+// Major version of Flash required
+var requiredMajorVersion = 9;
+// Minor version of Flash required
+var requiredMinorVersion = 0;
+// Minor version of Flash required
+var requiredRevision = 28;
+// -----------------------------------------------------------------------------
+// -->
+</script>
+</head>
 
-                    // this is the first event so ignore it if need be
-                    if (result['firstconn'] == true)
-                    {
-                        logMessage("Channel with Connection: (" + channel + "): " + request.responseText);
-                    }
-                    channels[channel]['started'] = true;
-                    document.getElementById("channel" + channel).value = "Stop";
+<body scroll="no">
+<script language="JavaScript" type="text/javascript">
+<!--
+// Version check for the Flash Player that has the ability to start Player Product Install (6.0r65)
+var hasProductInstall = DetectFlashVer(6, 0, 65);
 
-                    // subscribe to the next channel if more left
-                    curr_channel += 1;
-                    if ( ! ALL_AT_ONCE && curr_channel <= NUM_CHANNELS)
-                    {
-                        SubscribeToChannel(curr_channel);
-                    }
-                }
-                else
-                {
-                    logMessage("Received Event: " + request.responseText);
-                }
+// Version check based upon the values defined in globals
+var hasRequestedVersion = DetectFlashVer(requiredMajorVersion, requiredMinorVersion, requiredRevision);
 
-                channels[channel]['numevents'] = numevents + 1;
-            };
-            return handler;
-        }
+if ( hasProductInstall && !hasRequestedVersion ) {
+	// DO NOT MODIFY THE FOLLOWING FOUR LINES
+	// Location visited after installation is complete if installation is required
+	var MMPlayerType = (isIE == true) ? "ActiveX" : "PlugIn";
+	var MMredirectURL = window.location;
+    document.title = document.title.slice(0, 47) + " - Flash Player Installation";
+    var MMdoctitle = document.title;
 
-        function SubscribeToChannel(channel)
-        {
-            logMessage("Subscribing to channel: " + channel);
-            var data = {'channel': '/meta/subscribe',
-                        'clientId': clientId,
-                        'subscription': '/bayeux/channel' + channel};
-
-            var datastr = JSON.encode(data);
-            MakeAjaxRequest("POST", "/bayeux/", HandleChannelEvent(channel), datastr, true);
-        }
-
-        function handshake()
-        {
-            // subscribe to all channels
-            function callback(request)
-            {
-                if (request.readyState == 4)
-                {
-                    // woo whoo success
-                    var result = JSON.decode(request.responseText);
-                    clientId = result['clientId'];
-
-                    if (ALL_AT_ONCE)
-                    {
-                        for (var i = 1;i <= NUM_CHANNELS;i++)
-                            SubscribeToChannel(i);
-                    }
-                    else
-                    {
-                        SubscribeToChannel(curr_channel);
-                    }
-                }
-            }
-
-            var data = {'channel': '/meta/handshake',
-                        'version': '1.0',
-                        'supportedConnectionTypes': ['long-polling',
-                                                     'callback-polling',
-                                                     'iframe']};
-            var datastr = JSON.encode(data);
-            MakeAjaxRequest("POST", "/bayeux/", callback, datastr);
-        }
-
-        function onDocumentLoaded()
-        {
-            // document.getElementById("bayeuxLogs").value = "";
-            // handshake();
-        }
-
-        window.onload = onDocumentLoaded;
-    </script>
-    </head>
-    <body>
-    <center>
-    <table style="width: 100%; height: 100%" border = 1>
-        <tr>
-            <td width = "250">
-            </td>
-            <td width = "100%">
-            </td>
-        </tr>
-    </table></center>
-    </body>
+	AC_FL_RunContent(
+		"src", "playerProductInstall",
+		"FlashVars", "MMredirectURL="+MMredirectURL+'&MMplayerType='+MMPlayerType+'&MMdoctitle='+MMdoctitle+"",
+		"width", "100%",
+		"height", "100%",
+		"align", "middle",
+		"id", "LDBApp",
+		"quality", "high",
+		"bgcolor", "#869ca7",
+		"name", "LDBApp",
+		"allowScriptAccess","sameDomain",
+		"type", "application/x-shockwave-flash",
+		"pluginspage", "http://www.adobe.com/go/getflashplayer"
+	);
+} else if (hasRequestedVersion) {
+	// if we've detected an acceptable version
+	// embed the Flash Content SWF when all tests are passed
+	AC_FL_RunContent(
+			"src", "LDBApp",
+			"width", "100%",
+			"height", "100%",
+			"align", "middle",
+			"id", "LDBApp",
+			"quality", "high",
+			"bgcolor", "#869ca7",
+			"name", "LDBApp",
+			"allowScriptAccess","sameDomain",
+			"type", "application/x-shockwave-flash",
+			"pluginspage", "http://www.adobe.com/go/getflashplayer"
+	);
+  } else {  // flash is too old or we can't detect the plugin
+    var alternateContent = 'Alternate HTML content should be placed here. '
+  	+ 'This content requires the Adobe Flash Player. '
+   	+ '<a href=http://www.adobe.com/go/getflash/>Get Flash</a>';
+    document.write(alternateContent);  // insert non-flash content
+  }
+// -->
+</script>
+<noscript>
+  	<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+			id="LDBApp" width="100%" height="100%"
+			codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
+			<param name="movie" value="flash/LDBApp.swf" />
+			<param name="quality" value="high" />
+			<param name="bgcolor" value="#869ca7" />
+			<param name="allowScriptAccess" value="sameDomain" />
+			<embed src="flash/LDBApp.swf" quality="high" bgcolor="#869ca7"
+				width="100%" height="100%" name="LDBApp" align="middle"
+				play="true"
+				loop="false"
+				quality="high"
+				allowScriptAccess="sameDomain"
+				type="application/x-shockwave-flash"
+				pluginspage="http://www.adobe.com/go/getflashplayer">
+			</embed>
+	</object>
+</noscript>
+</body>
 </html>
-

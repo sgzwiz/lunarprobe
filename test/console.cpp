@@ -174,7 +174,7 @@ bool processCommand(char *command)
     return running;
 }
 
-int main(int argc, char *argv[])
+int console_main(int argc, char *argv[])
 {
     char inputBuff[1024];
     char *command;

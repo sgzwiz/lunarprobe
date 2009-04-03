@@ -21,6 +21,8 @@ extern const char *strip_initial_spaces(const char *input);
 
 extern NamedLuaStack *GetLuaStack(const std::string &name, bool add = false);
 
+external int console_main(int argc, char *argv[]);
+
 // Tells which mode we are in - either lua or command mode
 // ctrl-d switches between the two modes
 extern bool                            inCmdMode;

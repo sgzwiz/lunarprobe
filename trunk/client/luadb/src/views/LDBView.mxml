@@ -1,18 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
-	<!-- The actual game parameter accessible to all games -->
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:Script>
 		<![CDATA[
-			import mx.core.UIComponent;
-			import mx.controls.Button;
 			// The debugger APP owning this view
 			public var theApp:LDBApp 				= null;
-			
-			// Name of this view
-			public var viewName:String				= null;
-			
-			// Title of this view
-			public var viewTitle:String				= null;
 		]]>
 	</mx:Script>
-</mx:Canvas>
+</mx:Panel>

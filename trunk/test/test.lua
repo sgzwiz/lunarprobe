@@ -1,6 +1,6 @@
-require "Json"
-
 package.path = package.path .. ";./?.lua"
+
+require "Json"
 
 function test1()
     for i = 1, 10 do

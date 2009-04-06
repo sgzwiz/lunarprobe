@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ldbdialogs:OkCancelDialog xmlns:mx="http://www.adobe.com/2006/mxml" 
+					xmlns:ldbdialogs = "dialogs.*"
+					title = "Connect To Game">
+	<mx:Script>
+		<![CDATA[
+		import mx.controls.Alert;
+		
+		public function connected(success:Boolean):void
+		{
+			theApp.SetConnected(success);
+			if (success)
+			{
+				super.success();
+			}
+			else
+			{
+				Alert.show("Connection failed.  Please try again.");
+			}
+		}
+		
+		override protected function success():void
+		{
+			if (theApp == null)
+			{
+				Alert.show("App is null.  No game connection found");
+				return ;
+			}
+
+			var ldbHost:String = ldbHostText.text;
+			if (ldbHost == "")
+			{
+				Alert.show("Invalid game host");
+				return ;
+			}			
+
+			try
+			{
+				var ldbPort:int	= parseInt(ldbPortText.text);
+				theApp.connect(ldbHost, ldbPort, this);
+			}
+			catch (error:Error)
+			{
+				Alert.show("Port is not a valid integer");
+				ldbPortText.setFocus();
+				return ;
+			}
+		}
+		]]>
+	</mx:Script>
+	<mx:VBox width = "100%">
+		<mx:HBox width = "100%">
+			<mx:Label text = "Game Host"/>
+			<mx:TextInput id = "ldbHostText" text = "localhost" width = "100%"/>
+		</mx:HBox>
+		<mx:HBox width = "100%">
+			<mx:Label text = "Game Port"/>
+			<mx:TextInput id = "ldbPortText" text = "9999" width = "100%"/>
+		</mx:HBox>
+	</mx:VBox>
+</ldbdialogs:OkCancelDialog>

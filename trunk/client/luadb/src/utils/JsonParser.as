@@ -1,7 +1,7 @@
 
 package utils
 {
-    import flash.utils.ByteArray;
+    import flash.utils.IDataInput;
     
     /*
      * On-demand parser for parsing json from a stream
@@ -51,7 +51,7 @@ package utils
         /*
          * 
          */
-        private var currBuffer: ByteArray;
+        private var currBuffer: IDataInput;
         
         /*
          * Number of bytes read since start of object
@@ -78,38 +78,47 @@ package utils
          */
         private var objStack: Array = null;
         
-        private static const CHAR_BSLASH:int = '\/'.charCodeAt(0);
-        private static const CHAR_DQUOTE:int = '"'.charCodeAt(0);
-        private static const CHAR_SQUOTE:int = '\''.charCodeAt(0);
-        private static const CHAR_PLUS:int = '+'.charCodeAt(0);
-        private static const CHAR_DOT:int = '.'.charCodeAt(0);
-        private static const CHAR_a:int = 'a'.charCodeAt(0);
-        private static const CHAR_A:int = 'A'.charCodeAt(0);
-        private static const CHAR_e:int = 'e'.charCodeAt(0);
-        private static const CHAR_E:int = 'E'.charCodeAt(0);
-        private static const CHAR_t:int = 't'.charCodeAt(0);
-        private static const CHAR_v:int = 'v'.charCodeAt(0);
-        private static const CHAR_b:int = 'b'.charCodeAt(0);
-        private static const CHAR_f:int = 'f'.charCodeAt(0);
-        private static const CHAR_r:int = 'r'.charCodeAt(0);
-        private static const CHAR_n:int = 'n'.charCodeAt(0);
-        private static const CHAR_z:int = 'z'.charCodeAt(0);
-        private static const CHAR_Z:int = 'Z'.charCodeAt(0);
-        private static const CHAR_0:int = '0'.charCodeAt(0);
-        private static const CHAR_9:int = '9'.charCodeAt(0);
-        private static const CHAR_SLASH:int = '\\'.charCodeAt(0);
-        private static const CHAR_SPACE:int = ' '.charCodeAt(0);
-        private static const CHAR_MINUS:int = '-'.charCodeAt(0);
-        private static const CHAR_UND:int = '_'.charCodeAt(0);
-        private static const CHAR_TAB:int = '\t'.charCodeAt(0);
-        private static const CHAR_CR:int = '\r'.charCodeAt(0);
-        private static const CHAR_LF:int = '\n'.charCodeAt(0);
-        private static const CHAR_COMA:int = ','.charCodeAt(0);
-        private static const CHAR_COLON:int = ':'.charCodeAt(0);
-        private static const CHAR_OSQ:int = '['.charCodeAt(0);
-        private static const CHAR_CSQ:int = ']'.charCodeAt(0);
-        private static const CHAR_OBRACE:int = '{'.charCodeAt(0);
-        private static const CHAR_CBRACE:int = '}'.charCodeAt(0);
+        
+        public static const CHAR_BSLASH:int 	= '\/'.charCodeAt(0);
+        public static const CHAR_DQUOTE:int 	= '"'.charCodeAt(0);
+        public static const CHAR_SLASH:int 		= '\\'.charCodeAt(0);
+        
+        public static const CHAR_SLASH_B:int 	= '\b'.charCodeAt(0);
+        public static const CHAR_SLASH_F:int 	= '\f'.charCodeAt(0);
+        public static const CHAR_SLASH_N:int 	= '\n'.charCodeAt(0);
+        public static const CHAR_SLASH_R:int 	= '\r'.charCodeAt(0);
+        public static const CHAR_SLASH_V:int 	= '\v'.charCodeAt(0);
+        public static const CHAR_SLASH_T:int 	= '\t'.charCodeAt(0);
+        
+        public static const CHAR_SQUOTE:int = '\''.charCodeAt(0);
+        public static const CHAR_PLUS:int = '+'.charCodeAt(0);
+        public static const CHAR_DOT:int = '.'.charCodeAt(0);
+        public static const CHAR_a:int = 'a'.charCodeAt(0);
+        public static const CHAR_A:int = 'A'.charCodeAt(0);
+        public static const CHAR_e:int = 'e'.charCodeAt(0);
+        public static const CHAR_E:int = 'E'.charCodeAt(0);
+        public static const CHAR_t:int = 't'.charCodeAt(0);
+        public static const CHAR_v:int = 'v'.charCodeAt(0);
+        public static const CHAR_b:int = 'b'.charCodeAt(0);
+        public static const CHAR_f:int = 'f'.charCodeAt(0);
+        public static const CHAR_r:int = 'r'.charCodeAt(0);
+        public static const CHAR_n:int = 'n'.charCodeAt(0);
+        public static const CHAR_z:int = 'z'.charCodeAt(0);
+        public static const CHAR_Z:int = 'Z'.charCodeAt(0);
+        public static const CHAR_0:int = '0'.charCodeAt(0);
+        public static const CHAR_9:int = '9'.charCodeAt(0);
+        public static const CHAR_SPACE:int = ' '.charCodeAt(0);
+        public static const CHAR_MINUS:int = '-'.charCodeAt(0);
+        public static const CHAR_UND:int = '_'.charCodeAt(0);
+        public static const CHAR_TAB:int = '\t'.charCodeAt(0);
+        public static const CHAR_CR:int = '\r'.charCodeAt(0);
+        public static const CHAR_LF:int = '\n'.charCodeAt(0);
+        public static const CHAR_COMA:int = ','.charCodeAt(0);
+        public static const CHAR_COLON:int = ':'.charCodeAt(0);
+        public static const CHAR_OSQ:int = '['.charCodeAt(0);
+        public static const CHAR_CSQ:int = ']'.charCodeAt(0);
+        public static const CHAR_OBRACE:int = '{'.charCodeAt(0);
+        public static const CHAR_CBRACE:int = '}'.charCodeAt(0);
                 
         /*
          * Constructor
@@ -118,6 +127,66 @@ package utils
         {
             reset();
         }
+		        
+		public static function JsonEncode(object: *): String
+		{
+			var out: String = "";
+			if (object is Number)
+			{
+				out = (object as Number).toString();
+			}
+			else if (object is Boolean)
+			{
+				out = (object as Boolean).toString();
+			}
+			else if (object is String)
+			{
+				var str:String = object as String;
+				out = "\"";
+				for (var i:int = 0;i < str.length;i++)
+				{
+					var ch = str.charCodeAt(i);
+					if (ch == CHAR_BSLASH) out += "\\/";
+					else if (ch == CHAR_DQUOTE) out += "\\\"";
+					else if (ch == CHAR_SLASH) out += "\\\\";
+					else if (ch == CHAR_SLASH_B) out += "\\b";
+					else if (ch == CHAR_SLASH_F) out += "\\f";
+					else if (ch == CHAR_SLASH_N) out += "\\n";
+					else if (ch == CHAR_SLASH_R) out += "\\r";
+					else if (ch == CHAR_SLASH_V) out += "\\v";
+					else if (ch == CHAR_SLASH_T) out += "\\t";
+                   	else out += str.charAt(i);
+				}
+				out += "\"";
+			}
+			else if (object is Array)
+			{
+				var childArray:Array = object as Array;
+				out = "[ ";
+				for (var index:int = 0;index < childArray.length;index++)
+				{
+					if (index > 0) out += ", ";
+					out += JsonEncode(childArray[index]);
+				}
+				out += " ]";
+			}
+			else if (object is Object)
+			{
+				out = "{ ";
+				for (var key:String in object)
+				{
+					out += JsonEncode(key) + ": ";
+					out += JsonEncode(object[key]);
+				}
+				out += " }";
+			}
+			else
+			{
+				throw new Error("Invalid object type in json encoding: " + object.toString());
+			}
+			return out;
+		}
+		
 
         /*
          * Resets the parser
@@ -144,7 +213,7 @@ package utils
          * Returns nothing.  Call next() to retrieve the next object
          * from the stream (if any).
          */
-        public function processBytes(data:ByteArray): void
+        public function processInput(data:IDataInput): void
         {
             byteBuffers.push(data);
         }

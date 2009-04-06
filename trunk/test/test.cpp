@@ -22,6 +22,98 @@ int                             currStack   = -1;
 // The list of stacks that have been created
 std::vector<NamedLuaStack *>    luaStacks;
 
+//! our bayeux connection handler
+class MyConnHandler : public SConnHandler, public SChannelListener
+{
+public:
+    MyConnHandler(SBayeuxChannel *pChannel, SBayeuxModule *pMod)
+        : pTheChannel(pChannel), pModule(pMod), prompt(" Hello World >> ")
+    {
+        pTheChannel->SetChannelListener(this);
+    }
+
+    void HandleEvent(const JsonNodePtr &message, JsonNodePtr &output)
+    {
+        prompt = message->Get<SString>("prompt", "");
+    }
+
+protected:
+    //! Handle connection in async mode
+    virtual bool HandleConnection() { Start(); return false; }
+
+    //! handles a custom connection
+    virtual int Run()
+    {
+        cerr << "Accepting message from port: " << pServer->GetPort() << ", Socket: " << clientSocket << endl;
+        while (!Stopped())
+        {
+            char buffer[1025];
+
+            clientInput->getline(buffer, 1025);
+            if (clientInput->bad() || clientInput->fail() || clientInput->eof())
+                break ;
+
+            JsonNodePtr value = JsonNodeFactory::StringNode(prompt + buffer);
+            pModule->DeliverEvent(pTheChannel, value);
+        }
+
+        pServer->HandlerFinished(this);
+        return 0;
+    }
+
+protected:
+    //! The channel which is controlling it
+    SBayeuxChannel * pTheChannel;
+
+    //! Module thorough which events are dispatched
+    SBayeuxModule *pModule;
+
+    //! The prompt for this.
+    std::string prompt;
+};
+
+class MyConnFactory : public SConnFactory
+{
+public:
+    MyConnFactory(SBayeuxChannel *pChannel, SBayeuxModule *pMod)
+        : pTheChannel(pChannel), pModule(pMod) { }
+
+    virtual ~MyConnFactory() { }
+
+    virtual SConnHandler *  NewHandler()  { return new MyConnHandler(pTheChannel, pModule); }
+    virtual void            ReleaseHandler(SConnHandler * handler) { delete handler; }
+
+protected:
+    //! The channel which is controlling it
+    SBayeuxChannel * pTheChannel;
+
+    //! Module thorough which events are dispatched
+    SBayeuxModule *pModule;
+};
+
+class MyBayeuxChannel : public virtual SBayeuxChannel, public virtual SServer
+{
+public:
+    //! Constructor
+    MyBayeuxChannel(SBayeuxModule *pMod, const std::string &name, int port) :
+        SBayeuxChannel(name, pMod), SServer(port)
+    {
+        SetConnectionFactory(new MyConnFactory(this, pModule));
+    }
+
+protected:
+    void HandleConnection(int clientSocket)
+    {
+        JsonNodePtr value = JsonNodeFactory::StringNode(" ===== Handling New Connection on Channel: " + Name());
+        pModule->DeliverEvent(this, value);
+
+        SServer::HandleConnection(clientSocket);
+
+        value = JsonNodeFactory::StringNode(" ===== Connection Finished on Channel: " + Name());
+        pModule->DeliverEvent(this, value);
+    }
+};
+
 char *showPrompt(char *inputBuff = NULL)
 {
 #ifdef USING_READLINE
@@ -250,6 +342,20 @@ void InitLunarProbe(std::string staticPath)
         pUrlRouter->SetNextModule(&lpIndexModule);
 
         lpInstance->SetClientIface(&clientIface);
+
+        // and add 5 test channel
+        for (int i = 0;i < 5;i++)
+        {
+            SStringStream sstr;
+            sstr << "/channel" << (i + 1);
+            int port = 1010 + (i * 10);
+            MyBayeuxChannel *pChannel = new MyBayeuxChannel(debugServer.GetBayeuxModule(), sstr.str(), port);
+            cerr << "Starting bayeux channel: " << sstr.str() << " on port: " << port << endl;
+            debugServer.GetBayeuxModule()->RegisterChannel(pChannel);
+            SThread *pChannelThread = new SThread(pChannel);
+            pChannelThread->Start();
+        }
+
         serverThread.Start();
     }
 }

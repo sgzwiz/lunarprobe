@@ -14,12 +14,15 @@ function ChannelEventHandler(request)
         // this is the first event so ignore it if need be
         channelStarted = true;
 
-        ListDir(".")
+        // ListDir(".")
+        GetClient().Connected();
     }
-    else
-    {
-        alert("Received Event: " + request.responseText);
-    }
+    GetClient().HandleEvent(result);
+}
+
+function IsConnected()
+{
+    return clientId != null;
 }
 
 function SubscribeToChannel()
@@ -56,16 +59,20 @@ function DoHandshake()
     MakeAjaxRequest("POST", "/bayeux/", callback, datastr);
 }
 
+function GetClient()
+{
+    return ElementById("LDBApp");
+}
+
 function LuaDBLoaded()
 {
     // now do the channel subscriptions
     DoHandshake();
 }
 
-function SendCommand(cmd, call_back, cmd_data)
+function SendCommand(cmd, cmd_data, call_back_id)
 {
-    msgCounter  = msgCounter + 1;
-    var command = {'id': msgCounter, 'cmd': cmd, 'data': cmd_data};
+    var command = {'id': call_back_id, 'cmd': cmd, 'data': cmd_data};
     var data    = {'channel': '/ldb',
                    'clientId': clientId,
                    'command': JSON.encode(command)}
@@ -75,18 +82,16 @@ function SendCommand(cmd, call_back, cmd_data)
         if (call_back != null)
         {
             var result = JSON.decode(request.responseText);
+            GetClient().CommandCallback(call_back_id, result);
             call_back(result);
         }
     }
 
     var datastr = JSON.encode(data);
-    MakeAjaxRequest("POST", "/bayeux/", handler, datastr, true);
+    MakeAjaxRequest("POST", "/bayeux/", handler, datastr, false);
 }
 
-function GetClient()
-{
-    return ElementById("LDBApp");
-}
+
 
 function EvalExpression(context, expr, token)
 {

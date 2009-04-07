@@ -4,6 +4,9 @@
 		<![CDATA[
 			// The debugger APP owning this view
 			public var theApp:LDBApp 				= null;
+			public function SetConnected(conn:Boolean): void
+			{
+			}
 		]]>
 	</mx:Script>
 </mx:Panel>

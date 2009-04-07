@@ -145,7 +145,7 @@ package utils
 				out = "\"";
 				for (var i:int = 0;i < str.length;i++)
 				{
-					var ch = str.charCodeAt(i);
+					var ch:int = str.charCodeAt(i);
 					if (ch == CHAR_BSLASH) out += "\\/";
 					else if (ch == CHAR_DQUOTE) out += "\\\"";
 					else if (ch == CHAR_SLASH) out += "\\\\";

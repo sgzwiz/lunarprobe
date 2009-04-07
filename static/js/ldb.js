@@ -4,9 +4,15 @@ var numEvents       = -1;
 var channelStarted  = false;
 var msgCounter      = 0;
 
+function GetClient()
+{
+    return ElementById("LDBApp");
+}
+
 function ChannelEventHandler(request)
 {
     var result      = JSON.decode(request.responseText);
+    var ldbClient   = GetClient();
     numEvents = numEvents + 1;
 
     if (numEvents == 0)
@@ -15,9 +21,9 @@ function ChannelEventHandler(request)
         channelStarted = true;
 
         // ListDir(".")
-        GetClient().Connected();
+        ldbClient.OnConnected();
     }
-    GetClient().HandleEvent(result);
+    ldbClient.HandleEvent(result);
 }
 
 function IsConnected()
@@ -25,11 +31,11 @@ function IsConnected()
     return clientId != null;
 }
 
-function SubscribeToChannel()
+function SubscribeToChannel(channel)
 {
     var data = {'channel': '/meta/subscribe',
                 'clientId': clientId,
-                'subscription': '/ldb'};
+                'subscription': channel};
 
     var datastr = JSON.encode(data);
     MakeAjaxRequest("POST", "/bayeux/", ChannelEventHandler, datastr, true);
@@ -46,7 +52,12 @@ function DoHandshake()
             var result = JSON.decode(request.responseText);
             clientId = result['clientId'];
 
-            SubscribeToChannel();
+            SubscribeToChannel("/ldb");
+            SubscribeToChannel("/channel1");
+            SubscribeToChannel("/channel2");
+            SubscribeToChannel("/channel3");
+            SubscribeToChannel("/channel4");
+            SubscribeToChannel("/channel5");
         }
     }
 
@@ -56,18 +67,13 @@ function DoHandshake()
                                              'callback-polling',
                                              'iframe']};
     var datastr = JSON.encode(data);
-    MakeAjaxRequest("POST", "/bayeux/", callback, datastr);
-}
-
-function GetClient()
-{
-    return ElementById("LDBApp");
+    MakeAjaxRequest("POST", "/bayeux/", callback, datastr, false);
 }
 
 function LuaDBLoaded()
 {
     // now do the channel subscriptions
-    DoHandshake();
+    // DoHandshake();
 }
 
 function SendCommand(cmd, cmd_data, call_back_id)

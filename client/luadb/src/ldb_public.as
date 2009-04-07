@@ -52,7 +52,8 @@ private function CommandCallback(callback_id: *, result: *): void
 {
 	var callback_func:Function = commandCallbacks[callback_id];
 	delete commandCallbacks[callback_id];
-	callback_func(result);
+	if (callback_func != null)
+		callback_func(result);
 }
 
 // Called by JS when an event is recieved
@@ -62,7 +63,7 @@ private function HandleEvent(event: *): void
 }
 
 // Sends a command via JS to the debugger.
-private function SendCommand(cmd: String, cmd_data: *, callback: Function): void
+public function SendCommand(cmd: String, cmd_data: *, callback: Function): void
 {
 	var currFuncIndex:Number = numFuncCalls++;
 	commandCallbacks[currFuncIndex] = callback;

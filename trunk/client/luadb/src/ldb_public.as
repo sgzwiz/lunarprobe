@@ -9,6 +9,7 @@ import flash.net.*;
 
 import mx.collections.*;
 import mx.containers.TitleWindow;
+import mx.controls.Menu;
 import mx.controls.ProgressBar;
 import mx.events.*;
 
@@ -104,15 +105,19 @@ private function onMainMenuItem(event): void
 	var which:String = event.item.@id;
 	if (which == "connectMI")
 	{
+		connect("", 0, this);
+		/*
 		connectDialog = new ConnectDialog();
 		connectDialog.theApp = this;
 		connectDialog.show(true, this);
+		*/
 	}
 }
 
 public function connect(host: String, port: int, progress:*): Boolean
 {
-	ExternalInterface.call("DoHandshake", host, port);
+	// ExternalInterface.call("DoHandshake", host, port);
+	ExternalInterface.call("DoHandshake");
 	return true;
 }
 

@@ -118,10 +118,12 @@ void BayeuxClientIface::HandleEvent(const JsonNodePtr &event, JsonNodePtr &outpu
 //*****************************************************************************
 int BayeuxClientIface::SendMessage(const char *data, unsigned datasize)
 {
-    SMutexLock socketWriteLock(socketWriteMutex);
-
-    JsonNodePtr value = JsonNodeFactory::StringNode(SString(data, datasize));
-    pModule->DeliverEvent(this, value);
+    if (pModule != NULL)
+    {
+        SMutexLock socketWriteLock(socketWriteMutex);
+        JsonNodePtr value = JsonNodeFactory::StringNode(SString(data, datasize));
+        pModule->DeliverEvent(this, value);
+    }
 
     return 0;
 }

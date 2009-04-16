@@ -29,7 +29,7 @@
 #define _DEBUGCONTEXT_H_
 
 #include <string>
-#include "thread/mutex.h"
+#include "halley.h"
 
 LUNARPROBE_NS_BEGIN
 

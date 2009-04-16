@@ -28,9 +28,7 @@
 #define _BAYEUX_CLIENT_IFACE_H_
 
 #include "ClientIface.h"
-#include "json/json.h"
-#include "eds/http/bayeux/channel.h"
-#include "thread/mutex.h"
+#include "halley.h"
 
 LUNARPROBE_NS_BEGIN
 

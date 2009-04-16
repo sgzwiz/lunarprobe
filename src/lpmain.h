@@ -29,6 +29,7 @@
 
 #include "LuaUtils.h"
 #include "LunarProbe.h"
+#include "DebugServer.h"
 #include "DebugContext.h"
 #include "LuaBindings.h"
 #include "ClientIface.h"

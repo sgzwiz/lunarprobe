@@ -28,8 +28,7 @@
 #define _TCP_CLIENT_INTERFACE_H_
 
 #include "ClientIface.h"
-#include "net/connhandler.h"
-#include "thread/mutex.h"
+#include "halley.h"
 
 LUNARPROBE_NS_BEGIN
 

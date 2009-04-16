@@ -28,7 +28,7 @@
 #define _LUABINDINGS_H_
 
 #include "LuaUtils.h"
-#include "thread/mutex.h"
+#include "halley.h"
 
 LUNARPROBE_NS_BEGIN
 

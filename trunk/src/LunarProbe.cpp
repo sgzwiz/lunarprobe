@@ -126,10 +126,9 @@ void LunarProbe::SetClientIface(ClientIface *pClientIface_)
 //*****************************************************************************
 int LunarProbe::Attach(LuaStack pStack, const char *name)
 {
-    int result = -1;
-    if (GetClientIface()->StartDebugging(pStack, name))
-        result = lua_sethook(pStack, HookFunction, HookMask, HookCount);
-    return result;
+    if (GetClientIface() != NULL)
+        GetClientIface()->StartDebugging(pStack, name);
+    return lua_sethook(pStack, HookFunction, HookMask, HookCount);
 }
 
 //*****************************************************************************
@@ -143,7 +142,8 @@ int LunarProbe::Attach(LuaStack pStack, const char *name)
 //*****************************************************************************
 int LunarProbe::Detach(LuaStack pStack)
 {
-    GetClientIface()->StopDebugging(pStack);
+    if (GetClientIface() != NULL)
+        GetClientIface()->StopDebugging(pStack);
     return lua_sethook(pStack, NULL, 0, 0);
 }
 

@@ -44,7 +44,11 @@ const int HookCount    = 10000;
 //*****************************************************************************
 void HookFunction(LuaStack pStack, LuaDebug pDebug)
 {
-    LunarProbe::GetInstance()->GetClientIface()->HandleDebugHook(pStack, pDebug);
+    ClientIface *pClientIface = LunarProbe::GetInstance()->GetClientIface();
+    if (pClientIface != NULL)
+    {
+        pClientIface->HandleDebugHook(pStack, pDebug);
+    }
 }
 
 //*****************************************************************************

@@ -96,8 +96,15 @@ BayeuxClientIface::~BayeuxClientIface()
 //*****************************************************************************
 void BayeuxClientIface::HandleEvent(const JsonNodePtr &event, JsonNodePtr &output)
 {
-    SString message(event->Get<SString>("command", ""));
-    GetLuaBindings()->HandleMessage(message);
+    // SString message(event->Get<SString>("command", ""));
+    JsonNodePtr message = event->Get("command");
+
+    std::string result;
+    GetLuaBindings()->HandleMessage(message, result);
+
+    DefaultJsonInputStream<std::string::const_iterator> instream(result.begin(), result.end());
+    DefaultJsonBuilder jbuilder;
+    output = jbuilder.Build(&instream);
 }
 
 
@@ -118,8 +125,10 @@ void BayeuxClientIface::HandleEvent(const JsonNodePtr &event, JsonNodePtr &outpu
 //*****************************************************************************
 int BayeuxClientIface::SendMessage(const char *data, unsigned datasize)
 {
+    std::cerr << "Here Sending Message: " << pModule << std::endl;
     if (pModule != NULL)
     {
+        std::cerr << "Sending Message: " << data << std::endl;
         SMutexLock socketWriteLock(socketWriteMutex);
         JsonNodePtr value = JsonNodeFactory::StringNode(SString(data, datasize));
         pModule->DeliverEvent(this, value);

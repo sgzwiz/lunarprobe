@@ -53,11 +53,13 @@ function DoHandshake()
             clientId = result['clientId'];
 
             SubscribeToChannel("/ldb");
+            /*
             SubscribeToChannel("/channel1");
             SubscribeToChannel("/channel2");
             SubscribeToChannel("/channel3");
             SubscribeToChannel("/channel4");
             SubscribeToChannel("/channel5");
+            */
         }
     }
 
@@ -81,15 +83,16 @@ function SendCommand(cmd, cmd_data, call_back_id)
     var command = {'id': call_back_id, 'cmd': cmd, 'data': cmd_data};
     var data    = {'channel': '/ldb',
                    'clientId': clientId,
-                   'command': JSON.encode(command)}
+                   'command': (command)}
+
     function handler(request)
     {
         // alert("SendCommand Result: " + request.responseText);
-        if (call_back != null)
+        if (request.readyState == 4 && call_back_id != null)
         {
             var result = JSON.decode(request.responseText);
             GetClient().CommandCallback(call_back_id, result);
-            call_back(result);
+            // call_back(result);
         }
     }
 

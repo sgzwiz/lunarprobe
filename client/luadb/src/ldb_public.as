@@ -34,6 +34,9 @@ private var connectDialog:OkCancelDialog		= null;
 
 private function onCreationComplete(event: Object): void
 {
+	filesView.theApp = this;
+	contextsView.theApp = this;
+	
     // flash.system.Security.allowDomain("localhost:8080");
     // will be called by JS when it has recieved the result of a command we invoked
     ExternalInterface.addCallback("CommandCallback", CommandCallback);

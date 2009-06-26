@@ -336,6 +336,31 @@ void LuaBindings::HandleMessage(const std::string &message)
     }
 }
 
+//*****************************************************************************
+/*!
+ *  \brief  Called by the debugger to notify LUA to handle a client message
+ *  in pure json.  
+ *
+ *  \version
+ *      - S Panyam  26/06/2009
+ *      Initial version.
+ */
+//*****************************************************************************
+void LuaBindings::HandleMessage(const JsonNodePtr &message, std::string &output)
+{
+    output = "null";
+    if (CallLuaFunc("HandleMessage", "uj>s", this, message.Data(), &output) != 0)
+    {
+        // request a reload so that we give the user an opportunity to fix
+        // any issues that have arisen from the source file.
+        RequestReload();
+
+        // and send out a "failure" message
+        std::string error_msg = "{'code': -1, 'value': 'Unknown error in lua file.'}";
+        pClientIface->SendMessage(error_msg.c_str(), error_msg.size());
+    }
+}
+
 
 //*****************************************************************************
 /*!
@@ -413,7 +438,9 @@ int LuaBindings::ListDir(LuaStack stack)
 
     if (SFileModule::ReadDirectory(directory, entries))
     {
+        // lua_newtable(stack);
         lua_pushinteger(stack, 0);
+        // lua_setfield(stack, -2, "code");
         lua_newtable(stack);
 
         std::vector<DirEnt>::iterator iter = entries.begin();
@@ -439,14 +466,17 @@ int LuaBindings::ListDir(LuaStack stack)
 
             lua_settable(stack, -3);
         }
+        // lua_setfield(stack, -2, "value");
     }
     else
     {
         lua_pushinteger(stack, 0);
+        // lua_setfield(stack, -2, "code");
         lua_pushstring(stack, "Could not read directory.");
+        // lua_setfield(stack, -2, "value");
     }
 
-    return 0;
+    return 2;
 }
 
 //*****************************************************************************

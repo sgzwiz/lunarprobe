@@ -164,6 +164,88 @@ int LuaUtils::RunLuaString(lua_State *L, const char *lua_str, int len)
 
 //*****************************************************************************
 /*!
+ *  \brief  Wrapper to push a json node smart ptr.
+ *
+ *  \param  L       Stack on which the json node is pushed.
+ *  \param  node    The node to be pushed.
+ *
+ *  \version
+ *      - S Panyam  26/06/2009
+ *      Initial version.
+ */
+//*****************************************************************************
+void LuaUtils::PushJson(lua_State  *L, const JsonNodePtr &node)
+{
+    PushJson(L, node.Data());
+}
+
+//*****************************************************************************
+/*!
+ *  \brief  Pushes a json object onto the lua stack.
+ *
+ *  \param  L       Stack on which the json node is pushed.
+ *  \param  node    The node to be pushed.
+ *
+ *  \version
+ *      - S Panyam  26/06/2009
+ *      Initial version.
+ */
+//*****************************************************************************
+void LuaUtils::PushJson(lua_State  *L, const JsonNode *node)
+{
+    if (!node)
+    {
+        lua_pushnil(L);
+        return ;
+    }
+
+    switch (node->Type())
+    {
+        case JNT_NULL: lua_pushnil(L); break;
+        case JNT_BOOL: lua_pushboolean(L, node->Value<bool>()); break;
+        case JNT_INT: lua_pushinteger(L, node->Value<int>()); break;
+        case JNT_DOUBLE: lua_pushnumber(L, node->Value<double>()); break;
+        case JNT_STRING: lua_pushstring(L, node->Value<std::string>().c_str()); break;
+        case JNT_LIST:
+            lua_newtable(L);
+            for (unsigned i = 0, size = node->Size();i < size;++i)
+            {
+                lua_pushinteger(L, i + 1);
+                PushJson(L, node->Get(i));
+                lua_settable(L, -3);
+            } 
+            break;
+        case JNT_OBJECT: 
+            const JsonObjectNode *objNode = static_cast<const JsonObjectNode *>(node);
+
+            lua_newtable(L);
+            for (JsonObjectNode::const_iterator iter = objNode->begin(); iter != objNode->end(); ++iter)
+            {
+                PushJson(L, iter->second);
+                lua_setfield(L, -2, iter->first.c_str());
+            }
+            break;
+    }
+}
+
+//*****************************************************************************
+/*!
+ *  \brief  Converts the top most item on the stack into a json node.
+ *
+ *  \param  L       Stack from which the json node is pulled.
+ *  \param  input   The node to be saved as.
+ *
+ *  \version
+ *      - S Panyam  26/06/2009
+ *      Initial version.
+ */
+//*****************************************************************************
+void LuaUtils::PopJson(lua_State  *L, JsonNodePtr &output)
+{
+}
+
+//*****************************************************************************
+/*!
  *  \brief  Same as CallLuaFunc but takes a va_list instead of the variable
  *  arg list.
  *
@@ -211,6 +293,9 @@ int LuaUtils::VCallLuaFunc(lua_State  *L, const char *funcname, const char *func
                 break;
             case 's':   // long arg
                 lua_pushstring(L, va_arg(vl, char *));
+                break;
+            case 'j':   // table
+                PushJson(L, va_arg(vl, const JsonNode *));
                 break;
             case '>':
                 goto endwhile;
@@ -277,7 +362,9 @@ endwhile:
                 case 's': // string result 
                     if (!lua_isstring(L, nres))
                         fprintf(stderr, "Stack %p - Wrong result type.  Expected string.", L);
-                    *va_arg(vl, const char **) = lua_tostring(L, nres);
+                    
+                    fprintf(stderr, "String RetVal = %s.", lua_tostring(L, nres));
+                    *va_arg(vl, std::string *) = std::string(lua_tostring(L, nres));
                     break ;
 
                 default:

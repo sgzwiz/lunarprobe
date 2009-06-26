@@ -398,6 +398,7 @@ end
             - Initial version
 --------------------------------------------------------------------------------]]
 function Debugger:SendMessage(msg)
+    print("Sending Message: " .. msg)
     DebugLib.WriteString(self.cppDebugger, msg)
 end
 

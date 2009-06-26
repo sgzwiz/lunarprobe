@@ -31,6 +31,8 @@
 #include <stdarg.h>
 #include "lpfwddefs.h"
 
+#include "halley.h"
+
 LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
@@ -65,6 +67,15 @@ public:
                                      int           ntop = -1,
                                      int           levels = 1,
                                      const char *  varname = NULL);
+
+    // Push a json node within a smart ptr onto the stack
+    static void PushJson(lua_State  *L, const JsonNodePtr &node);
+
+    // Push a json node onto the stack
+    static void PushJson(lua_State  *L, const JsonNode *node);
+
+    // Pop a json node from the stack
+    static void PopJson(lua_State  *L, JsonNodePtr &output);
 };
 
 LUNARPROBE_NS_END

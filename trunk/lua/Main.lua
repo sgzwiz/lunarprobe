@@ -240,7 +240,8 @@ end
 --------------------------------------------------------------------------------]]
 function HandleMessage(pDebugger, pMessage)
     local debugger      = GetDebugger(pDebugger)
-    local message       = Json.Decode(pMessage)
+    -- local message       = Json.Decode(pMessage)
+    local message       = pMessage
     local msg_id        = message["id"]
     local msg_cmd       = message["cmd"]
     local msg_data      = message["data"]
@@ -256,12 +257,14 @@ function HandleMessage(pDebugger, pMessage)
         code, value = debugger.commandHandlers[msg_cmd](debugger, msg_data)
     end
 
-    if code == nil then
-        code, value = 0, "Success"
-    end
-
     -- simply send back the message along with the type, 
     -- code and value of the response
-    debugger:SendReply(code, value, message)
+    -- debugger:SendReply(code, value, message)
+    return Json.Encode({["type"]        = "Reply",
+                        ["code"]        = code,
+                        ["value"]       = value,
+                        ["original"]    = pMessage})
+    ---[[
+    --]]
 end
 

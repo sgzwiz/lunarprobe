@@ -70,6 +70,10 @@ public:
     // Called by the debugger to notify LUA to handle a client message
     virtual void HandleMessage(const std::string &message);
 
+    // Called by the debugger to notify LUA to handle a client message in
+    // unstringified json format 
+    virtual void HandleMessage(const JsonNodePtr &message, std::string &output);
+
     // Requests a reload of the scripts.
     void RequestReload();
 

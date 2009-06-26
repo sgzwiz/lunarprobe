@@ -621,7 +621,9 @@ function MsgFunc_Files(debugger, msg_data)
         directory = "."
     end
 
-    return debugger:ListDir(directory);
+    return DebugLib.ListDir(directory)
+    -- local listing = DebugLib.ListDir(directory)
+    -- return listing["code"], listing["value"]
 end
 
 --[[------------------------------------------------------------------------------

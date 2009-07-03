@@ -9,7 +9,6 @@ import flash.net.*;
 
 import mx.collections.*;
 import mx.containers.TitleWindow;
-import mx.controls.Menu;
 import mx.controls.ProgressBar;
 import mx.events.*;
 
@@ -104,7 +103,7 @@ private function OnConnected(): void
 	SetConnected(true);
 }
 
-private function onMainMenuItem(event): void
+private function onMainMenuItem(event: MenuEvent): void
 {
 	var which:String = event.item.@id;
 	if (which == "connectMI")

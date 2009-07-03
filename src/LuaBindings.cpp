@@ -461,7 +461,7 @@ int LuaBindings::ListDir(LuaStack stack)
             lua_pushboolean(stack, isdir);
             lua_setfield(stack, -2, "isdir");
 
-            lua_pushboolean(stack, iter->entStat.st_size);
+            lua_pushinteger(stack, iter->entStat.st_size);
             lua_setfield(stack, -2, "size");
 
             lua_settable(stack, -3);

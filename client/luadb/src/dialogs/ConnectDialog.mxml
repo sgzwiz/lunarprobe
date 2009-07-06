@@ -19,7 +19,7 @@
 			}
 		}
 		
-		override protected function success():void
+		override protected function success(event: Event = null):void
 		{
 			if (theApp == null)
 			{
@@ -38,6 +38,7 @@
 			{
 				var ldbPort:int	= parseInt(ldbPortText.text);
 				theApp.connect(ldbHost, ldbPort, this);
+				super.success(event);
 			}
 			catch (error:Error)
 			{

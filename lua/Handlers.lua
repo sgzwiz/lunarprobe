@@ -632,6 +632,7 @@ end
     The file contents are returned within a given range.
     \param  debugger    -   The debugger context.
     \param  msg_data    -   {'file'     -   Name of the file to inspect,
+                             'raw'      -   Return raw file (default = false)
                              'first'    -   Starting line (default 0)
                              'last'     -   ending line   (default -1 => last)
                             }
@@ -645,11 +646,16 @@ end
 --------------------------------------------------------------------------------]]
 function MsgFunc_File(debugger, msg_data)
     local filename      = msg_data["file"]
+    local raw           = msg_data["raw"]
     local first_line    = msg_data["first"]
     local last_line     = msg_data["last"]
 
     if filename == nil then
         return -1, "Filename MUST be specified"
+    end
+
+    if raw == nil then
+        raw = false
     end
 
     if first_line == nil or type(first_line) ~= "number" or first_line <= 0 then

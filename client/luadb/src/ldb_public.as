@@ -31,6 +31,9 @@ private var commandCallbacks:*					= {};
 private var numFuncCalls:Number					= 0;
 private var connectDialog:OkCancelDialog		= null;
 
+// Currently opened file
+private var currentFile: String					= null;
+
 private function onCreationComplete(event: Object): void
 {
 	filesView.theApp = this;
@@ -80,6 +83,9 @@ public function Log(str: String): void
 }
 
 
+/**
+ * Sets the connected status of the debugger.
+ */
 public function SetConnected(conn:Boolean): void
 {
 	if (conn)
@@ -97,6 +103,23 @@ public function isConnected(): Boolean
 	return ExternalInterface.call("IsConnected");
 }
 
+/**
+ * Sets a given file as the current file in the text editor.
+ */
+public function setCurrentFile(fullPath: String, contents: String): void 
+{
+	currentFile = fullPath;
+	sourceFileArea.text = contents;
+}
+
+/**
+ * Gets the currently open file in the editor.
+ */
+public function getCurrentFile(): String
+{
+	return currentFile;
+}
+
 private function OnConnected(): void
 {
 	connectDialog.setVisible(false);
@@ -108,11 +131,11 @@ private function onMainMenuItem(event: MenuEvent): void
 	var which:String = event.item.@id;
 	if (which == "connectMI")
 	{
-		connect("", 0, this);
-		/*
 		connectDialog = new ConnectDialog();
 		connectDialog.theApp = this;
 		connectDialog.show(true, this);
+		/*
+		connect("", 0, this);
 		*/
 	}
 }
@@ -133,8 +156,8 @@ private function CommandEvaluate(context: String, expr:String): void
 	SendCommand("eval", {'context': context, 'expr_str': expr}, result_callback);
 }
 
-/*
 
+/*
 public function SubscribeToChannel(channel:String): void
 {
 	if (!isConnected())

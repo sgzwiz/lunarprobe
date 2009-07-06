@@ -46,7 +46,7 @@ package dialogs
 			setConstraint(cancelButton, "width", "50%");
 			
 			addEventListener(CloseEvent.CLOSE, cancel);
-			okButton.addEventListener(MouseEvent.CLICK, okHandler);
+			okButton.addEventListener(MouseEvent.CLICK, success);
 			cancelButton.addEventListener(MouseEvent.CLICK, cancel);
 		}
 		
@@ -93,15 +93,12 @@ package dialogs
 		{
 			if (visible)
 			{
-				setVisible(true);
 				PopUpManager.addPopUp(this, parent, true);
 				PopUpManager.centerPopUp(this);
-				cancelled = false;
 			}
 			else
 			{
 				PopUpManager.removePopUp(this);	
-				this.setVisible(false);
 			}
 		}
 		
@@ -111,14 +108,7 @@ package dialogs
 			show(false);
 		}
 		
-		protected function okHandler(event:Event):void
-		{
-			if (event)
-				event.stopPropagation();
-			success();
-		}
-		
-		protected function success():void
+		protected function success(event:Event = null):void
 		{
 			cancelled = false;
 			show(false);

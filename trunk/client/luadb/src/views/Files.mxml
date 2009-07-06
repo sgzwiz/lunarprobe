@@ -8,7 +8,8 @@
 	    <mx:Button id = "refreshFilesButton" label = "Refresh" click="onRefreshClicked(event);"/>
 	    <mx:Tree id = "filesTree" width = "100%"
 	            verticalScrollPolicy = "auto" horizontalScrollPolicy = "on"
-	            dataProvider = "{fileTreeData}" change = "onItemChange(event);">
+	            dataProvider = "{fileTreeData}"
+	            itemOpen="onItemOpen" itemDoubleClick="onItemDoubleClick" itemClick="onItemDoubleClick">
 	    </mx:Tree>
 	</mx:VBox>
 </LDBView>

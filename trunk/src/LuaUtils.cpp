@@ -363,7 +363,6 @@ endwhile:
                     if (!lua_isstring(L, nres))
                         fprintf(stderr, "Stack %p - Wrong result type.  Expected string.", L);
                     
-                    fprintf(stderr, "String RetVal = %s.", lua_tostring(L, nres));
                     *va_arg(vl, std::string *) = std::string(lua_tostring(L, nres));
                     break ;
 

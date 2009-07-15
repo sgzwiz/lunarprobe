@@ -64,9 +64,9 @@ public:
                     const std::string & msgBoundary = "LUNARPROBE_MESSAGE_BOUNDARY");
     virtual ~HttpDebugServer();
 
-    inline SHttpReaderStage *  GetReaderStage()    { return &requestReader; }
-    inline SHttpHandlerStage * GetHandlerStage()   { return &requestHandler; }
-    inline SWriterModule *     GetWriterModule()   { return &writerModule; }
+    inline SHttpReaderStage *  GetReaderStage()     { return &requestReader; }
+    inline SHttpHandlerStage * GetHandlerStage()    { return &requestHandler; }
+    inline SHttpWriterStage  * GetWriterStage()     { return &requestWriter; }
     inline SContentModule *    GetContentModule()  { return &contentModule; }
     inline SBayeuxModule *     GetBayeuxModule()   { return &bayeuxModule; }
     inline SFileModule *       GetFileModule()     { return &fileModule; }
@@ -78,7 +78,7 @@ protected:
 
     SHttpReaderStage    requestReader;
     SHttpHandlerStage   requestHandler;
-    SWriterModule       writerModule;
+    SHttpWriterStage    requestWriter;
     SContentModule      contentModule;
     SBayeuxModule       bayeuxModule;
     SFileModule         fileModule;

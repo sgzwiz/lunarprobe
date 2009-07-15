@@ -98,16 +98,20 @@ HttpDebugServer::HttpDebugServer(int                    port,
                                  const std::string &    msgBoundary) :
     SEvServer(port),
     pClientIface(pIface),
-    contentModule(&writerModule),
     bayeuxModule(&contentModule, msgBoundary),
     fileModule(&contentModule, true),
     urlRouter(NULL)
 {
-    SetRequestReader(&requestReader);
+    SetReaderStage(&requestReader);
+    SetWriterStage(&requestWriter);
     SetStage("RequestReader", &requestReader);
     SetStage("RequestHandler", &requestHandler);
+    SetStage("RequestWriter", &requestWriter);
 
     requestReader.SetHandlerStage(&requestHandler);
+    requestWriter.SetReaderStage(&requestReader);
+    requestHandler.SetReaderStage(&requestReader);
+    requestHandler.SetWriterStage(&requestWriter);
     requestHandler.SetRootModule(&urlRouter);
 
     assert("BayeuxClientIface is NULL." && (pIface != NULL));

@@ -1,5 +1,5 @@
 
-AC_INIT(lunarprobe, 0.2.0, sri.panyam@gmail.com)
+AC_INIT(lunarprobe, 0.3.0, sri.panyam@gmail.com)
 
 ##########  Default Values  ##############
 
@@ -8,9 +8,9 @@ AC_INIT(lunarprobe, 0.2.0, sri.panyam@gmail.com)
 # in the AC_INIT line above on every release.
 #
 MAJOR_VERSION=0
-MINOR_VERSION=2
+MINOR_VERSION=3
 BUILD_VERSION=0
-RELEASE_DATE="08 Dec 2009"
+RELEASE_DATE="15 July 2009"
 
 # 
 # Check if lua exists

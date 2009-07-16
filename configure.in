@@ -18,7 +18,7 @@ RELEASE_DATE="15 July 2009"
 halley_include_path=/usr/local/include/halley
 halley_archive_path=/usr/local/lib
 
-lua_include_path=/usr/local/include/lua
+lua_include_path=/usr/local/include
 lua_archive_path=/usr/local/lib
 build_mode=release
 enable_memcheck=no

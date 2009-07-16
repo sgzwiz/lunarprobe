@@ -291,7 +291,8 @@ void InitLunarProbe(std::string staticPath)
         LPIndexModule(SHttpModule *pNext) : SHttpModule(pNext) { }
 
         //! Called to handle input data from another module
-        void ProcessInput(SHttpHandlerData *    pHandlerData,
+        void ProcessInput(SConnection *         pConnection,
+                          SHttpHandlerData *    pHandlerData,
                           SHttpHandlerStage *   pStage,
                           SBodyPart *           pBodyPart)
         {
@@ -308,8 +309,8 @@ void InitLunarProbe(std::string staticPath)
             part->SetBody("<html><head><title>Lua Debugger</title></head>");
             part->AppendToBody("<body>" + body + "</body></html>");
 
-            pStage->SendEvent_OutputToModule(pHandlerData->pConnection, pNextModule, part);
-            pStage->SendEvent_OutputToModule(pHandlerData->pConnection, pNextModule,
+            pStage->SendEvent_OutputToModule(pConnection, pNextModule, part);
+            pStage->SendEvent_OutputToModule(pConnection, pNextModule,
                                    pResponse->NewBodyPart(SBodyPart::BP_CONTENT_FINISHED, pNextModule));
         }
     };

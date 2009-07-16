@@ -109,7 +109,6 @@ HttpDebugServer::HttpDebugServer(int                    port,
     SetStage("RequestWriter", &requestWriter);
 
     requestReader.SetHandlerStage(&requestHandler);
-    requestWriter.SetReaderStage(&requestReader);
     requestHandler.SetReaderStage(&requestReader);
     requestHandler.SetWriterStage(&requestWriter);
     requestHandler.SetRootModule(&urlRouter);

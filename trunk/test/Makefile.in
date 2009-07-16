@@ -43,7 +43,7 @@ MAIN_OUTPUT     = $(OUTPUT_DIR)/$(MAIN_EXE_NAME)
 # 
 # Libraries to include
 #
-LIBS    = -lpthread -luuid
+LIBS    = -lpthread -luuid -ldl
 
 
 ###################     Begin Targets       ######################

@@ -42,6 +42,9 @@ HttpDebugServer::HttpDebugServer(int                    port,
                                  const std::string &    msgBoundary) :
     SEvServer(port),
     pClientIface(pIface),
+    requestReader("Reader", 0),
+    requestHandler("Handler", 0),
+    requestWriter("Writer", 0),
     bayeuxModule(&contentModule, msgBoundary),
     fileModule(&contentModule, true),
     urlRouter(NULL)

@@ -50,35 +50,45 @@ LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
 /*!
- *  \brief  Called by the liblua (actually via LunarProbe::HookFunction)
- *  when a breakpoint is hit.
+ *  \brief  Create a TCP based debug server.
  *
  *  \version
- *      - S Panyam  27/10/2008
+ *      - S Panyam  01/04/2009
  *      Initial version.
  */
 //*****************************************************************************
-void TcpClientIface::HandleDebugHook(LuaStack pStack, LuaDebug pDebug)
+TcpClientIface::TcpClientIface(int port) : SServer(port), clientSocket(-1)
 {
-    if (clientSocket < 0)
-        return ;
-
-    ClientIface::HandleDebugHook(pStack, pDebug);
 }
 
 //*****************************************************************************
 /*!
- *  \brief  Here is where a client connection to the debugger is handled.
+ *  \brief  No-op destructor
  *
  *  \version
- *      - S Panyam  27/10/2008
+ *      - S Panyam  01/04/2009
  *      Initial version.
  */
 //*****************************************************************************
-bool TcpClientIface::HandleConnection()
+TcpClientIface::~TcpClientIface()
+{
+}
+
+//*****************************************************************************
+/*!
+ *  \brief  Handle debug connections.
+ *
+ *  \version
+ *      - S Panyam  17/07/2009
+ *      Initial version.
+ */
+//*****************************************************************************
+void TcpClientIface::HandleConnection(int sock)
 {
     // read and handle messages one by one
     std::string message;
+
+    clientSocket = sock;
 
     // reload lua scripts at the start of each connection
     // GetLuaBindings()->RequestReload();
@@ -98,7 +108,25 @@ bool TcpClientIface::HandleConnection()
             ctx->Resume();
     }
 
-    return true;
+    SServer::HandleConnection(clientSocket);
+}
+
+//*****************************************************************************
+/*!
+ *  \brief  Called by the liblua (actually via LunarProbe::HookFunction)
+ *  when a breakpoint is hit.
+ *
+ *  \version
+ *      - S Panyam  27/10/2008
+ *      Initial version.
+ */
+//*****************************************************************************
+void TcpClientIface::HandleDebugHook(LuaStack pStack, LuaDebug pDebug)
+{
+    if (clientSocket < 0)
+        return ;
+
+    ClientIface::HandleDebugHook(pStack, pDebug);
 }
 
 

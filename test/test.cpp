@@ -22,14 +22,13 @@ int                             currStack   = -1;
 // The list of stacks that have been created
 std::vector<NamedLuaStack *>    luaStacks;
 
-//! our bayeux connection handler
-class MyConnHandler : public SConnHandler, public SChannelListener
+class MyBayeuxChannel : public virtual SBayeuxChannel, public virtual SServer
 {
 public:
-    MyConnHandler(SBayeuxChannel *pChannel, SBayeuxModule *pMod)
-        : pTheChannel(pChannel), pModule(pMod), prompt(" Hello World >> ")
+    //! Constructor
+    MyBayeuxChannel(SBayeuxModule *pMod, const std::string &name, int port) :
+        SBayeuxChannel(name, pMod), SServer(port)
     {
-        pTheChannel->SetChannelListener(this);
     }
 
     void HandleEvent(const JsonNodePtr &message, JsonNodePtr &output)
@@ -38,80 +37,36 @@ public:
     }
 
 protected:
-    //! Handle connection in async mode
-    virtual bool HandleConnection() { Start(); return false; }
-
-    //! handles a custom connection
-    virtual int Run()
+    void HandleConnection(int clientSocket)
     {
-        cerr << "Accepting message from port: " << pServer->GetPort() << ", Socket: " << clientSocket << endl;
+        SSocketBuff strbuff(clientSocket);
+        istream     clientInput(&strbuff);
+
+        JsonNodePtr value = JsonNodeFactory::StringNode(" ===== Handling New Connection on Channel: " + Name());
+        pModule->DeliverEvent(this, value);
+
+        cerr << "Accepting message from port: " << GetPort() << ", Socket: " << clientSocket << endl;
         while (!Stopped())
         {
             char buffer[1025];
 
-            clientInput->getline(buffer, 1025);
-            if (clientInput->bad() || clientInput->fail() || clientInput->eof())
+            clientInput.getline(buffer, 1025);
+            if (clientInput.bad() || clientInput.fail() || clientInput.eof())
                 break ;
 
             JsonNodePtr value = JsonNodeFactory::StringNode(prompt + buffer);
-            pModule->DeliverEvent(pTheChannel, value);
+            pModule->DeliverEvent(this, value);
         }
-
-        pServer->HandlerFinished(this);
-        return 0;
-    }
-
-protected:
-    //! The channel which is controlling it
-    SBayeuxChannel * pTheChannel;
-
-    //! Module thorough which events are dispatched
-    SBayeuxModule *pModule;
-
-    //! The prompt for this.
-    std::string prompt;
-};
-
-class MyConnFactory : public SConnFactory
-{
-public:
-    MyConnFactory(SBayeuxChannel *pChannel, SBayeuxModule *pMod)
-        : pTheChannel(pChannel), pModule(pMod) { }
-
-    virtual ~MyConnFactory() { }
-
-    virtual SConnHandler *  NewHandler()  { return new MyConnHandler(pTheChannel, pModule); }
-    virtual void            ReleaseHandler(SConnHandler * handler) { delete handler; }
-
-protected:
-    //! The channel which is controlling it
-    SBayeuxChannel * pTheChannel;
-
-    //! Module thorough which events are dispatched
-    SBayeuxModule *pModule;
-};
-
-class MyBayeuxChannel : public virtual SBayeuxChannel, public virtual SServer
-{
-public:
-    //! Constructor
-    MyBayeuxChannel(SBayeuxModule *pMod, const std::string &name, int port) :
-        SBayeuxChannel(name, pMod), SServer(port)
-    {
-        SetConnectionFactory(new MyConnFactory(this, pModule));
-    }
-
-protected:
-    void HandleConnection(int clientSocket)
-    {
-        JsonNodePtr value = JsonNodeFactory::StringNode(" ===== Handling New Connection on Channel: " + Name());
-        pModule->DeliverEvent(this, value);
-
-        SServer::HandleConnection(clientSocket);
 
         value = JsonNodeFactory::StringNode(" ===== Connection Finished on Channel: " + Name());
         pModule->DeliverEvent(this, value);
+
+        SServer::HandleConnection(clientSocket);
     }
+
+protected:
+    //! The prompt for this.
+    std::string prompt;
 };
 
 char *showPrompt(char *inputBuff = NULL)

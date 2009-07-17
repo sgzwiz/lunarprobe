@@ -329,6 +329,8 @@ int main(int argc, char *argv[])
     const char *luaPath = "./lua/";
     const char *staticPath = "./static/";
     bool running = true;
+    SLogger logger;
+    SLogger::Add(&logger);
 
     int argCounter = 1;
     for (;argCounter < argc;argCounter++)

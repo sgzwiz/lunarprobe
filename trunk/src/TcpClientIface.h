@@ -30,6 +30,10 @@
 #include "ClientIface.h"
 #include "halley.h"
 
+#ifndef LUA_DEBUG_PORT
+#define LUA_DEBUG_PORT  9999
+#endif
+
 LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
@@ -38,19 +42,22 @@ LUNARPROBE_NS_BEGIN
  *
  *  \brief  A custom tcp implementation of the debugger.
  *****************************************************************************/
-class TcpClientIface : public ClientIface, public SConnHandler
+class TcpClientIface : public ClientIface, public SServer
 {
 public:
+                TcpClientIface(int port = LUA_DEBUG_PORT);
+    virtual     ~TcpClientIface();
+
     // OVerridden to check client status
     virtual void    HandleDebugHook(LuaStack pStack, LuaDebug pDebug);
 
     // Sends a message to the connected client
     virtual int     SendMessage(const char *data, unsigned datasize);
 
-    // Handle a new client connection
-    bool HandleConnection();
-
 protected:
+    // handles connections
+    virtual     void        HandleConnection(int clientSocket);
+
     // Reads a string from the socket
     virtual bool ReadString(std::string &result);
 
@@ -60,6 +67,9 @@ private:
 
     //! Write lock on the socket
     SMutex              socketWriteMutex;
+
+    //! Current socket we are serving
+    int                 clientSocket;
 };
 
 LUNARPROBE_NS_END

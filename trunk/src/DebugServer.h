@@ -40,22 +40,6 @@
 
 LUNARPROBE_NS_BEGIN
 
-class TcpDebugServer :
-        public virtual SServer,
-        public virtual SConnFactory
-{
-
-public:
-                            TcpDebugServer(int port, TcpClientIface *pIface);
-    virtual                 ~TcpDebugServer();
-    SConnHandler *          NewHandler();
-    void                    ReleaseHandler(SConnHandler *);
-    inline TcpClientIface * GetClientIface()    { return pClientIface; }
-
-protected:
-    TcpClientIface  *   pClientIface;
-};
-
 class HttpDebugServer : public virtual SEvServer
 {
 public:

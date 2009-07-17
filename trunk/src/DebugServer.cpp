@@ -30,62 +30,6 @@ LUNARPROBE_NS_BEGIN
 
 //*****************************************************************************
 /*!
- *  \brief  Create a TCP based debug server.
- *
- *  \version
- *      - S Panyam  01/04/2009
- *      Initial version.
- */
-//*****************************************************************************
-TcpDebugServer::TcpDebugServer(int port, TcpClientIface *pIface) :
-    SServer(port),
-    pClientIface(pIface)
-{
-    SetConnectionFactory(this);
-}
-
-//*****************************************************************************
-/*!
- *  \brief  No-op destructor
- *
- *  \version
- *      - S Panyam  01/04/2009
- *      Initial version.
- */
-//*****************************************************************************
-TcpDebugServer::~TcpDebugServer()
-{
-}
-
-//*****************************************************************************
-/*!
- *  \brief  Creates a new client handler.
- *
- *  \version
- *      - S Panyam  01/04/2009
- *      Initial version.
- */
-//*****************************************************************************
-SConnHandler *TcpDebugServer::NewHandler()
-{
-    return pClientIface;
-}
-
-//*****************************************************************************
-/*!
- *  \brief  Releases the client handler (does nothing here).
- *
- *  \version
- *      - S Panyam  01/04/2009
- *      Initial version.
- */
-//*****************************************************************************
-void TcpDebugServer::ReleaseHandler(SConnHandler *)
-{
-}
-
-//*****************************************************************************
-/*!
  *  \brief  Create a HTTP based debug server.
  *
  *  \version

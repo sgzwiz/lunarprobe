@@ -260,13 +260,13 @@ void InitLunarProbe(std::string staticPath)
                     ;
             SString body    = "<hr><center>"    + links + "</center><hr>";
 
-            SBodyPart *part = pResponse->NewBodyPart();
+            SRawBodyPart *part = pResponse->NewRawBodyPart();
             part->SetBody("<html><head><title>Lua Debugger</title></head>");
             part->AppendToBody("<body>" + body + "</body></html>");
 
             pStage->SendEvent_OutputToModule(pConnection, pNextModule, part);
             pStage->SendEvent_OutputToModule(pConnection, pNextModule,
-                                   pResponse->NewBodyPart(SBodyPart::BP_CONTENT_FINISHED, pNextModule));
+                                   pResponse->NewContFinishedPart(pNextModule));
         }
     };
 

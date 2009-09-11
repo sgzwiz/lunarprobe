@@ -1,11 +1,13 @@
 // ActionScript file
 
 import dialogs.*;
+import editor.*;
 
 import flash.display.*;
 import flash.external.*;
 import flash.media.*;
 import flash.net.*;
+import flash.utils.*;
 
 import mx.collections.*;
 import mx.containers.TitleWindow;
@@ -32,7 +34,7 @@ private var numFuncCalls:Number					= 0;
 private var connectDialog:OkCancelDialog		= null;
 
 // Currently opened file
-private var currentFile: String					= null;
+private var currDoc: IDocument				    = null;
 
 private function onCreationComplete(event: Object): void
 {
@@ -106,18 +108,26 @@ public function isConnected(): Boolean
 /**
  * Sets a given file as the current file in the text editor.
  */
-public function setCurrentFile(fullPath: String, contents: String): void 
+public function setCurrentFile(fullPath: String, contents: String = null): void 
 {
-	currentFile = fullPath;
-	sourceFileArea.text = contents;
+    var input:IDataInput = null; //contents;
+    if (contents == null)
+    {
+		sourceFileArea.setDocument(null);
+    }
+    else
+    {
+		currDoc = new DefaultDocumentTokenizer().tokenize(fullPath, input);
+		sourceFileArea.setDocument(currDoc);
+    }
 }
 
 /**
  * Gets the currently open file in the editor.
  */
-public function getCurrentFile(): String
+public function getDocument(): IDocument
 {
-	return currentFile;
+	return currDoc;
 }
 
 private function OnConnected(): void
@@ -126,18 +136,12 @@ private function OnConnected(): void
 	SetConnected(true);
 }
 
-private function onMainMenuItem(event: MenuEvent): void
+private function onConnectMI(event: *): void
 {
-	var which:String = event.item.@id;
-	if (which == "connectMI")
-	{
-		connectDialog = new ConnectDialog();
-		connectDialog.theApp = this;
-		connectDialog.show(true, this);
-		/*
-		connect("", 0, this);
-		*/
-	}
+	connectDialog = new ConnectDialog();
+	connectDialog.theApp = this;
+	connectDialog.show(true, this);
+	// connect("", 0, this);
 }
 
 public function connect(host: String, port: int, progress:*): Boolean

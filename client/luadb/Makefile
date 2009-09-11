@@ -1,4 +1,8 @@
 
+# 
+# Ensure FLEX_SDK_DIR points to where the flex sdk is installed
+#
+
 SOURCE_DIR 	= src
 OUTPUT_DIR	= ../../static/flash
 INPUT_MXML	= LDBApp.mxml

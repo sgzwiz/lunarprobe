@@ -9,7 +9,10 @@
 	    <mx:Tree id = "filesTree" width = "100%"
 	            verticalScrollPolicy = "auto" horizontalScrollPolicy = "on"
 	            dataProvider = "{fileTreeData}"
-	            itemOpen="onItemOpen" itemDoubleClick="onItemDoubleClick" itemClick="onItemDoubleClick">
+	            itemOpen="onItemOpen(event);" 
+	            itemDoubleClick="onItemDoubleClick(event);" 
+	            itemClick="onItemDoubleClick(event);"
+	            >
 	    </mx:Tree>
 	</mx:VBox>
 </LDBView>

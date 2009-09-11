@@ -8,9 +8,7 @@
 	<mx:VBox width="100%" height="100%">
 		<mx:MenuBar id = "mainMenuBar" labelField = "@label" itemClick = "onMainMenuItem(event);">
 			<mx:XMLList>
-				<menuitem id = "gameMI" label = "Game" enabled = "True">
-					<menuitem id = "connectMI" label = "Connect..." enabled = "True"/>
-				</menuitem>
+				<menuitem id = "connectMI" label = "Connect..." enabled = "True"/>
 			</mx:XMLList>
 		</mx:MenuBar>
 		<mx:HDividedBox width="100%" height="100%">

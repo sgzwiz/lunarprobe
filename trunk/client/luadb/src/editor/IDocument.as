@@ -18,8 +18,8 @@ package editor
         // Get number of lines in the file.
         function get lineCount(): int;
         
-        // Adds a new token to the current line
-        function addToken(token:Token, line: -1, position: -1): void;
+        // Adds a new token to a given line at a given position
+        function addToken(token:Token, line: int = -1, position: int = -1): void;
         
         // Adds a new line before a given line
         function addNewLine(position: int = -1): void;

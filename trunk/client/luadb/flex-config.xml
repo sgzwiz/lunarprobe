@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<flex-config xmlns="http://www.adobe.com/2006/flex-config">
+    <metadata>
+        <title>LuaDB</title>
+        <publisher>Sri Panyam</publisher>
+        <creator>Sri Panyam</creator>
+        <language>EN</language>
+    </metadata>
+    <compiler>
+        <source-path>
+            <path-element>src</path-element>
+        </source-path>
+    </compiler>
+</flex-config>

@@ -13,7 +13,7 @@ package editor
         protected var selectionModel:SelectionModel = new SelectionModel();
 
         // The document renderer
-        protected var renderer:IDocumentRenderer = null;
+        protected var renderer:IDocumentView = null;
 
         /**
          * Constructor

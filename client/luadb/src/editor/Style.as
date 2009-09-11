@@ -24,14 +24,14 @@ package editor
         /**
          * Set the style at a given index.
          */
-        public function setChild(index: int, style: IStyle): void
+        public function setChild(index: int, style: Style): void
         {
         }
         
         /**
          * Add a child style at a given position.
          */
-        public function addChild(style: IStyle, index: int): void
+        public function addChild(style: Style, index: int): void
         {
         }
         

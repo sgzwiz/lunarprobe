@@ -95,3 +95,9 @@ function HandleEvent(result)
     alert("We Are Overriding HandleEvent");
 }
 
+function Log(message)
+{
+    var consoleDiv = $("#consoleDiv");
+    consoleDiv.val(consoleDiv.val() + message + "\n");
+}
+

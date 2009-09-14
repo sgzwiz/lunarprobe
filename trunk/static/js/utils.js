@@ -19,7 +19,7 @@ function MakeAjaxRequest(method, uri, callback, data, multipart, headers)
     }
 
     // 
-    // Called as we get a list of files to fill up on
+    // Called as we get a list of chunks to fill up on
     //
     if (multipart == true)
     {

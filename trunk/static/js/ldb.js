@@ -36,6 +36,7 @@ function DoHandshake()
         }
     }
 
+    Log("Perform handshakes...");
     var data = {'channel': '/meta/handshake',
                 'version': '1.0',
                 'supportedConnectionTypes': ['long-polling',
@@ -50,6 +51,7 @@ function DoHandshake()
  */
 function SubscribeToChannel(channel)
 {
+    Log("Subscribing to channel: " + channel);
     var data = {'channel': '/meta/subscribe',
                 'clientId': clientId,
                 'subscription': channel};

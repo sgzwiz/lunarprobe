@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<title>Lunar Probe</title>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<script type="text/javascript" src = "js/jquery-1.3.2.min.js"> </script>
+<script type="text/javascript" src = "js/dimensions.js"> </script>
+<script type="text/javascript" src = "js/splitter.js"> </script>
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+html, body {
+	margin:0;
+	padding:0;
+    overflow: hidden;
+}
+
+#header { padding: 1em; }
+
+<link rel="stylesheet" type="text/css" href="css/main.css"/>
+
+#MainPanel {
+    border: 4px solid #669;
+    min-width: 600px;
+    min-height: 500px;
+}
+
+.hsplitbar {
+    width: 6px;
+    background: #669 url("images/hgrabber.gif) no-repeat center;
+}
+
+.hsplitbar.active, .hsplitbar:hover {
+    background: #c66 url(hgrabber.gif) no-repeat center;
+}
+
+.ContentPanel {
+    overflow: auto;
+    padding: 8px;
+    background: #def;
+}
+
+</style>
+
+<script type="text/javascript" src = "js/jsonerror.js"> </script>
+<script type="text/javascript" src = "js/json.js"> </script>
+<script type="text/javascript" src = "js/json2.js"> </script>
+<script type="text/javascript" src = "js/utils.js"> </script>
+<script type="text/javascript" src = "js/ldb.js"> </script>
+<script type="text/javascript" src = "js/luadbui.js"> </script>
+
+<script type="text/javascript">
+    $().ready(function() {
+        $("#MainPanel").splitter({
+            type: "h",
+            minA: 100, initA: 150, maxA: 250
+        });
+
+        $(window).bind("resize", function() {
+            var $mp = $("#MainPanel");
+            var top = $mp.offset().top;
+            var wh = $(window).height();
+            var mrg = parseInt($mp.css("marginBottom")) || 0;
+            var brd = parseInt($mp.css("borderBottomWidth")) || 0;
+            $mp.css("height", (wh - top - mrg - brd) + "px");
+
+            // IE fires resize for splitter; others dont so do it here
+            if (!jQuery.browser.msie)
+                $mp.trigger("resize");
+        }).trigger("resize");
+    });
+</script>
+</head>
+
+
+<body class=" yui-skin-sam">
+
+<div id = "MainPanel">
+    <div id = "centerPanel1">
+        <div id = "navigatorPanel"  class = "ContentPanel">
+            File Navigator
+        </div>
+        <div id = "fileAndWestPanel">
+            <div id = "fileSourcePanel" class = "ContentPanel">
+                File Source
+            </div>
+            <div id = "westPanel" class = "ContentPanel">
+                <div id = "variablesPanel" class = "ContentPanel">
+                </div>
+                <div id = "breakpointsPanel" class = "ContentPanel">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id = "southPanel1">
+        <div id = "consolePanel" class = "ContentPanel">
+            Console
+        </div>
+        <div id = "debugStackAndContextPanel" class = "ContentPanel">
+            <div id = "debugStackPanel">
+                Debug Stack
+            </div>
+            <div id = "debugContextsPanel" class = "ContentPanel">
+                Debug Contexts
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

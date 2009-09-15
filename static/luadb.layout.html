@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<title>Lunar Probe</title>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+#toggle {
+    text-align: center;
+    padding: 1em;
+}
+#toggle a {
+    padding: 0 5px;
+    border-left: 1px solid black;
+}
+#tRight {
+    border-left: none !important;
+}
+</style>
+
+<!-- Skin CSS files resize.css must load before layout.css --> 
+<link rel="stylesheet" type="text/css"href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css"> 
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/assets/skins/sam/resize.css"> 
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/assets/skins/sam/layout.css"> 
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/assets/skins/sam/button.css"> 
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/tabview/assets/skins/sam/tabview.css"
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/menu/assets/skins/sam/menu.css"
+/>
+
+
+<!-- Utility Dependencies --> 
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/yahoo/yahoo-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/event/event-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/container/container_core-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/dom/dom-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/element/element-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/resize/resize-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/animation/animation-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/layout/layout-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/tabview/tabview-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/menu/menu-min.js"></script>
+
+<script type="text/javascript" src = "js/jquery-1.3.2.min.js"> </script>
+
+<script type="text/javascript" src = "js/jsonerror.js"> </script>
+<script type="text/javascript" src = "js/json.js"> </script>
+<script type="text/javascript" src = "js/json2.js"> </script>
+<script type="text/javascript" src = "js/utils.js"> </script>
+<script type="text/javascript" src = "js/ldb.js"> </script>
+<script type="text/javascript" src = "js/luadbui.js"> </script>
+<script>
+    var theMainLayout           = null;
+    var theFilesContainer       = null;
+    var theConsoleView          = null;
+    var theVariablesView        = null;
+    var theBreakpointsView      = null;
+    var theDebugStackView       = null;
+    var theDebugContextsView    = null;
+    var theNavigatorView        = null;
+</script>
+
+<script>
+
+(function() {
+    if (true)
+    {
+        createPanels();
+    }
+    else
+    {
+        $("#consoleDiv").val("");
+        createMainLayout();
+        Log("Created main layout...");
+        createFilesContainer();
+        Log("Created files container...");
+    }
+})();
+</script>
+
+</head>
+
+
+<body class=" yui-skin-sam">
+<div id="top1">
+    <input type=button value="Connect" id="connectButton" name="connectButton" onclick="connectToScript();"/>
+</div>
+
+<div id="bottom1" style="width: 100%; height: 100%">
+    <div id="pg1">
+        <div id="bottomDivParent" class="yui-g" style="overflow: hidden;">
+            <div id = "consoleDiv" first" style="overflow: auto">
+                Console output goes here.
+            </div>
+            <div id = "debugStackDiv" style="overflow: auto">
+                Debug stack frames go here.
+            </div>
+            <div id = "debugContextsDiv" style="overflow: auto">
+                Debug contexts go here.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="left1">
+    <div id = "navigatorDiv" class="yui-navset">
+    </div>
+</div>
+
+<div id="right1">
+    <div id = "variablesDiv">
+        Variables in the current frame go here.
+    </div>
+
+    <div id = "breakpointsDiv">
+        Breakpoint info goes here.
+    </div>
+</div>
+
+<div id="center1" style="width: 100%; height: 100%">
+    <div id = "filesContainer" class="yui-navset">
+    </div>
+</div>
+
+
+</body>
+
+
+</html>

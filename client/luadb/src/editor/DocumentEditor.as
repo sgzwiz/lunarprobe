@@ -1,6 +1,7 @@
 package editor
 {
     import flash.events.*;
+    import flash.text.*;
     
     import mx.core.UIComponent;
 
@@ -44,7 +45,7 @@ package editor
                 invalidateDisplayList();
             }
         }
-        
+
         protected function handleMouseEvent(event:MouseEvent): void
         {
         }
